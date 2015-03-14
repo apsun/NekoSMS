@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_item_import_from_sms"
+        android:title="Import from SMS"
+        android:icon="@drawable/ic_inbox_white_24dp"
+        android:showAsAction="always"/>
+    <item
+        android:id="@+id/menu_item_create_filter"
+        android:title="Create filter"
+        android:icon="@drawable/ic_create_white_24dp"
+        android:showAsAction="always"/>
+</menu>
