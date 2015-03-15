@@ -9,6 +9,7 @@ import android.telephony.SmsMessage;
 import com.oxycode.nekosms.utils.Xlog;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -17,8 +18,7 @@ import java.util.ArrayList;
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
 
-    private static SmsMessage[] getMessagesFromIntent(Intent intent) {
-        byte[][] pdus = (byte[][])intent.getExtras().get("pdus");
+    private static SmsMessage[] getMessagesFromPdus(byte[][] pdus) {
         SmsMessage[] messages = new SmsMessage[pdus.length];
         for (int i = 0; i < pdus.length; ++i) {
             messages[i] = SmsMessage.createFromPdu(pdus[i]);
@@ -60,7 +60,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
-    private static void finishSmsBroadcast(Object smsHandler, Object smsReceiver) throws Throwable {
+    private static void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
         // This code is equivalent to the following 2 lines:
         // deleteFromRawTable(mDeleteWhere, mDeleteWhereArgs);
         // sendMessage(EVENT_BROADCAST_COMPLETE);
@@ -76,7 +76,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             new Class<?>[] {int.class}, 3);
     }
 
-    private static void beforeSmsHandler(XC_MethodHook.MethodHookParam param) throws Throwable {
+    private static void beforeSmsHandler(XC_MethodHook.MethodHookParam param) {
         Intent intent = (Intent)param.args[0];
         String action = intent.getAction();
 
@@ -84,7 +84,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        SmsMessage[] messages = getMessagesFromIntent(intent);
+        byte[][] pdus = (byte[][])intent.getSerializableExtra("pdus");
+        SmsMessage[] messages = getMessagesFromPdus(pdus);
         int messageCount = messages.length;
         Xlog.i(TAG, "Got %d new SMS message(s)", messages.length);
 
@@ -134,7 +135,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             param1Type, param2Type, param3Type, param4Type, param5Type, hook);
     }
 
-    private static void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+    private static void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) {
         XC_MethodHook hook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
@@ -173,6 +174,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Phone manufacturer: %s", Build.MANUFACTURER);
         Xlog.i(TAG, "Phone model: %s", Build.MODEL);
         Xlog.i(TAG, "Android version: %s", Build.VERSION.RELEASE);
+        Xlog.i(TAG, "Xposed bridge version: %d", XposedBridge.XPOSED_BRIDGE_VERSION);
     }
 
     @Override
