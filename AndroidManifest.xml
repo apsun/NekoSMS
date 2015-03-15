@@ -32,6 +32,6 @@
             android:value="Regular expression-based filtering for your SMS messages"/>
         <meta-data
             android:name="xposedminversion"
-            android:value="32"/>
+            android:value="2"/>
     </application>
 </manifest>
