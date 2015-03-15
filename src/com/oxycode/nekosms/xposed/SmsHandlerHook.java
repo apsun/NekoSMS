@@ -66,13 +66,43 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // sendMessage(EVENT_BROADCAST_COMPLETE);
 
         Xlog.d(TAG, "Removing raw SMS data from database");
-        Class<?>[] argTypes = {String.class, String[].class};
-        XposedHelpers.callMethod(smsHandler, "deleteFromRawTable", argTypes,
+        XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
+            new Class<?>[] {String.class, String[].class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
 
         Xlog.d(TAG, "Notifying completion of SMS broadcast");
-        XposedHelpers.callMethod(smsHandler, "sendMessage", int.class, 3);
+        XposedHelpers.callMethod(smsHandler, "sendMessage",
+            new Class<?>[] {int.class}, 3);
+    }
+
+    private static void beforeSmsHandler(XC_MethodHook.MethodHookParam param) throws Throwable {
+        Intent intent = (Intent)param.args[0];
+        String action = intent.getAction();
+
+        if (!Telephony.Sms.Intents.SMS_DELIVER_ACTION.equals(action)) {
+            return;
+        }
+
+        SmsMessage[] messages = getMessagesFromIntent(intent);
+        int messageCount = messages.length;
+        Xlog.i(TAG, "Got %d new SMS message(s)", messages.length);
+
+        SmsMessage[] filteredMessages = filterMessages(messages);
+        int remainingCount = filteredMessages.length;
+        int filteredCount = messageCount - remainingCount;
+        Xlog.i(TAG, "Filtered %d/%d message(s)", filteredCount, messageCount);
+
+        if (remainingCount == 0) {
+            Xlog.d(TAG, "All messages filtered, skipping broadcast");
+            param.setResult(null);
+            finishSmsBroadcast(param.thisObject, param.args[3]);
+        } else if (filteredCount != 0) {
+            Xlog.d(TAG, "%d message(s) unfiltered, continuing broadcast", remainingCount);
+            intent.putExtra("pdus", getPdusFromMessages(filteredMessages));
+        } else {
+            Xlog.d(TAG, "No messages filtered, continuing broadcast");
+        }
     }
 
     private static void hookSmsHandler19(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
@@ -108,31 +138,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         XC_MethodHook hook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                Intent intent = (Intent)param.args[0];
-                String action = intent.getAction();
-
-                if (!Telephony.Sms.Intents.SMS_DELIVER_ACTION.equals(action)) {
-                    return;
-                }
-
-                SmsMessage[] messages = getMessagesFromIntent(intent);
-                int messageCount = messages.length;
-                Xlog.i(TAG, "Got %d new SMS message(s)", messages.length);
-
-                SmsMessage[] filteredMessages = filterMessages(messages);
-                int remainingCount = filteredMessages.length;
-                int filteredCount = messageCount - remainingCount;
-                Xlog.i(TAG, "Filtered %d/%d message(s)", filteredCount, messageCount);
-
-                if (remainingCount == 0) {
-                    Xlog.d(TAG, "All messages filtered, skipping broadcast");
-                    param.setResult(null);
-                    finishSmsBroadcast(param.thisObject, param.args[3]);
-                } else if (filteredCount != 0) {
-                    Xlog.d(TAG, "%d message(s) unfiltered, continuing broadcast", remainingCount);
-                    intent.putExtra("pdus", getPdusFromMessages(filteredMessages));
-                } else {
-                    Xlog.d(TAG, "No messages filtered, continuing broadcast");
+                try {
+                    beforeSmsHandler(param);
+                } catch (Throwable e) {
+                    Xlog.e(TAG, "Error occurred in SMS handler hook", e);
+                    throw e;
                 }
             }
         };

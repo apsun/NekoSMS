@@ -4,7 +4,7 @@ A regular expression based text message blocker for Android.
 
 ## Requirements
 
-- An Android device running 5.0 Lollipop or newer
+- An Android device running 4.4 KitKat or newer
 - [Xposed framework 3.0](http://forum.xda-developers.com/showthread.php?t=3034811)
 
 ## Note
