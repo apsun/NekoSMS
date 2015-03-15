@@ -8,7 +8,6 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.oxycode.nekosms.utils.ReflectionHelper;
 import com.oxycode.nekosms.utils.Xlog;
-import com.oxycode.nekosms.xposed.compat.CompatShim;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedHelpers;
@@ -17,30 +16,15 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import java.util.ArrayList;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
+    private static final String TAG = SmsHandlerHook.class.getSimpleName();
+
     private static SmsMessage[] getMessagesFromIntent(Intent intent) {
-        Object[] pdus = (Object[])intent.getExtras().get("pdus");
+        byte[][] pdus = (byte[][])intent.getExtras().get("pdus");
         SmsMessage[] messages = new SmsMessage[pdus.length];
         for (int i = 0; i < pdus.length; ++i) {
-            byte[] pdu = (byte[])pdus[i];
-            messages[i] = SmsMessage.createFromPdu(pdu);
+            messages[i] = SmsMessage.createFromPdu(pdus[i]);
         }
         return messages;
-    }
-
-    private static SmsMessage[] filterMessages(SmsMessage[] messages) {
-        ArrayList<SmsMessage> messageList = new ArrayList<SmsMessage>(messages.length);
-        for (int i = 0; i < messages.length; i++) {
-            SmsMessage message = messages[i];
-            Xlog.v("[%d] Sender: %s", i, message.getOriginatingAddress());
-            Xlog.v("[%d] Message: %s", i, message.getMessageBody());
-            if (shouldFilterMessage(message)) {
-                Xlog.v("[%d] Result: Blocked");
-            } else {
-                Xlog.v("[%d] Result: Allowed");
-                messageList.add(message);
-            }
-        }
-        return messageList.toArray(new SmsMessage[messageList.size()]);
     }
 
     private static byte[][] getPdusFromMessages(SmsMessage[] messages) {
@@ -56,11 +40,38 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return message.getMessageBody().startsWith("123");
     }
 
-    private static void cleanUpTempDatabase(Object smsHandler, Object smsReceiver) {
-        Xlog.i("Cleaning up temp database");
+    private static SmsMessage[] filterMessages(SmsMessage[] messages) {
+        ArrayList<SmsMessage> messageList = new ArrayList<SmsMessage>(messages.length);
+        for (int i = 0; i < messages.length; i++) {
+            SmsMessage message = messages[i];
+            Xlog.v(TAG, "[%d] Sender: %s", i, message.getOriginatingAddress());
+            Xlog.v(TAG, "[%d] Message: %s", i, message.getMessageBody());
+            if (shouldFilterMessage(message)) {
+                Xlog.v(TAG, "[%d] Result: Blocked", i);
+            } else {
+                Xlog.v(TAG, "[%d] Result: Allowed", i);
+                messageList.add(message);
+            }
+        }
+
+        if (messages.length == messageList.size()) {
+            return messages;
+        } else {
+            return messageList.toArray(new SmsMessage[messageList.size()]);
+        }
+    }
+
+    private static void finishSmsBroadcast(Object smsHandler, Object smsReceiver) throws Throwable {
+        // This code is equivalent to the following 2 lines:
+        // deleteFromRawTable(mDeleteWhere, mDeleteWhereArgs);
+        // sendMessage(EVENT_BROADCAST_COMPLETE);
+
+        Xlog.d(TAG, "Removing raw SMS data from database");
         ReflectionHelper.invoke(smsHandler, "deleteFromRawTable",
             String.class, ReflectionHelper.getFieldValue(smsReceiver, "mDeleteWhere"),
             String[].class, ReflectionHelper.getFieldValue(smsReceiver, "mDeleteWhereArgs"));
+
+        Xlog.d(TAG, "Notifying completion of SMS broadcast");
         ReflectionHelper.invoke(smsHandler, "sendMessage",
             int.class, 3);
     }
@@ -81,24 +92,28 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                     Intent intent = (Intent)param.args[0];
                     String action = intent.getAction();
 
-                    if (!action.equals(Telephony.Sms.Intents.SMS_DELIVER_ACTION)) {
+                    if (!Telephony.Sms.Intents.SMS_DELIVER_ACTION.equals(action)) {
                         return;
                     }
 
                     SmsMessage[] messages = getMessagesFromIntent(intent);
                     int messageCount = messages.length;
-                    Xlog.i("Got %d new SMS message(s)", messages.length);
+                    Xlog.i(TAG, "Got %d new SMS message(s)", messages.length);
+
                     SmsMessage[] filteredMessages = filterMessages(messages);
                     int remainingCount = filteredMessages.length;
                     int filteredCount = messageCount - remainingCount;
-                    Xlog.i("Filtered %d/%d message(s)", filteredCount, messageCount);
-                    if (filteredMessages.length == 0) {
-                        Xlog.i("All messages filtered, skipping broadcast");
+                    Xlog.i(TAG, "Filtered %d/%d message(s)", filteredCount, messageCount);
+
+                    if (remainingCount == 0) {
+                        Xlog.d(TAG, "All messages filtered, skipping broadcast");
                         param.setResult(null);
-                        cleanUpTempDatabase(param.thisObject, param.args[3]);
-                    } else {
-                        Xlog.i("%d message(s) unfiltered, continuing broadcast", remainingCount);
+                        finishSmsBroadcast(param.thisObject, param.args[3]);
+                    } else if (filteredCount != 0) {
+                        Xlog.d(TAG, "%d message(s) unfiltered, continuing broadcast", remainingCount);
                         intent.putExtra("pdus", getPdusFromMessages(filteredMessages));
+                    } else {
+                        Xlog.d(TAG, "No messages filtered, continuing broadcast");
                     }
                 }
             }
@@ -106,25 +121,39 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static void loadShims(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        CompatShim.loadShims(lpparam);
+        for (IXposedHookLoadPackage shim : CompatShimLoader.getEnabledShims()) {
+            String shimName = shim.getClass().getSimpleName();
+            try {
+                Xlog.i(TAG, "Loading shim: %s", shimName);
+                shim.handleLoadPackage(lpparam);
+            } catch (Throwable e) {
+                Xlog.e(TAG, "Error occurred while loading shim: %s", shimName, e);
+                throw e;
+            }
+        }
     }
 
     private static void printDeviceInfo() {
-        Xlog.i("Phone manufacturer: " + Build.MANUFACTURER);
-        Xlog.i("Phone model: " + Build.MODEL);
-        Xlog.i("Android version: " + Build.VERSION.RELEASE);
+        Xlog.i(TAG, "Phone manufacturer: %s", Build.MANUFACTURER);
+        Xlog.i(TAG, "Phone model: %s", Build.MODEL);
+        Xlog.i(TAG, "Android version: %s", Build.VERSION.RELEASE);
     }
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!lpparam.packageName.equals("com.android.phone")) {
+        if (!"com.android.phone".equals(lpparam.packageName)) {
             return;
         }
 
-        Xlog.i("NekoSMS initializing...");
+        Xlog.i(TAG, "NekoSMS initializing...");
         printDeviceInfo();
         loadShims(lpparam);
-        hookSmsHandler(lpparam);
-        Xlog.i("NekoSMS initialization complete!");
+        try {
+            hookSmsHandler(lpparam);
+        } catch (Throwable e) {
+            Xlog.e(TAG, "Failed to hook SMS handler", e);
+            throw e;
+        }
+        Xlog.i(TAG, "NekoSMS initialization complete!");
     }
 }

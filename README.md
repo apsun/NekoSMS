@@ -21,7 +21,7 @@ first word that popped into my head. Hence, NekoSMS.
 
 ### How does it work?
 
-It hooks the internal Android class, com.android.internal.telephony.InboundSmsHandler. 
+It hooks the internal Android class, `com.android.internal.telephony.InboundSmsHandler`. 
 This class is responsible for taking the raw SMS data received by the phone and 
 dispatching it to the default SMS app, then broadcasting it to all apps capable of 
 reading SMS messages.
