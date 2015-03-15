@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import com.oxycode.nekosms.utils.ReflectionHelper;
 import com.oxycode.nekosms.utils.Xlog;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -67,16 +66,30 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // sendMessage(EVENT_BROADCAST_COMPLETE);
 
         Xlog.d(TAG, "Removing raw SMS data from database");
-        ReflectionHelper.invoke(smsHandler, "deleteFromRawTable",
-            String.class, ReflectionHelper.getFieldValue(smsReceiver, "mDeleteWhere"),
-            String[].class, ReflectionHelper.getFieldValue(smsReceiver, "mDeleteWhereArgs"));
+        Class<?>[] argTypes = {String.class, String[].class};
+        XposedHelpers.callMethod(smsHandler, "deleteFromRawTable", argTypes,
+            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
+            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
 
         Xlog.d(TAG, "Notifying completion of SMS broadcast");
-        ReflectionHelper.invoke(smsHandler, "sendMessage",
-            int.class, 3);
+        XposedHelpers.callMethod(smsHandler, "sendMessage", int.class, 3);
     }
 
-    private static void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+    private static void hookSmsHandler19(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+        String className = "com.android.internal.telephony.InboundSmsHandler";
+        String methodName = "dispatchIntent";
+        Class<?> param1Type = Intent.class;
+        Class<?> param2Type = String.class;
+        Class<?> param3Type = int.class;
+        Class<?> param4Type = BroadcastReceiver.class;
+
+        Xlog.i(TAG, "Hooking SMS handler for Android v19+");
+
+        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
+            param1Type, param2Type, param3Type, param4Type, hook);
+    }
+
+    private static void hookSmsHandler21(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         String methodName = "dispatchIntent";
         Class<?> param1Type = Intent.class;
@@ -85,46 +98,59 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param4Type = BroadcastReceiver.class;
         Class<?> param5Type = UserHandle.class;
 
+        Xlog.i(TAG, "Hooking SMS handler for Android v21+");
+
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, param5Type, new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    Intent intent = (Intent)param.args[0];
-                    String action = intent.getAction();
+            param1Type, param2Type, param3Type, param4Type, param5Type, hook);
+    }
 
-                    if (!Telephony.Sms.Intents.SMS_DELIVER_ACTION.equals(action)) {
-                        return;
-                    }
+    private static void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+        XC_MethodHook hook = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                Intent intent = (Intent)param.args[0];
+                String action = intent.getAction();
 
-                    SmsMessage[] messages = getMessagesFromIntent(intent);
-                    int messageCount = messages.length;
-                    Xlog.i(TAG, "Got %d new SMS message(s)", messages.length);
+                if (!Telephony.Sms.Intents.SMS_DELIVER_ACTION.equals(action)) {
+                    return;
+                }
 
-                    SmsMessage[] filteredMessages = filterMessages(messages);
-                    int remainingCount = filteredMessages.length;
-                    int filteredCount = messageCount - remainingCount;
-                    Xlog.i(TAG, "Filtered %d/%d message(s)", filteredCount, messageCount);
+                SmsMessage[] messages = getMessagesFromIntent(intent);
+                int messageCount = messages.length;
+                Xlog.i(TAG, "Got %d new SMS message(s)", messages.length);
 
-                    if (remainingCount == 0) {
-                        Xlog.d(TAG, "All messages filtered, skipping broadcast");
-                        param.setResult(null);
-                        finishSmsBroadcast(param.thisObject, param.args[3]);
-                    } else if (filteredCount != 0) {
-                        Xlog.d(TAG, "%d message(s) unfiltered, continuing broadcast", remainingCount);
-                        intent.putExtra("pdus", getPdusFromMessages(filteredMessages));
-                    } else {
-                        Xlog.d(TAG, "No messages filtered, continuing broadcast");
-                    }
+                SmsMessage[] filteredMessages = filterMessages(messages);
+                int remainingCount = filteredMessages.length;
+                int filteredCount = messageCount - remainingCount;
+                Xlog.i(TAG, "Filtered %d/%d message(s)", filteredCount, messageCount);
+
+                if (remainingCount == 0) {
+                    Xlog.d(TAG, "All messages filtered, skipping broadcast");
+                    param.setResult(null);
+                    finishSmsBroadcast(param.thisObject, param.args[3]);
+                } else if (filteredCount != 0) {
+                    Xlog.d(TAG, "%d message(s) unfiltered, continuing broadcast", remainingCount);
+                    intent.putExtra("pdus", getPdusFromMessages(filteredMessages));
+                } else {
+                    Xlog.d(TAG, "No messages filtered, continuing broadcast");
                 }
             }
-        );
+        };
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            hookSmsHandler21(lpparam, hook);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hookSmsHandler19(lpparam, hook);
+        } else {
+            throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
+        }
     }
 
     private static void loadShims(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         for (IXposedHookLoadPackage shim : CompatShimLoader.getEnabledShims()) {
             String shimName = shim.getClass().getSimpleName();
             try {
-                Xlog.i(TAG, "Loading shim: %s", shimName);
+                Xlog.i(TAG, "Loading compatibility shim: %s", shimName);
                 shim.handleLoadPackage(lpparam);
             } catch (Throwable e) {
                 Xlog.e(TAG, "Error occurred while loading shim: %s", shimName, e);
