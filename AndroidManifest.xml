@@ -4,9 +4,15 @@
     package="com.oxycode.nekosms"
     android:versionCode="1"
     android:versionName="1.0">
+    <permission
+        android:name="com.oxycode.nekosms.WRITE_FILTERS"
+        android:label="Write NekoSMS filters"/>
     <uses-sdk
         android:minSdkVersion="19"
-        android:targetSdkVersion="21"/>
+        android:targetSdkVersion="22"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.WRITE_SMS"/>
+    <uses-permission android:name="com.oxycode.nekosms.WRITE_FILTERS"/>
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
@@ -24,6 +30,19 @@
             android:name=".app.FilterEditorActivity"
             android:label="Filter editor">
         </activity>
+        <provider
+            android:name=".provider.SmsFilterProvider"
+            android:label="SmsFilterProvider"
+            android:authorities="com.oxycode.nekosms.filterprovider"
+            android:writePermission="com.oxycode.nekosms.WRITE_FILTERS"
+            android:exported="true"/>
+        <provider
+            android:name=".provider.BlockedSmsProvider"
+            android:label="BlockedSmsProvider"
+            android:authorities="com.oxycode.nekosms.smsprovider"
+            android:readPermission="android.permission.READ_SMS"
+            android:writePermission="android.permission.WRITE_SMS"
+            android:exported="true"/>
         <meta-data
             android:name="xposedmodule"
             android:value="true"/>
