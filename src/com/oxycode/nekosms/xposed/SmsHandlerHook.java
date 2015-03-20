@@ -1,15 +1,17 @@
 package com.oxycode.nekosms.xposed;
 
-import android.content.BroadcastReceiver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
+import android.content.*;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import android.text.TextUtils;
-import com.oxycode.nekosms.data.*;
+import com.oxycode.nekosms.data.RegexSmsFilter;
+import com.oxycode.nekosms.data.SmsFilter;
+import com.oxycode.nekosms.data.SmsFilterField;
+import com.oxycode.nekosms.data.SmsFilterMode;
+import com.oxycode.nekosms.provider.NekoSmsContract;
 import com.oxycode.nekosms.utils.Xlog;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -17,7 +19,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
@@ -25,38 +27,72 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private List<SmsFilter> mSmsFilters;
 
-    private static String getMessageBody(SmsMessage[] messages) {
-        if (messages.length == 1) {
-            return messages[0].getMessageBody();
+    private static String getMessageBody(SmsMessage[] messageParts) {
+        if (messageParts.length == 1) {
+            return messageParts[0].getMessageBody();
         } else {
             StringBuilder sb = new StringBuilder();
-            for (SmsMessage message : messages) {
-                sb.append(message.getMessageBody());
+            for (SmsMessage messagePart : messageParts) {
+                sb.append(messagePart.getMessageBody());
             }
             return sb.toString();
         }
     }
 
     private static ContentValues serializeSmsMessage(SmsMessage[] messageParts, String messageBody) {
-        SmsMessage message = messageParts[0];
+        SmsMessage messagePart = messageParts[0];
         ContentValues values = new ContentValues();
-        values.put(Telephony.Sms.Inbox.ADDRESS, message.getOriginatingAddress());
-        values.put(Telephony.Sms.Inbox.BODY, messageBody);
-        values.put(Telephony.Sms.Inbox.DATE_SENT, message.getTimestampMillis());
-        values.put(Telephony.Sms.Inbox.DATE, System.currentTimeMillis());
-        values.put(Telephony.Sms.Inbox.PROTOCOL, message.getProtocolIdentifier());
-        values.put(Telephony.Sms.Inbox.SEEN, 0);
-        values.put(Telephony.Sms.Inbox.READ, 0);
-        String subject = message.getPseudoSubject();
-        if (!TextUtils.isEmpty(subject)) {
-            values.put(Telephony.Sms.Inbox.SUBJECT, subject);
-        }
-        values.put(Telephony.Sms.Inbox.REPLY_PATH_PRESENT, message.isReplyPathPresent() ? 1 : 0);
-        values.put(Telephony.Sms.Inbox.SERVICE_CENTER, message.getServiceCenterAddress());
+        values.put(NekoSmsContract.Blocked.ADDRESS, messagePart.getOriginatingAddress());
+        values.put(NekoSmsContract.Blocked.BODY, messageBody);
+        values.put(NekoSmsContract.Blocked.DATE_SENT, messagePart.getTimestampMillis());
+        values.put(NekoSmsContract.Blocked.DATE, System.currentTimeMillis());
+        values.put(NekoSmsContract.Blocked.PROTOCOL, messagePart.getProtocolIdentifier());
+        values.put(NekoSmsContract.Blocked.SEEN, 0);
+        values.put(NekoSmsContract.Blocked.READ, 0);
+        values.put(NekoSmsContract.Blocked.SUBJECT, messagePart.getPseudoSubject());
+        values.put(NekoSmsContract.Blocked.REPLY_PATH_PRESENT, messagePart.isReplyPathPresent() ? 1 : 0);
+        values.put(NekoSmsContract.Blocked.SERVICE_CENTER, messagePart.getServiceCenterAddress());
         return values;
     }
 
+    private static SmsFilter createSmsFilter(SmsFilterField field, SmsFilterMode mode, String pattern) {
+        switch (mode) {
+            case REGEX:
+                return new RegexSmsFilter(field, pattern);
+            default:
+                throw new UnsupportedOperationException("TBA");
+        }
+    }
+
+    private List<SmsFilter> getSmsFilters(Context context) {
+        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
+        String[] projection = {
+            NekoSmsContract.Filters.FIELD,
+            NekoSmsContract.Filters.MODE,
+            NekoSmsContract.Filters.PATTERN
+        };
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(filtersUri, projection, null, null, null);
+        List<SmsFilter> filters = new ArrayList<SmsFilter>(cursor.getCount());
+        while (cursor.moveToNext()) {
+            SmsFilterField field = SmsFilterField.valueOf(cursor.getString(0));
+            SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(1));
+            String pattern = cursor.getString(2);
+            SmsFilter filter = createSmsFilter(field, mode, pattern);
+            filters.add(filter);
+        }
+        return filters;
+    }
+
+    private Uri writeBlockedSms(Context context, SmsMessage[] messageParts, String messageBody) {
+        Uri messagesUri = NekoSmsContract.Blocked.CONTENT_URI;
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues values = serializeSmsMessage(messageParts, messageBody);
+        return contentResolver.insert(messagesUri, values);
+    }
+
     private boolean shouldFilterMessage(Context context, String sender, String body) {
+        // TODO: Reload filters on database modification
         if (mSmsFilters == null) {
             mSmsFilters = getSmsFilters(context);
         }
@@ -69,57 +105,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return false;
     }
 
-    private static SmsFilter createSmsFilter(String fieldStr, String modeStr, String pattern) {
-        SmsFilterField field = SmsFilterField.valueOf(fieldStr);
-        SmsFilterMode mode = SmsFilterMode.valueOf(modeStr);
-
-        switch (mode) {
-            case REGEX:
-                return new RegexSmsFilter(field, pattern);
-            default:
-                throw new UnsupportedOperationException("TBA");
-        }
-    }
-
-    private List<SmsFilter> getSmsFilters(Context context) {
-        return Arrays.asList(new SmsFilter[] {new SmsFilter() {
-            @Override
-            public boolean matches(String sender, String body) {
-                return body.startsWith("123");
-            }
-        }});
-
-        /* TODO
-        Uri filtersUri = Uri.parse("com.oxycode.nekosms.provider/filters");
-        String[] projection = {"field", "mode", "pattern"};
-        ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(filtersUri, projection, null, null, null);
-        List<SmsFilter> filters = new ArrayList<SmsFilter>(cursor.getCount());
-        while (cursor.moveToNext()) {
-            SmsFilterField field = SmsFilterField.valueOf(cursor.getString(0));
-            SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(1));
-            String pattern = cursor.getString(2);
-            SmsFilter filter = SmsFilter.create(field, mode, pattern);
-            filters.add(filter);
-        }
-        return filters;
-        */
-    }
-
-    private void writeBlockedSms(Context context, SmsMessage[] messageParts, String messageBody) {
-        /* TODO
-        Uri messagesUri = Uri.parse("com.oxycode.nekosms.provider/messages");
-        ContentResolver contentResolver = context.getContentResolver();
-        ContentValues values = serializeSmsMessage(messageParts, messageBody);
-        Uri messageUri = contentResolver.insert(messagesUri, values);
-        */
-    }
-
     private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
-        // This code is equivalent to the following 2 lines:
-        // deleteFromRawTable(mDeleteWhere, mDeleteWhereArgs);
-        // sendMessage(EVENT_BROADCAST_COMPLETE);
-
         Xlog.d(TAG, "Removing raw SMS data from database");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class},
