@@ -1,16 +1,15 @@
 package com.oxycode.nekosms.xposed;
 
 import android.content.*;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import com.oxycode.nekosms.data.RegexSmsFilter;
-import com.oxycode.nekosms.data.SmsFilter;
-import com.oxycode.nekosms.data.SmsFilterField;
-import com.oxycode.nekosms.data.SmsFilterMode;
+import com.oxycode.nekosms.data.*;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 import com.oxycode.nekosms.utils.Xlog;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -25,6 +24,8 @@ import java.util.List;
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
 
+    private final Object mFiltersLock = new Object();
+    private ContentObserver mContentObserver;
     private List<SmsFilter> mSmsFilters;
 
     private static String getMessageBody(SmsMessage[] messageParts) {
@@ -55,10 +56,13 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return values;
     }
 
-    private static SmsFilter createSmsFilter(SmsFilterField field, SmsFilterMode mode, String pattern) {
+    private static SmsFilter createSmsFilter(SmsFilterAction action,
+                                             SmsFilterField field,
+                                             SmsFilterMode mode,
+                                             String pattern) {
         switch (mode) {
             case REGEX:
-                return new RegexSmsFilter(field, pattern);
+                return new RegexSmsFilter(action, field, pattern);
             default:
                 throw new UnsupportedOperationException("TBA");
         }
@@ -67,6 +71,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private List<SmsFilter> getSmsFilters(Context context) {
         Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
         String[] projection = {
+            NekoSmsContract.Filters.ACTION,
             NekoSmsContract.Filters.FIELD,
             NekoSmsContract.Filters.MODE,
             NekoSmsContract.Filters.PATTERN
@@ -75,13 +80,33 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Cursor cursor = contentResolver.query(filtersUri, projection, null, null, null);
         List<SmsFilter> filters = new ArrayList<SmsFilter>(cursor.getCount());
         while (cursor.moveToNext()) {
-            SmsFilterField field = SmsFilterField.valueOf(cursor.getString(0));
-            SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(1));
-            String pattern = cursor.getString(2);
-            SmsFilter filter = createSmsFilter(field, mode, pattern);
+            SmsFilterAction action = SmsFilterAction.valueOf(cursor.getString(0));
+            SmsFilterField field = SmsFilterField.valueOf(cursor.getString(1));
+            SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(2));
+            String pattern = cursor.getString(3);
+            SmsFilter filter = createSmsFilter(action, field, mode, pattern);
             filters.add(filter);
         }
         return filters;
+    }
+
+    private ContentObserver registerContentObserver(Context context) {
+        Xlog.i(TAG, "Registering SMS filter content observer");
+
+        ContentObserver contentObserver = new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+                Xlog.d(TAG, "SMS filter database updated, marking cache as dirty");
+                synchronized (mFiltersLock) {
+                    mSmsFilters = null;
+                }
+            }
+        };
+
+        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
+        ContentResolver contentResolver = context.getContentResolver();
+        contentResolver.registerContentObserver(filtersUri, true, contentObserver);
+        return contentObserver;
     }
 
     private Uri writeBlockedSms(Context context, SmsMessage[] messageParts, String messageBody) {
@@ -92,16 +117,21 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private boolean shouldFilterMessage(Context context, String sender, String body) {
-        // TODO: Reload filters on database modification
-        if (mSmsFilters == null) {
-            mSmsFilters = getSmsFilters(context);
+        List<SmsFilter> smsFilters;
+        synchronized (mFiltersLock) {
+            smsFilters = mSmsFilters;
+            if (smsFilters == null) {
+                Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
+                smsFilters = mSmsFilters = getSmsFilters(context);
+            }
         }
 
-        for (SmsFilter filter : mSmsFilters) {
+        for (SmsFilter filter : smsFilters) {
             if (filter.matches(sender, body)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -117,7 +147,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             new Class<?>[] {int.class}, 3);
     }
 
-    private void beforeSmsHandler(XC_MethodHook.MethodHookParam param) {
+    private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
+        Context context = (Context)param.args[1];
+        if (mContentObserver == null) {
+            mContentObserver = registerContentObserver(context);
+        }
+    }
+
+    private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param) {
         Intent intent = (Intent)param.args[0];
         String action = intent.getAction();
 
@@ -145,7 +182,21 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
-    private void hookSmsHandler19(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+    private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+        String className = "com.android.internal.telephony.InboundSmsHandler";
+        Class<?> param1Type = String.class;
+        Class<?> param2Type = Context.class;
+        String param3Type = "com.android.internal.telephony.SmsStorageMonitor";
+        String param4Type = "com.android.internal.telephony.PhoneBase";
+        String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
+
+        Xlog.i(TAG, "Hooking InboundSmsHandler constructor");
+
+        XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
+            param1Type, param2Type, param3Type, param4Type, param5Type, hook);
+    }
+
+    private void hookDispatchIntent19(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         String methodName = "dispatchIntent";
         Class<?> param1Type = Intent.class;
@@ -153,13 +204,13 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param3Type = int.class;
         Class<?> param4Type = BroadcastReceiver.class;
 
-        Xlog.i(TAG, "Hooking SMS handler for Android v19+");
+        Xlog.i(TAG, "Hooking InboundSmsHandler#dispatchIntent() for Android v19+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, hook);
     }
 
-    private void hookSmsHandler21(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+    private void hookDispatchIntent21(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         String methodName = "dispatchIntent";
         Class<?> param1Type = Intent.class;
@@ -168,29 +219,43 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param4Type = BroadcastReceiver.class;
         Class<?> param5Type = UserHandle.class;
 
-        Xlog.i(TAG, "Hooking SMS handler for Android v21+");
+        Xlog.i(TAG, "Hooking InboundSmsHandler#dispatchIntent() for Android v21+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, param5Type, hook);
     }
 
     private void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) {
-        XC_MethodHook hook = new XC_MethodHook() {
+        XC_MethodHook constructorHook = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                try {
+                    afterConstructorHandler(param);
+                } catch (Throwable e) {
+                    Xlog.e(TAG, "Error occurred in constructor hook", e);
+                    throw e;
+                }
+            }
+        };
+
+        XC_MethodHook dispatchIntentHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 try {
-                    beforeSmsHandler(param);
+                    beforeDispatchIntentHandler(param);
                 } catch (Throwable e) {
-                    Xlog.e(TAG, "Error occurred in SMS handler hook", e);
+                    Xlog.e(TAG, "Error occurred in dispatchIntent() hook", e);
                     throw e;
                 }
             }
         };
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            hookSmsHandler21(lpparam, hook);
+            hookConstructor(lpparam, constructorHook);
+            hookDispatchIntent21(lpparam, dispatchIntentHook);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            hookSmsHandler19(lpparam, hook);
+            hookConstructor(lpparam, constructorHook);
+            hookDispatchIntent19(lpparam, dispatchIntentHook);
         } else {
             throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
         }

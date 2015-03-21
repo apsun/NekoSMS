@@ -12,7 +12,7 @@ public class RegexSmsFilter implements SmsFilter {
     private final String mPattern;
     private final Matcher mMatcher;
 
-    public RegexSmsFilter(SmsFilterField field, String pattern) {
+    public RegexSmsFilter(SmsFilterAction action, SmsFilterField field, String pattern) {
         mField = field;
         mPattern = pattern;
         mMatcher = Pattern.compile(pattern).matcher("");

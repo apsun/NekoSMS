@@ -28,6 +28,8 @@ public final class NekoSmsContract {
         public static final String TABLE = "filters";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(NekoSmsContract.CONTENT_URI, TABLE);
 
+        public static final String PRIORITY           = "priority";
+        public static final String ACTION             = "action";
         public static final String FIELD              = "field";
         public static final String MODE               = "mode";
         public static final String PATTERN            = "pattern";

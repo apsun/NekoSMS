@@ -9,11 +9,13 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "nekosms.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String CREATE_FILTERS_TABLE =
         "CREATE TABLE " + NekoSmsContract.Filters.TABLE + "(" +
             NekoSmsContract.Filters._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            NekoSmsContract.Filters.PRIORITY           + " INTEGER NOT NULL," +
+            NekoSmsContract.Filters.ACTION             + " TEXT NOT NULL," +
             NekoSmsContract.Filters.FIELD              + " TEXT NOT NULL," +
             NekoSmsContract.Filters.MODE               + " TEXT NOT NULL," +
             NekoSmsContract.Filters.PATTERN            + " TEXT NOT NULL" +
@@ -42,9 +44,6 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_FILTERS_TABLE);
         db.execSQL(CREATE_BLOCKED_TABLE);
-
-        // TODO: Testing code, remove when done
-        db.execSQL("insert into filters(field, mode, pattern) values(\"BODY\", \"REGEX\", \"^123\");");
     }
 
     @Override
