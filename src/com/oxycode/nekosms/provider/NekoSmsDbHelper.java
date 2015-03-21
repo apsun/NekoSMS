@@ -49,7 +49,7 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Xlog.d(TAG, "Upgrading database from v" + oldVersion + " to v" + newVersion);
+        Xlog.i(TAG, "Upgrading database from v%d to v%d", oldVersion, newVersion);
         db.execSQL("DROP TABLE IF EXISTS " + NekoSmsContract.Filters.TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + NekoSmsContract.Blocked.TABLE);
         onCreate(db);
