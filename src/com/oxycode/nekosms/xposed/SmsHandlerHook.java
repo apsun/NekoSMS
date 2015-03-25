@@ -80,13 +80,20 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Cursor cursor = contentResolver.query(filtersUri, projection, null, null, null);
         List<SmsFilter> filters = new ArrayList<SmsFilter>(cursor.getCount());
         while (cursor.moveToNext()) {
-            SmsFilterAction action = SmsFilterAction.valueOf(cursor.getString(0));
-            SmsFilterField field = SmsFilterField.valueOf(cursor.getString(1));
-            SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(2));
-            String pattern = cursor.getString(3);
-            SmsFilter filter = createSmsFilter(action, field, mode, pattern);
+            SmsFilter filter;
+            try {
+                SmsFilterAction action = SmsFilterAction.valueOf(cursor.getString(0));
+                SmsFilterField field = SmsFilterField.valueOf(cursor.getString(1));
+                SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(2));
+                String pattern = cursor.getString(3);
+                filter = createSmsFilter(action, field, mode, pattern);
+            } catch (Exception e) {
+                Xlog.e(TAG, "Failed to create SMS filter", e);
+                continue;
+            }
             filters.add(filter);
         }
+        cursor.close();
         return filters;
     }
 
