@@ -7,8 +7,45 @@
     <include
         layout="@layout/toolbar"
         android:id="@+id/toolbar"/>
-    <EditText
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText"/>
+        android:padding="6dp">
+        <EditText
+            android:id="@+id/activity_filter_editor_pattern_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Pattern"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Field"/>
+            <Spinner
+                android:id="@+id/activity_filter_editor_field_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:entries="@array/activity_filter_editor_field_spinner_values"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="Mode"/>
+            <Spinner
+                android:id="@+id/activity_filter_editor_mode_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="38dp"
+                android:entries="@array/activity_filter_editor_mode_spinner_values"/>
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>
