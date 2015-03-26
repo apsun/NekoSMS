@@ -38,18 +38,18 @@ public class NekoSmsProvider extends ContentProvider {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
-            case FILTERS_ITEM_ID:
-                queryBuilder.appendWhere(NekoSmsContract.Filters._ID + "=" + uri.getLastPathSegment());
-            case FILTERS_ITEMS_ID:
-                queryBuilder.setTables(NekoSmsContract.Filters.TABLE);
-                break;
-            case BLOCKED_ITEM_ID:
-                queryBuilder.appendWhere(NekoSmsContract.Blocked._ID + "=" + uri.getLastPathSegment());
-            case BLOCKED_ITEMS_ID:
-                queryBuilder.setTables(NekoSmsContract.Blocked.TABLE);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid query URI: " + uri);
+        case FILTERS_ITEM_ID:
+            queryBuilder.appendWhere(NekoSmsContract.Filters._ID + "=" + uri.getLastPathSegment());
+        case FILTERS_ITEMS_ID:
+            queryBuilder.setTables(NekoSmsContract.Filters.TABLE);
+            break;
+        case BLOCKED_ITEM_ID:
+            queryBuilder.appendWhere(NekoSmsContract.Blocked._ID + "=" + uri.getLastPathSegment());
+        case BLOCKED_ITEMS_ID:
+            queryBuilder.setTables(NekoSmsContract.Blocked.TABLE);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid query URI: " + uri);
         }
 
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
@@ -62,14 +62,14 @@ public class NekoSmsProvider extends ContentProvider {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         long row;
         switch (sUriMatcher.match(uri)) {
-            case FILTERS_ITEMS_ID:
-                row = db.insert(NekoSmsContract.Filters.TABLE, null, values);
-                break;
-            case BLOCKED_ITEMS_ID:
-                row = db.insert(NekoSmsContract.Blocked.TABLE, null, values);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid insert URI: " + uri);
+        case FILTERS_ITEMS_ID:
+            row = db.insert(NekoSmsContract.Filters.TABLE, null, values);
+            break;
+        case BLOCKED_ITEMS_ID:
+            row = db.insert(NekoSmsContract.Blocked.TABLE, null, values);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid insert URI: " + uri);
         }
 
         Uri newUri = ContentUris.withAppendedId(uri, row);
@@ -84,18 +84,18 @@ public class NekoSmsProvider extends ContentProvider {
         SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         int deletedRows;
         switch (sUriMatcher.match(uri)) {
-            case FILTERS_ITEM_ID:
-                selection = getCombinedSelectionString(NekoSmsContract.Filters._ID, uri, selection);
-            case FILTERS_ITEMS_ID:
-                deletedRows = db.delete(NekoSmsContract.Filters.TABLE, selection, selectionArgs);
-                break;
-            case BLOCKED_ITEM_ID:
-                selection = getCombinedSelectionString(NekoSmsContract.Blocked._ID, uri, selection);
-            case BLOCKED_ITEMS_ID:
-                deletedRows = db.delete(NekoSmsContract.Blocked.TABLE, selection, selectionArgs);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid delete URI: " + uri);
+        case FILTERS_ITEM_ID:
+            selection = getCombinedSelectionString(NekoSmsContract.Filters._ID, uri, selection);
+        case FILTERS_ITEMS_ID:
+            deletedRows = db.delete(NekoSmsContract.Filters.TABLE, selection, selectionArgs);
+            break;
+        case BLOCKED_ITEM_ID:
+            selection = getCombinedSelectionString(NekoSmsContract.Blocked._ID, uri, selection);
+        case BLOCKED_ITEMS_ID:
+            deletedRows = db.delete(NekoSmsContract.Blocked.TABLE, selection, selectionArgs);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid delete URI: " + uri);
         }
 
         if (selection == null || deletedRows > 0) {
@@ -109,18 +109,18 @@ public class NekoSmsProvider extends ContentProvider {
         SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         int updatedRows;
         switch (sUriMatcher.match(uri)) {
-            case FILTERS_ITEM_ID:
-                selection = getCombinedSelectionString(NekoSmsContract.Filters._ID, uri, selection);
-            case FILTERS_ITEMS_ID:
-                updatedRows = db.update(NekoSmsContract.Filters.TABLE, values, selection, selectionArgs);
-                break;
-            case BLOCKED_ITEM_ID:
-                selection = getCombinedSelectionString(NekoSmsContract.Blocked._ID, uri, selection);
-            case BLOCKED_ITEMS_ID:
-                updatedRows = db.update(NekoSmsContract.Blocked.TABLE, values, selection, selectionArgs);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid update URI: " + uri);
+        case FILTERS_ITEM_ID:
+            selection = getCombinedSelectionString(NekoSmsContract.Filters._ID, uri, selection);
+        case FILTERS_ITEMS_ID:
+            updatedRows = db.update(NekoSmsContract.Filters.TABLE, values, selection, selectionArgs);
+            break;
+        case BLOCKED_ITEM_ID:
+            selection = getCombinedSelectionString(NekoSmsContract.Blocked._ID, uri, selection);
+        case BLOCKED_ITEMS_ID:
+            updatedRows = db.update(NekoSmsContract.Blocked.TABLE, values, selection, selectionArgs);
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid update URI: " + uri);
         }
 
         if (updatedRows > 0) {

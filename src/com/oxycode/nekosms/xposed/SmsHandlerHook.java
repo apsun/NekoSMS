@@ -58,10 +58,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private static SmsFilter createSmsFilter(SmsFilterField field, SmsFilterMode mode, String pattern) {
         switch (mode) {
-            case REGEX:
-                return new RegexSmsFilter(field, pattern);
-            default:
-                throw new UnsupportedOperationException("TBA");
+        case REGEX:
+            return new RegexSmsFilter(field, pattern);
+        default:
+            throw new UnsupportedOperationException("TBA");
         }
     }
 

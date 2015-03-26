@@ -24,12 +24,12 @@ public class RegexSmsFilter implements SmsFilter {
         Xlog.v(TAG, "  Field: %s", mField);
         Xlog.v(TAG, "  Pattern: %s", mPattern);
         switch (mField) {
-            case SENDER:
-                mMatcher.reset(sender);
-                break;
-            case BODY:
-                mMatcher.reset(body);
-                break;
+        case SENDER:
+            mMatcher.reset(sender);
+            break;
+        case BODY:
+            mMatcher.reset(body);
+            break;
         }
 
         boolean matches = mMatcher.find();
