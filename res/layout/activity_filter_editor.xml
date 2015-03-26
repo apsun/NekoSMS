@@ -30,7 +30,7 @@
                 android:id="@+id/activity_filter_editor_field_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
-                android:entries="@array/activity_filter_editor_field_spinner_values"/>
+                android:entries="@array/sms_filter_field_names"/>
         </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
@@ -45,7 +45,7 @@
                 android:id="@+id/activity_filter_editor_mode_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="38dp"
-                android:entries="@array/activity_filter_editor_mode_spinner_values"/>
+                android:entries="@array/sms_filter_mode_names"/>
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

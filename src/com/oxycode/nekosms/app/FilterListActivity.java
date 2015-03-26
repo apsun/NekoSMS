@@ -3,18 +3,82 @@ package com.oxycode.nekosms.app;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.AdapterView;
-import android.widget.SimpleCursorAdapter;
+import android.widget.ResourceCursorAdapter;
+import android.widget.TextView;
 import android.widget.Toolbar;
 import com.oxycode.nekosms.R;
 import com.oxycode.nekosms.provider.NekoSmsContract;
+import com.oxycode.nekosms.utils.MapUtils;
+
+import java.util.Map;
 
 public class FilterListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private SimpleCursorAdapter mAdapter;
+    private static class FilterListItemTag {
+        public TextView mPatternTextView;
+        public TextView mInfoTextView;
+    }
+
+    private static class FilterAdapter extends ResourceCursorAdapter {
+        private boolean mColumnsInitialized = false;
+        private int mFieldColumn;
+        private int mModeColumn;
+        private int mPatternColumn;
+        private Map<String, String> mSmsFilterFieldMap;
+        private Map<String, String> mSmsFilterModeMap;
+
+        public FilterAdapter(Context context) {
+            super(context, R.layout.listitem_filter_list, null, 0);
+
+            Resources resources = context.getResources();
+
+            String[] fieldKeys = resources.getStringArray(R.array.sms_filter_field_keys);
+            String[] fieldNames = resources.getStringArray(R.array.sms_filter_field_names);
+            mSmsFilterFieldMap = MapUtils.createFromArrays(fieldKeys, fieldNames);
+
+            String[] modeKeys = resources.getStringArray(R.array.sms_filter_mode_keys);
+            String[] modeNames = resources.getStringArray(R.array.sms_filter_mode_names);
+            mSmsFilterModeMap = MapUtils.createFromArrays(modeKeys, modeNames);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            View view = super.newView(context, cursor, parent);
+            FilterListItemTag tag = new FilterListItemTag();
+            tag.mPatternTextView = (TextView)view.findViewById(R.id.listitem_filter_list_pattern_textview);
+            tag.mInfoTextView = (TextView)view.findViewById(R.id.listitem_filter_list_info_textview);
+            view.setTag(tag);
+            return view;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            if (!mColumnsInitialized) {
+                mFieldColumn = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.FIELD);
+                mModeColumn = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.MODE);
+                mPatternColumn = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.PATTERN);
+                mColumnsInitialized = true;
+            }
+
+            String fieldStr = cursor.getString(mFieldColumn);
+            String modeStr = cursor.getString(mModeColumn);
+            String pattern = cursor.getString(mPatternColumn);
+            String infoText = String.format("%s | %s",
+                mSmsFilterFieldMap.get(fieldStr),
+                mSmsFilterModeMap.get(modeStr));
+
+            FilterListItemTag tag = (FilterListItemTag)view.getTag();
+            tag.mPatternTextView.setText(pattern);
+            tag.mInfoTextView.setText(infoText);
+        }
+    }
+
+    private FilterAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -26,16 +90,11 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
 
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(
-            this, R.layout.listitem_filter_list, null,
-            new String[] { NekoSmsContract.Filters.PATTERN, NekoSmsContract.Filters.FIELD },
-            new int[] { R.id.listitem_filter_list_pattern_textview, R.id.listitem_filter_list_info_textview }, 0);
+        FilterAdapter adapter = new FilterAdapter(this);
         setListAdapter(adapter);
-
+        mAdapter = adapter;
 
         registerForContextMenu(getListView());
-
-        mAdapter = adapter;
     }
 
     @Override
@@ -103,9 +162,13 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     }
 
     private void startFilterEditorActivity(long filterId) {
-        Intent filterEditorIntent = new Intent(this, FilterEditorActivity.class);
-        filterEditorIntent.putExtra(FilterEditorActivity.EXTRA_FILTER_ID, filterId);
-        startActivity(filterEditorIntent);
+        Intent intent = new Intent(this, FilterEditorActivity.class);
+        if (filterId >= 0) {
+            Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
+            Uri filterUri = ContentUris.withAppendedId(filtersUri, filterId);
+            intent.setData(filterUri);
+        }
+        startActivity(intent);
     }
 
     private void deleteFilter(long filterId) {

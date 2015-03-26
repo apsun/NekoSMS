@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="activity_filter_editor_field_spinner_values">
+    <string-array name="sms_filter_field_keys">
         <item>SENDER</item>
         <item>BODY</item>
     </string-array>
 
-    <string-array name="activity_filter_editor_mode_spinner_values">
+    <string-array name="sms_filter_field_names">
+        <item>Sender</item>
+        <item>Body</item>
+    </string-array>
+
+    <string-array name="sms_filter_mode_keys">
         <item>REGEX</item>
+    </string-array>
+
+    <string-array name="sms_filter_mode_names">
+        <item>Regular expression</item>
     </string-array>
 </resources>

@@ -2,9 +2,9 @@ package com.oxycode.nekosms.app;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,48 +16,58 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.Toolbar;
 import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.SmsFilterField;
-import com.oxycode.nekosms.data.SmsFilterMode;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 
-public class FilterEditorActivity extends Activity {
-    public static final String EXTRA_FILTER_ID = "filterId";
+import java.util.Arrays;
+import java.util.List;
 
+public class FilterEditorActivity extends Activity {
     private EditText mPatternEditText;
     private Spinner mFieldSpinner;
     private Spinner mModeSpinner;
-    private long mFilterId;
+    private Uri mFilterUri;
+    private List<String> mSmsFilterFieldKeys;
+    private List<String> mSmsFilterModeKeys;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
+
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle("Save filter");
         toolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
+        setActionBar(toolbar);
 
         Intent intent = getIntent();
-        long filterId = intent.getLongExtra(EXTRA_FILTER_ID, -1);
+        Uri filterUri = intent.getData();
 
-        mFilterId = filterId;
+        mFilterUri = filterUri;
         mPatternEditText = (EditText)findViewById(R.id.activity_filter_editor_pattern_edittext);
         mFieldSpinner = (Spinner)findViewById(R.id.activity_filter_editor_field_spinner);
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
 
-        if (filterId >= 0) {
-            Cursor cursor = getFilterData();
+        Resources resources = getResources();
+        mSmsFilterFieldKeys = Arrays.asList(resources.getStringArray(R.array.sms_filter_field_keys));
+        mSmsFilterModeKeys = Arrays.asList(resources.getStringArray(R.array.sms_filter_mode_keys));
+
+        if (filterUri != null) {
+            String[] projection = {
+                NekoSmsContract.Filters.FIELD,
+                NekoSmsContract.Filters.MODE,
+                NekoSmsContract.Filters.PATTERN
+            };
+            Cursor cursor = getContentResolver().query(filterUri, projection, null, null, null);
             cursor.moveToFirst();
-            SmsFilterField field = SmsFilterField.valueOf(cursor.getString(0));
-            SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(1));
+            String fieldStr = cursor.getString(0);
+            String modeStr = cursor.getString(1);
             String pattern = cursor.getString(2);
             cursor.close();
-            // TODO: Set field & mode
-            mPatternEditText.setText(pattern);
-            toolbar.setTitle("Save filter");
-        } else {
-            toolbar.setTitle("Add new filter");
-        }
 
-        setActionBar(toolbar);
+            mFieldSpinner.setSelection(mSmsFilterFieldKeys.indexOf(fieldStr));
+            mModeSpinner.setSelection(mSmsFilterModeKeys.indexOf(modeStr));
+            mPatternEditText.setText(pattern);
+        }
     }
 
     @Override
@@ -71,11 +81,15 @@ public class FilterEditorActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:
-            writeFilterData();
+            Uri filterUri = writeFilterData();
             Toast.makeText(this, "Filter saved", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent();
+            intent.setData(filterUri);
+            setResult(RESULT_OK, intent);
             finish();
             return true;
         case R.id.menu_item_discard_changes:
+            setResult(RESULT_CANCELED, null);
             finish();
             return true;
         default:
@@ -83,40 +97,31 @@ public class FilterEditorActivity extends Activity {
         }
     }
 
-    private Cursor getFilterData() {
-        ContentResolver contentResolver = getContentResolver();
-        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
-        Uri filterUri = ContentUris.withAppendedId(filtersUri, mFilterId);
-        String[] projection = {
-            NekoSmsContract.Filters.FIELD,
-            NekoSmsContract.Filters.MODE,
-            NekoSmsContract.Filters.PATTERN
-        };
-        return contentResolver.query(filterUri, projection, null, null, null);
-    }
-
     private ContentValues createFilterData() {
         ContentValues values = new ContentValues();
-        SmsFilterField field = SmsFilterField.valueOf((String)mFieldSpinner.getSelectedItem());
-        SmsFilterMode mode = SmsFilterMode.valueOf((String)mModeSpinner.getSelectedItem());
+        int fieldIndex = mFieldSpinner.getSelectedItemPosition();
+        int modeIndex = mModeSpinner.getSelectedItemPosition();
         String pattern = mPatternEditText.getText().toString();
-        values.put(NekoSmsContract.Filters.MODE, mode.name());
-        values.put(NekoSmsContract.Filters.FIELD, field.name());
+        values.put(NekoSmsContract.Filters.FIELD, mSmsFilterFieldKeys.get(fieldIndex));
+        values.put(NekoSmsContract.Filters.MODE, mSmsFilterModeKeys.get(modeIndex));
         values.put(NekoSmsContract.Filters.PATTERN, pattern);
         return values;
     }
 
-    private void writeFilterData() {
+    private Uri writeFilterData() {
+        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
         ContentResolver contentResolver = getContentResolver();
         ContentValues values = createFilterData();
-        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
-        if (mFilterId >= 0) {
-            Uri filterUri = ContentUris.withAppendedId(filtersUri, mFilterId);
+        Uri filterUri;
+        if (mFilterUri != null) {
+            filterUri = mFilterUri;
             int updatedRows = contentResolver.update(filterUri, values, null, null);
             // TODO: Check return value
         } else {
-            Uri filterUri = contentResolver.insert(filtersUri, values);
+            filterUri = contentResolver.insert(filtersUri, values);
             // TODO: Check return value
         }
+
+        return filterUri;
     }
 }
