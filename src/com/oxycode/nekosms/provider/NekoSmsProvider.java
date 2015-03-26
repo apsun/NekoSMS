@@ -42,9 +42,6 @@ public class NekoSmsProvider extends ContentProvider {
                 queryBuilder.appendWhere(NekoSmsContract.Filters._ID + "=" + uri.getLastPathSegment());
             case FILTERS_ITEMS_ID:
                 queryBuilder.setTables(NekoSmsContract.Filters.TABLE);
-                if (TextUtils.isEmpty(sortOrder)) {
-                    sortOrder = NekoSmsContract.Filters.PRIORITY + " ASC";
-                }
                 break;
             case BLOCKED_ITEM_ID:
                 queryBuilder.appendWhere(NekoSmsContract.Blocked._ID + "=" + uri.getLastPathSegment());

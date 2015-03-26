@@ -56,13 +56,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return values;
     }
 
-    private static SmsFilter createSmsFilter(SmsFilterAction action,
-                                             SmsFilterField field,
-                                             SmsFilterMode mode,
-                                             String pattern) {
+    private static SmsFilter createSmsFilter(SmsFilterField field, SmsFilterMode mode, String pattern) {
         switch (mode) {
             case REGEX:
-                return new RegexSmsFilter(action, field, pattern);
+                return new RegexSmsFilter(field, pattern);
             default:
                 throw new UnsupportedOperationException("TBA");
         }
@@ -71,7 +68,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private List<SmsFilter> getSmsFilters(Context context) {
         Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
         String[] projection = {
-            NekoSmsContract.Filters.ACTION,
             NekoSmsContract.Filters.FIELD,
             NekoSmsContract.Filters.MODE,
             NekoSmsContract.Filters.PATTERN
@@ -82,11 +78,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         while (cursor.moveToNext()) {
             SmsFilter filter;
             try {
-                SmsFilterAction action = SmsFilterAction.valueOf(cursor.getString(0));
-                SmsFilterField field = SmsFilterField.valueOf(cursor.getString(1));
-                SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(2));
-                String pattern = cursor.getString(3);
-                filter = createSmsFilter(action, field, mode, pattern);
+                SmsFilterField field = SmsFilterField.valueOf(cursor.getString(0));
+                SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(1));
+                String pattern = cursor.getString(2);
+                filter = createSmsFilter(field, mode, pattern);
             } catch (Exception e) {
                 Xlog.e(TAG, "Failed to create SMS filter", e);
                 continue;

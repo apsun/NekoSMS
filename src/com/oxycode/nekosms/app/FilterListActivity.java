@@ -2,7 +2,6 @@ package com.oxycode.nekosms.app;
 
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,8 +32,6 @@ public class FilterListActivity extends Activity {
             case R.id.menu_item_create_filter:
                 // TODO: Testing code, remove when done
                 ContentValues v = new ContentValues();
-                v.put(NekoSmsContract.Filters.PRIORITY, 0);
-                v.put(NekoSmsContract.Filters.ACTION, "BLOCK");
                 v.put(NekoSmsContract.Filters.FIELD, "BODY");
                 v.put(NekoSmsContract.Filters.MODE, "REGEX");
                 v.put(NekoSmsContract.Filters.PATTERN, "^123");
