@@ -31,5 +31,6 @@ public final class NekoSmsContract {
         public static final String FIELD              = "field";
         public static final String MODE               = "mode";
         public static final String PATTERN            = "pattern";
+        public static final String FLAGS              = "flags";
     }
 }

@@ -5,17 +5,21 @@ import com.oxycode.nekosms.utils.Xlog;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexSmsFilter implements SmsFilter {
+public class RegexSmsFilter extends SmsFilter {
     private static final String TAG = RegexSmsFilter.class.getSimpleName();
 
     private final SmsFilterField mField;
     private final String mPattern;
     private final Matcher mMatcher;
 
-    public RegexSmsFilter(SmsFilterField field, String pattern) {
-        mField = field;
-        mPattern = pattern;
-        mMatcher = Pattern.compile(pattern).matcher("");
+    public RegexSmsFilter(SmsFilterData data) {
+        mField = data.getField();
+        mPattern = data.getPattern();
+        int regexFlags = Pattern.UNICODE_CASE;
+        if ((data.getFlags() & SmsFilterFlags.IGNORE_CASE) != 0) {
+            regexFlags |= Pattern.CASE_INSENSITIVE;
+        }
+        mMatcher = Pattern.compile(mPattern, regexFlags).matcher("");
     }
 
     @Override

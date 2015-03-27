@@ -47,5 +47,10 @@
                 android:layout_height="38dp"
                 android:entries="@array/sms_filter_mode_names"/>
         </LinearLayout>
+        <CheckBox
+            android:id="@+id/activity_filter_editor_ignorecase_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ignore case"/>
     </LinearLayout>
 </LinearLayout>

@@ -7,12 +7,16 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toolbar;
 import com.oxycode.nekosms.R;
+import com.oxycode.nekosms.data.SmsFilterData;
+import com.oxycode.nekosms.data.SmsFilterFlags;
+import com.oxycode.nekosms.data.SmsFilterLoader;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 import com.oxycode.nekosms.utils.MapUtils;
 
@@ -25,12 +29,10 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     }
 
     private static class FilterAdapter extends ResourceCursorAdapter {
-        private boolean mColumnsInitialized = false;
-        private int mFieldColumn;
-        private int mModeColumn;
-        private int mPatternColumn;
+        private int[] mColumns;
         private Map<String, String> mSmsFilterFieldMap;
         private Map<String, String> mSmsFilterModeMap;
+        private SparseArray<String> mSmsFilterFlagsMap;
 
         public FilterAdapter(Context context) {
             super(context, R.layout.listitem_filter_list, null, 0);
@@ -44,6 +46,10 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             String[] modeKeys = resources.getStringArray(R.array.sms_filter_mode_keys);
             String[] modeNames = resources.getStringArray(R.array.sms_filter_mode_names);
             mSmsFilterModeMap = MapUtils.createFromArrays(modeKeys, modeNames);
+
+            int[] flagsKeys = resources.getIntArray(R.array.sms_filter_flags_keys);
+            String[] flagsNames = resources.getStringArray(R.array.sms_filter_flags_names);
+            mSmsFilterFlagsMap = MapUtils.createFromArrays(flagsKeys, flagsNames);
         }
 
         @Override
@@ -58,23 +64,29 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
-            if (!mColumnsInitialized) {
-                mFieldColumn = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.FIELD);
-                mModeColumn = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.MODE);
-                mPatternColumn = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.PATTERN);
-                mColumnsInitialized = true;
+            if (mColumns == null) {
+                mColumns = SmsFilterLoader.getColumns(cursor);
             }
 
-            String fieldStr = cursor.getString(mFieldColumn);
-            String modeStr = cursor.getString(mModeColumn);
-            String pattern = cursor.getString(mPatternColumn);
-            String infoText = String.format("%s | %s",
-                mSmsFilterFieldMap.get(fieldStr),
-                mSmsFilterModeMap.get(modeStr));
+            SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns);
+            String fieldStr = filterData.getField().name();
+            String modeStr = filterData.getMode().name();
+            String pattern = filterData.getPattern();
+            int flags = filterData.getFlags();
+
+            StringBuilder infoBuilder = new StringBuilder();
+            infoBuilder.append(mSmsFilterFieldMap.get(fieldStr));
+            infoBuilder.append(" | ");
+            infoBuilder.append(mSmsFilterModeMap.get(modeStr));
+            infoBuilder.append(" | ");
+            if ((flags & SmsFilterFlags.IGNORE_CASE) != 0) {
+                infoBuilder.append(" | ");
+                infoBuilder.append(mSmsFilterFlagsMap.get(SmsFilterFlags.IGNORE_CASE));
+            }
 
             FilterListItemTag tag = (FilterListItemTag)view.getTag();
             tag.mPatternTextView.setText(pattern);
-            tag.mInfoTextView.setText(infoText);
+            tag.mInfoTextView.setText(infoBuilder.toString());
         }
     }
 
@@ -121,6 +133,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_filter_list, menu);
+        menu.setHeaderTitle("Nyaa!");
     }
 
     @Override
@@ -145,7 +158,8 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             NekoSmsContract.Filters._ID,
             NekoSmsContract.Filters.PATTERN,
             NekoSmsContract.Filters.MODE,
-            NekoSmsContract.Filters.FIELD
+            NekoSmsContract.Filters.FIELD,
+            NekoSmsContract.Filters.FLAGS
         };
         Uri uri = NekoSmsContract.Filters.CONTENT_URI;
         return new CursorLoader(this, uri, from, null, null, null);

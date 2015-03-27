@@ -2,14 +2,16 @@ package com.oxycode.nekosms.xposed;
 
 import android.content.*;
 import android.database.ContentObserver;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import com.oxycode.nekosms.data.*;
+import com.oxycode.nekosms.data.MultipartSmsMessage;
+import com.oxycode.nekosms.data.SmsFilter;
+import com.oxycode.nekosms.data.SmsFilterData;
+import com.oxycode.nekosms.data.SmsFilterLoader;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 import com.oxycode.nekosms.utils.Xlog;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -27,70 +29,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
     private List<SmsFilter> mSmsFilters;
-
-    private static String getMessageBody(SmsMessage[] messageParts) {
-        if (messageParts.length == 1) {
-            return messageParts[0].getMessageBody();
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (SmsMessage messagePart : messageParts) {
-                sb.append(messagePart.getMessageBody());
-            }
-            return sb.toString();
-        }
-    }
-
-    private static ContentValues serializeSmsMessage(SmsMessage[] messageParts, String messageBody) {
-        SmsMessage messagePart = messageParts[0];
-        ContentValues values = new ContentValues();
-        values.put(NekoSmsContract.Blocked.ADDRESS, messagePart.getOriginatingAddress());
-        values.put(NekoSmsContract.Blocked.BODY, messageBody);
-        values.put(NekoSmsContract.Blocked.DATE_SENT, messagePart.getTimestampMillis());
-        values.put(NekoSmsContract.Blocked.DATE, System.currentTimeMillis());
-        values.put(NekoSmsContract.Blocked.PROTOCOL, messagePart.getProtocolIdentifier());
-        values.put(NekoSmsContract.Blocked.SEEN, 0);
-        values.put(NekoSmsContract.Blocked.READ, 0);
-        values.put(NekoSmsContract.Blocked.SUBJECT, messagePart.getPseudoSubject());
-        values.put(NekoSmsContract.Blocked.REPLY_PATH_PRESENT, messagePart.isReplyPathPresent() ? 1 : 0);
-        values.put(NekoSmsContract.Blocked.SERVICE_CENTER, messagePart.getServiceCenterAddress());
-        return values;
-    }
-
-    private static SmsFilter createSmsFilter(SmsFilterField field, SmsFilterMode mode, String pattern) {
-        switch (mode) {
-        case REGEX:
-            return new RegexSmsFilter(field, pattern);
-        default:
-            throw new UnsupportedOperationException("TBA");
-        }
-    }
-
-    private List<SmsFilter> getSmsFilters(Context context) {
-        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
-        String[] projection = {
-            NekoSmsContract.Filters.FIELD,
-            NekoSmsContract.Filters.MODE,
-            NekoSmsContract.Filters.PATTERN
-        };
-        ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(filtersUri, projection, null, null, null);
-        List<SmsFilter> filters = new ArrayList<SmsFilter>(cursor.getCount());
-        while (cursor.moveToNext()) {
-            SmsFilter filter;
-            try {
-                SmsFilterField field = SmsFilterField.valueOf(cursor.getString(0));
-                SmsFilterMode mode = SmsFilterMode.valueOf(cursor.getString(1));
-                String pattern = cursor.getString(2);
-                filter = createSmsFilter(field, mode, pattern);
-            } catch (Exception e) {
-                Xlog.e(TAG, "Failed to create SMS filter", e);
-                continue;
-            }
-            filters.add(filter);
-        }
-        cursor.close();
-        return filters;
-    }
 
     private ContentObserver registerContentObserver(Context context) {
         Xlog.i(TAG, "Registering SMS filter content observer");
@@ -111,10 +49,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return contentObserver;
     }
 
-    private Uri writeBlockedSms(Context context, SmsMessage[] messageParts, String messageBody) {
+    private Uri writeBlockedSms(Context context, MultipartSmsMessage message) {
         Uri messagesUri = NekoSmsContract.Blocked.CONTENT_URI;
         ContentResolver contentResolver = context.getContentResolver();
-        ContentValues values = serializeSmsMessage(messageParts, messageBody);
+        ContentValues values = message.serialize();
         return contentResolver.insert(messagesUri, values);
     }
 
@@ -124,7 +62,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             smsFilters = mSmsFilters;
             if (smsFilters == null) {
                 Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
-                smsFilters = mSmsFilters = getSmsFilters(context);
+                List<SmsFilterData> filterDatas = SmsFilterLoader.loadAllFilters(context, true);
+                List<SmsFilter> filters = new ArrayList<SmsFilter>(filterDatas.size());
+                for (SmsFilterData filterData : filterDatas) {
+                    filters.add(SmsFilter.create(filterData));
+                }
+                smsFilters = mSmsFilters = filters;
             }
         }
 
@@ -168,15 +111,16 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");
 
         SmsMessage[] messageParts = Telephony.Sms.Intents.getMessagesFromIntent(intent);
-        String sender = messageParts[0].getOriginatingAddress();
-        String body = getMessageBody(messageParts);
+        MultipartSmsMessage message = new MultipartSmsMessage(messageParts);
+        String sender = message.getDisplayOriginatingAddress();
+        String body = message.getDisplayMessageBody();
         Xlog.i(TAG, "Received a new SMS message");
         Xlog.v(TAG, "  Sender: %s", sender);
         Xlog.v(TAG, "  Body: %s", body);
 
         if (shouldFilterMessage(context, sender, body)) {
             Xlog.i(TAG, "  Result: Blocked");
-            writeBlockedSms(context, messageParts, body);
+            writeBlockedSms(context, message);
             param.setResult(null);
             finishSmsBroadcast(smsHandler, param.args[3]);
         } else {

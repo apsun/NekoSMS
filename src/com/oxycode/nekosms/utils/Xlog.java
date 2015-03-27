@@ -8,6 +8,8 @@ public final class Xlog {
     private static final boolean MERGE = true;
     private static final String MERGED_TAG = "NekoSMS";
 
+    private Xlog() { }
+
     private static void log(int priority, String tag, String message, Object... args) {
         if (MERGE) {
             tag = MERGED_TAG;

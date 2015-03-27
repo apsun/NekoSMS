@@ -9,14 +9,15 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "nekosms.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     private static final String CREATE_FILTERS_TABLE =
         "CREATE TABLE " + NekoSmsContract.Filters.TABLE + "(" +
             NekoSmsContract.Filters._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             NekoSmsContract.Filters.FIELD              + " TEXT NOT NULL," +
             NekoSmsContract.Filters.MODE               + " TEXT NOT NULL," +
-            NekoSmsContract.Filters.PATTERN            + " TEXT NOT NULL" +
+            NekoSmsContract.Filters.PATTERN            + " TEXT NOT NULL," +
+            NekoSmsContract.Filters.FLAGS              + " INTEGER NOT NULL" +
         ");";
 
     private static final String CREATE_BLOCKED_TABLE =
