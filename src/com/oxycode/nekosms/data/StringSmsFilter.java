@@ -1,6 +1,10 @@
 package com.oxycode.nekosms.data;
 
+import com.oxycode.nekosms.utils.Xlog;
+
 public class StringSmsFilter extends SmsFilter {
+    private static final String TAG = StringSmsFilter.class.getSimpleName();
+
     private final SmsFilterField mField;
     private final SmsFilterMode mMode;
     private final String mPattern;
@@ -10,7 +14,7 @@ public class StringSmsFilter extends SmsFilter {
         mField = data.getField();
         mMode = data.getMode();
         mCaseSensitive = data.isCaseSensitive();
-        if (mCaseSensitive) {
+        if (!mCaseSensitive) {
             mPattern = data.getPattern().toLowerCase();
         } else {
             mPattern = data.getPattern();
@@ -19,6 +23,12 @@ public class StringSmsFilter extends SmsFilter {
 
     @Override
     public boolean matches(String sender, String body) {
+        Xlog.v(TAG, "Checking string filter");
+        Xlog.v(TAG, "  Field: %s", mField.name().toLowerCase());
+        Xlog.v(TAG, "  Mode: %s", mMode.name().toLowerCase());
+        Xlog.v(TAG, "  Pattern: %s", mPattern);
+        Xlog.v(TAG, "  Case sensitive: %s", mCaseSensitive);
+
         String testString = null;
         switch (mField) {
         case SENDER:
@@ -29,7 +39,7 @@ public class StringSmsFilter extends SmsFilter {
             break;
         }
 
-        if (mCaseSensitive) {
+        if (!mCaseSensitive) {
             testString = testString.toLowerCase();
         }
 

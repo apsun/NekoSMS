@@ -11,12 +11,14 @@ public class RegexSmsFilter extends SmsFilter {
     private final SmsFilterField mField;
     private final String mPattern;
     private final Matcher mMatcher;
+    private final boolean mCaseSensitive;
 
     public RegexSmsFilter(SmsFilterData data) {
         mField = data.getField();
         mPattern = data.getPattern();
+        mCaseSensitive = data.isCaseSensitive();
         int regexFlags = Pattern.UNICODE_CASE;
-        if (data.isCaseSensitive()) {
+        if (!mCaseSensitive) {
             regexFlags |= Pattern.CASE_INSENSITIVE;
         }
         mMatcher = Pattern.compile(mPattern, regexFlags).matcher("");
@@ -25,8 +27,9 @@ public class RegexSmsFilter extends SmsFilter {
     @Override
     public boolean matches(String sender, String body) {
         Xlog.v(TAG, "Checking regex filter");
-        Xlog.v(TAG, "  Field: %s", mField);
+        Xlog.v(TAG, "  Field: %s", mField.name().toLowerCase());
         Xlog.v(TAG, "  Pattern: %s", mPattern);
+        Xlog.v(TAG, "  Case sensitive: %s", mCaseSensitive);
         switch (mField) {
         case SENDER:
             mMatcher.reset(sender);

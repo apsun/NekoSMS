@@ -58,7 +58,7 @@ public class FilterEditorActivity extends Activity {
             mFieldSpinner.setSelection(mSmsFilterFieldKeys.indexOf(filter.getField().name()));
             mModeSpinner.setSelection(mSmsFilterModeKeys.indexOf(filter.getMode().name()));
             mPatternEditText.setText(filter.getPattern());
-            mIgnoreCaseCheckBox.setChecked(filter.isCaseSensitive());
+            mIgnoreCaseCheckBox.setChecked(!filter.isCaseSensitive());
         }
     }
 
@@ -114,7 +114,7 @@ public class FilterEditorActivity extends Activity {
         int fieldIndex = mFieldSpinner.getSelectedItemPosition();
         int modeIndex = mModeSpinner.getSelectedItemPosition();
         String pattern = mPatternEditText.getText().toString();
-        boolean caseSensitive = mIgnoreCaseCheckBox.isChecked();
+        boolean caseSensitive = !mIgnoreCaseCheckBox.isChecked();
 
         SmsFilterData data = mFilter;
         if (data == null) {

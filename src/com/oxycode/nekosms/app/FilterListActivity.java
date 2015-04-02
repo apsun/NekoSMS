@@ -79,7 +79,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             infoBuilder.append(mSmsFilterFieldMap.get(fieldStr));
             infoBuilder.append(" | ");
             infoBuilder.append(mSmsFilterModeMap.get(modeStr));
-            if (caseSensitive) {
+            if (!caseSensitive) {
                 infoBuilder.append(" | ");
                 infoBuilder.append(mSmsFilterFlagsMap.get(SmsFilterFlags.IGNORE_CASE));
             }
