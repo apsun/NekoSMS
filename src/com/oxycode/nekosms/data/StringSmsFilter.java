@@ -4,13 +4,13 @@ public class StringSmsFilter extends SmsFilter {
     private final SmsFilterField mField;
     private final SmsFilterMode mMode;
     private final String mPattern;
-    private final int mFlags;
+    private final boolean mCaseSensitive;
 
     public StringSmsFilter(SmsFilterData data) {
         mField = data.getField();
         mMode = data.getMode();
-        mFlags = data.getFlags();
-        if ((mFlags & SmsFilterFlags.IGNORE_CASE) != 0) {
+        mCaseSensitive = data.isCaseSensitive();
+        if (mCaseSensitive) {
             mPattern = data.getPattern().toLowerCase();
         } else {
             mPattern = data.getPattern();
@@ -29,7 +29,7 @@ public class StringSmsFilter extends SmsFilter {
             break;
         }
 
-        if ((mFlags & SmsFilterFlags.IGNORE_CASE) != 0) {
+        if (mCaseSensitive) {
             testString = testString.toLowerCase();
         }
 

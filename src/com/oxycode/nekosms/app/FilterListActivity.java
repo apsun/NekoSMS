@@ -9,10 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ResourceCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toolbar;
+import android.widget.*;
 import com.oxycode.nekosms.R;
 import com.oxycode.nekosms.data.SmsFilterData;
 import com.oxycode.nekosms.data.SmsFilterFlags;
@@ -24,6 +21,7 @@ import java.util.Map;
 
 public class FilterListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static class FilterListItemTag {
+        public SmsFilterData mFilterData;
         public TextView mPatternTextView;
         public TextView mInfoTextView;
     }
@@ -68,23 +66,24 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
                 mColumns = SmsFilterLoader.getColumns(cursor);
             }
 
-            SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns);
+            FilterListItemTag tag = (FilterListItemTag)view.getTag();
+            SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, tag.mFilterData);
+            tag.mFilterData = filterData;
+
             String fieldStr = filterData.getField().name();
             String modeStr = filterData.getMode().name();
             String pattern = filterData.getPattern();
-            int flags = filterData.getFlags();
+            boolean caseSensitive = filterData.isCaseSensitive();
 
             StringBuilder infoBuilder = new StringBuilder();
             infoBuilder.append(mSmsFilterFieldMap.get(fieldStr));
             infoBuilder.append(" | ");
             infoBuilder.append(mSmsFilterModeMap.get(modeStr));
-            infoBuilder.append(" | ");
-            if ((flags & SmsFilterFlags.IGNORE_CASE) != 0) {
+            if (caseSensitive) {
                 infoBuilder.append(" | ");
                 infoBuilder.append(mSmsFilterFlagsMap.get(SmsFilterFlags.IGNORE_CASE));
             }
 
-            FilterListItemTag tag = (FilterListItemTag)view.getTag();
             tag.mPatternTextView.setText(pattern);
             tag.mInfoTextView.setText(infoBuilder.toString());
         }
@@ -159,7 +158,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             NekoSmsContract.Filters.PATTERN,
             NekoSmsContract.Filters.MODE,
             NekoSmsContract.Filters.FIELD,
-            NekoSmsContract.Filters.FLAGS
+            NekoSmsContract.Filters.CASE_SENSITIVE
         };
         Uri uri = NekoSmsContract.Filters.CONTENT_URI;
         return new CursorLoader(this, uri, from, null, null, null);

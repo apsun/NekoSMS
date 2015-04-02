@@ -4,18 +4,23 @@ import android.content.ContentValues;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 
 public class SmsFilterData {
+    private long mId;
     private SmsFilterField mField;
     private SmsFilterMode mMode;
     private String mPattern;
-    private int mFlags;
+    private boolean mCaseSensitive;
 
     public ContentValues serialize() {
         ContentValues values = new ContentValues(4);
         values.put(NekoSmsContract.Filters.FIELD, getField().name());
         values.put(NekoSmsContract.Filters.MODE, getMode().name());
         values.put(NekoSmsContract.Filters.PATTERN, getPattern());
-        values.put(NekoSmsContract.Filters.FLAGS, getFlags());
+        values.put(NekoSmsContract.Filters.CASE_SENSITIVE, isCaseSensitive());
         return values;
+    }
+
+    public void setId(long id) {
+        mId = id;
     }
 
     public void setField(SmsFilterField field) {
@@ -30,8 +35,12 @@ public class SmsFilterData {
         mPattern = pattern;
     }
 
-    public void setFlags(int flags) {
-        mFlags = flags;
+    public void setCaseSensitive(boolean caseSensitive) {
+        mCaseSensitive = caseSensitive;
+    }
+
+    public long getId() {
+        return mId;
     }
 
     public SmsFilterField getField() {
@@ -46,7 +55,7 @@ public class SmsFilterData {
         return mPattern;
     }
 
-    public int getFlags() {
-        return mFlags;
+    public boolean isCaseSensitive() {
+        return mCaseSensitive;
     }
 }

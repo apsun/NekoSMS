@@ -10,8 +10,9 @@ A regular expression based text message blocker for Android.
 
 ## Note
 
-NekoSMS was designed for devices running stock Android. If your OEM has modified 
-how Android handles SMS messages at the ROM level, this app will *not* work.
+NekoSMS was designed for devices running stock Android. If your ROM has made 
+significant changes to the way Android internally handles SMS messages, this 
+app might not work.
 
 ## License
 
@@ -25,14 +26,16 @@ Images are copyright their respective owners.
 No reason in particular. I wanted a name that had "SMS" in it, and "neko" was the 
 first word that popped into my head. Hence, NekoSMS.
 
-### Why does this app require root?
+### Why does this app require root/Xposed?
 
 [Starting from Android 4.4](http://android-developers.blogspot.in/2013/10/getting-your-sms-apps-ready-for-kitkat.html), 
-only the default SMS app has the ability to intercept SMS messages, meaning that 
-you could no longer use your favorite SMS app with a 3rd party SMS blocker.
+only the default SMS app has the ability to intercept SMS messages. In order to 
+bypass this restriction, code must be modified at the OS level, which requires root.
 
-In order to work around this restriction, code must be modified at the OS level, 
-which requires root access.
+### Does NekoSMS work with (insert SMS app here)?
+
+As long as your ROM supports it, yes. There is no app-specific SMS blocking 
+code, so if it works with one SMS app, it will work with them all.
 
 ### How does it work? (for nerds)
 
@@ -43,7 +46,7 @@ reading SMS messages.
 
 Essentially, this app intercepts the data right before it is sent to the default 
 SMS app, then runs it through the user-defined filters. If the message matches 
-any filter, it is discarded and no broadcasts are sent, even to the default SMS app.
+a filter, it is discarded and no broadcasts are sent.
 
 ### How does it work? (for non-nerds)
 

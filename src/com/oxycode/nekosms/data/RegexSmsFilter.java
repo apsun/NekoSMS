@@ -16,7 +16,7 @@ public class RegexSmsFilter extends SmsFilter {
         mField = data.getField();
         mPattern = data.getPattern();
         int regexFlags = Pattern.UNICODE_CASE;
-        if ((data.getFlags() & SmsFilterFlags.IGNORE_CASE) != 0) {
+        if (data.isCaseSensitive()) {
             regexFlags |= Pattern.CASE_INSENSITIVE;
         }
         mMatcher = Pattern.compile(mPattern, regexFlags).matcher("");

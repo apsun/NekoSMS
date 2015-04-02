@@ -29,7 +29,7 @@ public class MultipartSmsMessage {
     }
 
     public ContentValues serialize() {
-        ContentValues values = new ContentValues();
+        ContentValues values = new ContentValues(10);
         values.put(NekoSmsContract.Blocked.ADDRESS, getDisplayOriginatingAddress());
         values.put(NekoSmsContract.Blocked.BODY, getDisplayMessageBody());
         values.put(NekoSmsContract.Blocked.DATE_SENT, getTimestampMillis());

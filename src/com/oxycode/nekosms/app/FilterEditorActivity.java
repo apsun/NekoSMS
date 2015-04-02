@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,8 +58,13 @@ public class FilterEditorActivity extends Activity {
             mFieldSpinner.setSelection(mSmsFilterFieldKeys.indexOf(filter.getField().name()));
             mModeSpinner.setSelection(mSmsFilterModeKeys.indexOf(filter.getMode().name()));
             mPatternEditText.setText(filter.getPattern());
-            mIgnoreCaseCheckBox.setChecked((filter.getFlags() & SmsFilterFlags.IGNORE_CASE) != 0);
+            mIgnoreCaseCheckBox.setChecked(filter.isCaseSensitive());
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        saveAndFinish();
     }
 
     @Override
@@ -72,39 +78,52 @@ public class FilterEditorActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:
-            Uri filterUri = writeFilterData();
-            Toast.makeText(this, "Filter saved", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent();
-            intent.setData(filterUri);
-            setResult(RESULT_OK, intent);
-            finish();
+            saveAndFinish();
             return true;
         case R.id.menu_item_discard_changes:
-            setResult(RESULT_CANCELED, null);
-            finish();
+            discardAndFinish();
             return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
 
+    private void finishTryTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        } else {
+            finish();
+        }
+    }
+
+    private void saveAndFinish() {
+        Uri filterUri = writeFilterData();
+        Toast.makeText(this, "Filter saved", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent();
+        intent.setData(filterUri);
+        setResult(RESULT_OK, intent);
+        finishTryTransition();
+    }
+
+    private void discardAndFinish() {
+        setResult(RESULT_CANCELED, null);
+        finishTryTransition();
+    }
+
     private ContentValues createFilterData() {
         int fieldIndex = mFieldSpinner.getSelectedItemPosition();
         int modeIndex = mModeSpinner.getSelectedItemPosition();
         String pattern = mPatternEditText.getText().toString();
-        int flags = 0;
-        if (mIgnoreCaseCheckBox.isChecked()) {
-            flags |= SmsFilterFlags.IGNORE_CASE;
-        }
+        boolean caseSensitive = mIgnoreCaseCheckBox.isChecked();
 
         SmsFilterData data = mFilter;
         if (data == null) {
-            data = new SmsFilterData();
+            data = mFilter = new SmsFilterData();
         }
         data.setField(SmsFilterField.valueOf(mSmsFilterFieldKeys.get(fieldIndex)));
         data.setMode(SmsFilterMode.valueOf(mSmsFilterModeKeys.get(modeIndex)));
         data.setPattern(pattern);
-        data.setFlags(flags);
+        data.setCaseSensitive(caseSensitive);
         return data.serialize();
     }
 
