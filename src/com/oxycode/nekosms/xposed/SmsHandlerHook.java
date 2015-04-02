@@ -150,7 +150,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param3Type = int.class;
         Class<?> param4Type = BroadcastReceiver.class;
 
-        Xlog.i(TAG, "Hooking InboundSmsHandler#dispatchIntent() for Android v19+");
+        Xlog.i(TAG, "Hooking dispatchIntent() for Android v19+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, hook);
@@ -165,7 +165,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param4Type = BroadcastReceiver.class;
         Class<?> param5Type = UserHandle.class;
 
-        Xlog.i(TAG, "Hooking InboundSmsHandler#dispatchIntent() for Android v21+");
+        Xlog.i(TAG, "Hooking dispatchIntent() for Android v21+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, param5Type, hook);
@@ -207,19 +207,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
-    private static void loadShims(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        for (IXposedHookLoadPackage shim : CompatShimLoader.getEnabledShims()) {
-            String shimName = shim.getClass().getSimpleName();
-            try {
-                Xlog.i(TAG, "Loading compatibility shim: %s", shimName);
-                shim.handleLoadPackage(lpparam);
-            } catch (Throwable e) {
-                Xlog.e(TAG, "Error occurred while loading shim: %s", shimName, e);
-                throw e;
-            }
-        }
-    }
-
     private static void printDeviceInfo() {
         Xlog.i(TAG, "Phone manufacturer: %s", Build.MANUFACTURER);
         Xlog.i(TAG, "Phone model: %s", Build.MODEL);
@@ -235,7 +222,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         Xlog.i(TAG, "NekoSMS initializing...");
         printDeviceInfo();
-        loadShims(lpparam);
         try {
             hookSmsHandler(lpparam);
         } catch (Throwable e) {
