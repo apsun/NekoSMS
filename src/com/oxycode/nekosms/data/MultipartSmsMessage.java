@@ -5,15 +5,19 @@ import android.telephony.SmsMessage;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 
 public class MultipartSmsMessage {
-    private final SmsMessage[] mMessageParts;
+    private final String mSender;
     private final String mMessageBody;
+    private final long mTimeSent;
+    private final long mTimeReceived;
 
     public MultipartSmsMessage(SmsMessage[] messageParts) {
         if (messageParts.length == 0) {
             throw new IllegalArgumentException("No message parts provided");
         }
-        mMessageParts = messageParts;
+        mSender = messageParts[0].getDisplayOriginatingAddress();
         mMessageBody = mergeMessageParts(messageParts);
+        mTimeSent = messageParts[0].getTimestampMillis();
+        mTimeReceived = System.currentTimeMillis();
     }
 
     private static String mergeMessageParts(SmsMessage[] messageParts) {
@@ -29,45 +33,19 @@ public class MultipartSmsMessage {
     }
 
     public ContentValues serialize() {
-        ContentValues values = new ContentValues(10);
-        values.put(NekoSmsContract.Blocked.ADDRESS, getDisplayOriginatingAddress());
-        values.put(NekoSmsContract.Blocked.BODY, getDisplayMessageBody());
-        values.put(NekoSmsContract.Blocked.DATE_SENT, getTimestampMillis());
-        values.put(NekoSmsContract.Blocked.DATE, System.currentTimeMillis());
-        values.put(NekoSmsContract.Blocked.PROTOCOL, getProtocolIdentifier());
-        values.put(NekoSmsContract.Blocked.SEEN, 0);
-        values.put(NekoSmsContract.Blocked.READ, 0);
-        values.put(NekoSmsContract.Blocked.SUBJECT, getPseudoSubject());
-        values.put(NekoSmsContract.Blocked.REPLY_PATH_PRESENT, isReplyPathPresent() ? 1 : 0);
-        values.put(NekoSmsContract.Blocked.SERVICE_CENTER, getServiceCenterAddress());
+        ContentValues values = new ContentValues(4);
+        values.put(NekoSmsContract.Blocked.SENDER, getSender());
+        values.put(NekoSmsContract.Blocked.BODY, getBody());
+        values.put(NekoSmsContract.Blocked.TIME_SENT, mTimeSent);
+        values.put(NekoSmsContract.Blocked.TIME_RECEIVED, mTimeReceived);
         return values;
     }
 
-    public String getServiceCenterAddress() {
-        return mMessageParts[0].getServiceCenterAddress();
+    public String getSender() {
+        return mSender;
     }
 
-    public String getDisplayOriginatingAddress() {
-        return mMessageParts[0].getDisplayOriginatingAddress();
-    }
-
-    public String getDisplayMessageBody() {
+    public String getBody() {
         return mMessageBody;
-    }
-
-    public String getPseudoSubject() {
-        return mMessageParts[0].getPseudoSubject();
-    }
-
-    public long getTimestampMillis() {
-        return mMessageParts[0].getTimestampMillis();
-    }
-
-    public int getProtocolIdentifier() {
-        return mMessageParts[0].getProtocolIdentifier();
-    }
-
-    public boolean isReplyPathPresent() {
-        return mMessageParts[0].isReplyPathPresent();
     }
 }

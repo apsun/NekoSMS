@@ -112,8 +112,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         SmsMessage[] messageParts = Telephony.Sms.Intents.getMessagesFromIntent(intent);
         MultipartSmsMessage message = new MultipartSmsMessage(messageParts);
-        String sender = message.getDisplayOriginatingAddress();
-        String body = message.getDisplayMessageBody();
+        String sender = message.getSender();
+        String body = message.getBody();
         Xlog.i(TAG, "Received a new SMS message");
         Xlog.v(TAG, "  Sender: %s", sender);
         Xlog.v(TAG, "  Body: %s", body);

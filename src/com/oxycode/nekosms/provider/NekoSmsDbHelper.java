@@ -9,7 +9,7 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "nekosms.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     private static final String CREATE_FILTERS_TABLE =
         "CREATE TABLE " + NekoSmsContract.Filters.TABLE + "(" +
@@ -23,16 +23,10 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String CREATE_BLOCKED_TABLE =
         "CREATE TABLE " + NekoSmsContract.Blocked.TABLE + "(" +
             NekoSmsContract.Blocked._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            NekoSmsContract.Blocked.ADDRESS            + " TEXT," +
+            NekoSmsContract.Blocked.SENDER             + " TEXT," +
             NekoSmsContract.Blocked.BODY               + " TEXT," +
-            NekoSmsContract.Blocked.DATE_SENT          + " INTEGER," +
-            NekoSmsContract.Blocked.DATE               + " INTEGER," +
-            NekoSmsContract.Blocked.PROTOCOL           + " TEXT," +
-            NekoSmsContract.Blocked.SEEN               + " INTEGER," +
-            NekoSmsContract.Blocked.READ               + " INTEGER," +
-            NekoSmsContract.Blocked.SUBJECT            + " TEXT," +
-            NekoSmsContract.Blocked.REPLY_PATH_PRESENT + " INTEGER," +
-            NekoSmsContract.Blocked.SERVICE_CENTER     + " TEXT" +
+            NekoSmsContract.Blocked.TIME_SENT          + " INTEGER," +
+            NekoSmsContract.Blocked.TIME_RECEIVED      + " INTEGER" +
         ");";
 
     public NekoSmsDbHelper(Context context) {

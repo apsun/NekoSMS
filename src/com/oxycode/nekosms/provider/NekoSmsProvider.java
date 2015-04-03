@@ -131,10 +131,21 @@ public class NekoSmsProvider extends ContentProvider {
 
     @Override
     public String getType(Uri uri) {
-        return null;
+        switch (sUriMatcher.match(uri)) {
+        case FILTERS_ITEM_ID:
+            return NekoSmsContract.Filters.CONTENT_ITEM_TYPE;
+        case FILTERS_ITEMS_ID:
+            return NekoSmsContract.Filters.CONTENT_TYPE;
+        case BLOCKED_ITEM_ID:
+            return NekoSmsContract.Blocked.CONTENT_ITEM_TYPE;
+        case BLOCKED_ITEMS_ID:
+            return NekoSmsContract.Blocked.CONTENT_TYPE;
+        default:
+            return null;
+        }
     }
 
-    private String getCombinedSelectionString(String idColumnName, Uri uri, String selection) {
+    private static String getCombinedSelectionString(String idColumnName, Uri uri, String selection) {
         String profileWhere = idColumnName + "=" + uri.getLastPathSegment();
         if (TextUtils.isEmpty(selection)) {
             return profileWhere;
