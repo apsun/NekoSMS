@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,11 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.*;
 import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.*;
+import com.oxycode.nekosms.data.SmsFilterData;
+import com.oxycode.nekosms.data.SmsFilterField;
+import com.oxycode.nekosms.data.SmsFilterLoader;
+import com.oxycode.nekosms.data.SmsFilterMode;
 import com.oxycode.nekosms.provider.NekoSmsContract;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class FilterEditorActivity extends Activity {
     private EditText mPatternEditText;
@@ -26,8 +25,8 @@ public class FilterEditorActivity extends Activity {
     private CheckBox mIgnoreCaseCheckBox;
     private Uri mFilterUri;
     private SmsFilterData mFilter;
-    private List<String> mSmsFilterFieldKeys;
-    private List<String> mSmsFilterModeKeys;
+    private EnumAdapter<SmsFilterField> mSmsFilterFieldAdapter;
+    private EnumAdapter<SmsFilterMode> mSmsFilterModeAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,7 +34,7 @@ public class FilterEditorActivity extends Activity {
         setContentView(R.layout.activity_filter_editor);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTitle("Save filter");
+        toolbar.setTitle(R.string.save_filter);
         toolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
         setActionBar(toolbar);
 
@@ -48,15 +47,22 @@ public class FilterEditorActivity extends Activity {
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
         mIgnoreCaseCheckBox = (CheckBox)findViewById(R.id.activity_filter_editor_ignorecase_checkbox);
 
-        Resources resources = getResources();
-        mSmsFilterFieldKeys = Arrays.asList(resources.getStringArray(R.array.sms_filter_field_keys));
-        mSmsFilterModeKeys = Arrays.asList(resources.getStringArray(R.array.sms_filter_mode_keys));
+        mSmsFilterFieldAdapter = new EnumAdapter<SmsFilterField>(this,
+            android.R.layout.simple_spinner_dropdown_item, SmsFilterField.class);
+        mSmsFilterFieldAdapter.setStringMap(FilterEnumMaps.getFieldMap(this));
+
+        mSmsFilterModeAdapter = new EnumAdapter<SmsFilterMode>(this,
+            android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
+        mSmsFilterModeAdapter.setStringMap(FilterEnumMaps.getModeMap(this));
+
+        mFieldSpinner.setAdapter(mSmsFilterFieldAdapter);
+        mModeSpinner.setAdapter(mSmsFilterModeAdapter);
 
         if (filterUri != null) {
             SmsFilterData filter = SmsFilterLoader.loadFilter(this, filterUri);
             mFilter = filter;
-            mFieldSpinner.setSelection(mSmsFilterFieldKeys.indexOf(filter.getField().name()));
-            mModeSpinner.setSelection(mSmsFilterModeKeys.indexOf(filter.getMode().name()));
+            mFieldSpinner.setSelection(mSmsFilterFieldAdapter.getPosition(filter.getField()));
+            mModeSpinner.setSelection(mSmsFilterModeAdapter.getPosition(filter.getMode()));
             mPatternEditText.setText(filter.getPattern());
             mIgnoreCaseCheckBox.setChecked(!filter.isCaseSensitive());
         }
@@ -98,7 +104,7 @@ public class FilterEditorActivity extends Activity {
 
     private void saveAndFinish() {
         Uri filterUri = writeFilterData();
-        Toast.makeText(this, "Filter saved", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.filter_saved, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
         intent.setData(filterUri);
         setResult(RESULT_OK, intent);
@@ -111,8 +117,8 @@ public class FilterEditorActivity extends Activity {
     }
 
     private ContentValues createFilterData() {
-        int fieldIndex = mFieldSpinner.getSelectedItemPosition();
-        int modeIndex = mModeSpinner.getSelectedItemPosition();
+        SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
+        SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
         String pattern = mPatternEditText.getText().toString();
         boolean caseSensitive = !mIgnoreCaseCheckBox.isChecked();
 
@@ -120,8 +126,8 @@ public class FilterEditorActivity extends Activity {
         if (data == null) {
             data = mFilter = new SmsFilterData();
         }
-        data.setField(SmsFilterField.valueOf(mSmsFilterFieldKeys.get(fieldIndex)));
-        data.setMode(SmsFilterMode.valueOf(mSmsFilterModeKeys.get(modeIndex)));
+        data.setField(field);
+        data.setMode(mode);
         data.setPattern(pattern);
         data.setCaseSensitive(caseSensitive);
         return data.serialize();

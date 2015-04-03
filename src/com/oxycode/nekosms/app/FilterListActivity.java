@@ -3,19 +3,17 @@ package com.oxycode.nekosms.app;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.SparseArray;
 import android.view.*;
 import android.widget.*;
 import com.oxycode.nekosms.R;
 import com.oxycode.nekosms.data.SmsFilterData;
-import com.oxycode.nekosms.data.SmsFilterFlags;
+import com.oxycode.nekosms.data.SmsFilterField;
 import com.oxycode.nekosms.data.SmsFilterLoader;
+import com.oxycode.nekosms.data.SmsFilterMode;
 import com.oxycode.nekosms.provider.NekoSmsContract;
-import com.oxycode.nekosms.utils.MapUtils;
 
 import java.util.Map;
 
@@ -28,26 +26,13 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
 
     private static class FilterAdapter extends ResourceCursorAdapter {
         private int[] mColumns;
-        private Map<String, String> mSmsFilterFieldMap;
-        private Map<String, String> mSmsFilterModeMap;
-        private SparseArray<String> mSmsFilterFlagsMap;
+        private Map<SmsFilterField, String> mSmsFilterFieldMap;
+        private Map<SmsFilterMode, String> mSmsFilterModeMap;
 
         public FilterAdapter(Context context) {
             super(context, R.layout.listitem_filter_list, null, 0);
-
-            Resources resources = context.getResources();
-
-            String[] fieldKeys = resources.getStringArray(R.array.sms_filter_field_keys);
-            String[] fieldNames = resources.getStringArray(R.array.sms_filter_field_names);
-            mSmsFilterFieldMap = MapUtils.createFromArrays(fieldKeys, fieldNames);
-
-            String[] modeKeys = resources.getStringArray(R.array.sms_filter_mode_keys);
-            String[] modeNames = resources.getStringArray(R.array.sms_filter_mode_names);
-            mSmsFilterModeMap = MapUtils.createFromArrays(modeKeys, modeNames);
-
-            int[] flagsKeys = resources.getIntArray(R.array.sms_filter_flags_keys);
-            String[] flagsNames = resources.getStringArray(R.array.sms_filter_flags_names);
-            mSmsFilterFlagsMap = MapUtils.createFromArrays(flagsKeys, flagsNames);
+            mSmsFilterFieldMap = FilterEnumMaps.getFieldMap(context);
+            mSmsFilterModeMap = FilterEnumMaps.getModeMap(context);
         }
 
         @Override
@@ -70,18 +55,18 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, tag.mFilterData);
             tag.mFilterData = filterData;
 
-            String fieldStr = filterData.getField().name();
-            String modeStr = filterData.getMode().name();
+            SmsFilterField field = filterData.getField();
+            SmsFilterMode mode = filterData.getMode();
             String pattern = filterData.getPattern();
             boolean caseSensitive = filterData.isCaseSensitive();
 
             StringBuilder infoBuilder = new StringBuilder();
-            infoBuilder.append(mSmsFilterFieldMap.get(fieldStr));
+            infoBuilder.append(mSmsFilterFieldMap.get(field));
             infoBuilder.append(" | ");
-            infoBuilder.append(mSmsFilterModeMap.get(modeStr));
+            infoBuilder.append(mSmsFilterModeMap.get(mode));
             if (!caseSensitive) {
                 infoBuilder.append(" | ");
-                infoBuilder.append(mSmsFilterFlagsMap.get(SmsFilterFlags.IGNORE_CASE));
+                infoBuilder.append(context.getString(R.string.filter_ignore_case));
             }
 
             tag.mPatternTextView.setText(pattern);
@@ -122,6 +107,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             startFilterEditorActivity(-1);
             return true;
         case R.id.menu_item_import_from_sms:
+            Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -132,7 +118,6 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.context_filter_list, menu);
-        menu.setHeaderTitle("Nyaa!");
     }
 
     @Override

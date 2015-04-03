@@ -15,7 +15,7 @@ public class SmsFilterData {
         values.put(NekoSmsContract.Filters.FIELD, getField().name());
         values.put(NekoSmsContract.Filters.MODE, getMode().name());
         values.put(NekoSmsContract.Filters.PATTERN, getPattern());
-        values.put(NekoSmsContract.Filters.CASE_SENSITIVE, isCaseSensitive());
+        values.put(NekoSmsContract.Filters.CASE_SENSITIVE, isCaseSensitive() ? 1 : 0);
         return values;
     }
 

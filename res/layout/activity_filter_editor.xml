@@ -29,8 +29,7 @@
             <Spinner
                 android:id="@+id/activity_filter_editor_field_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="38dp"
-                android:entries="@array/sms_filter_field_names"/>
+                android:layout_height="38dp"/>
         </LinearLayout>
         <LinearLayout
             android:orientation="horizontal"
@@ -44,8 +43,7 @@
             <Spinner
                 android:id="@+id/activity_filter_editor_mode_spinner"
                 android:layout_width="match_parent"
-                android:layout_height="38dp"
-                android:entries="@array/sms_filter_mode_names"/>
+                android:layout_height="38dp"/>
         </LinearLayout>
         <CheckBox
             android:id="@+id/activity_filter_editor_ignorecase_checkbox"

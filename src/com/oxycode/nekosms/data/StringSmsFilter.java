@@ -59,6 +59,7 @@ public class StringSmsFilter extends SmsFilter {
             break;
         }
 
+        Xlog.v(TAG, "  Matches: %s", matches);
         return matches;
     }
 }
