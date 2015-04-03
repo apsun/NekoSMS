@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_item_discard_changes"
-        android:title="Discard changes"
+        android:title="@string/discard_changes"
         android:icon="@drawable/ic_close_white_24dp"
         android:showAsAction="never"/>
 </menu>

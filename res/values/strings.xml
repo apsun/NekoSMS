@@ -12,10 +12,14 @@
 
     <!-- Filter editor -->
     <string name="save_filter">Save filter</string>
-    <string name="discard_filter">Discard filter</string>
+    <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter saved</string>
 
     <!-- Filter properties -->
+    <string name="filter_pattern">Pattern</string>
+    <string name="filter_field">Field</string>
+    <string name="filter_mode">Mode</string>
+    <string name="filter_ignore_case">Ignore case</string>
     <string name="filter_mode_regex">Regular expression</string>
     <string name="filter_mode_wildcard">Wildcard</string>
     <string name="filter_mode_contains">Contains</string>
@@ -24,5 +28,4 @@
     <string name="filter_mode_equals">Equals</string>
     <string name="filter_field_sender">Sender</string>
     <string name="filter_field_body">Body</string>
-    <string name="filter_ignore_case">Ignore case</string>
 </resources>
