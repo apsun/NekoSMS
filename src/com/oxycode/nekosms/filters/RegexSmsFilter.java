@@ -1,5 +1,7 @@
-package com.oxycode.nekosms.data;
+package com.oxycode.nekosms.filters;
 
+import com.oxycode.nekosms.data.SmsFilterData;
+import com.oxycode.nekosms.data.SmsFilterField;
 import com.oxycode.nekosms.utils.Xlog;
 
 import java.util.regex.Matcher;

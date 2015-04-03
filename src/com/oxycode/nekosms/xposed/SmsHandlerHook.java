@@ -8,8 +8,8 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import com.oxycode.nekosms.data.MultipartSmsMessage;
-import com.oxycode.nekosms.data.SmsFilter;
+import com.oxycode.nekosms.data.SmsMessageData;
+import com.oxycode.nekosms.filters.SmsFilter;
 import com.oxycode.nekosms.data.SmsFilterData;
 import com.oxycode.nekosms.data.SmsFilterLoader;
 import com.oxycode.nekosms.provider.NekoSmsContract;
@@ -30,6 +30,32 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private ContentObserver mContentObserver;
     private List<SmsFilter> mSmsFilters;
 
+    private static SmsMessageData createMessageData(SmsMessage[] messageParts) {
+        String sender = messageParts[0].getDisplayOriginatingAddress();
+        String body = mergeMessageBodies(messageParts);
+        long timeSent = messageParts[0].getTimestampMillis();
+        long timeReceived = System.currentTimeMillis();
+
+        SmsMessageData message = new SmsMessageData();
+        message.setSender(sender);
+        message.setBody(body);
+        message.setTimeSent(timeSent);
+        message.setTimeReceived(timeReceived);
+        return message;
+    }
+
+    private static String mergeMessageBodies(SmsMessage[] messageParts) {
+        if (messageParts.length == 1) {
+            return messageParts[0].getDisplayMessageBody();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (SmsMessage messagePart : messageParts) {
+                sb.append(messagePart.getDisplayMessageBody());
+            }
+            return sb.toString();
+        }
+    }
+
     private ContentObserver registerContentObserver(Context context) {
         Xlog.i(TAG, "Registering SMS filter content observer");
 
@@ -49,7 +75,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return contentObserver;
     }
 
-    private Uri writeBlockedSms(Context context, MultipartSmsMessage message) {
+    private Uri writeBlockedSms(Context context, SmsMessageData message) {
         Uri messagesUri = NekoSmsContract.Blocked.CONTENT_URI;
         ContentResolver contentResolver = context.getContentResolver();
         ContentValues values = message.serialize();
@@ -111,7 +137,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");
 
         SmsMessage[] messageParts = Telephony.Sms.Intents.getMessagesFromIntent(intent);
-        MultipartSmsMessage message = new MultipartSmsMessage(messageParts);
+        SmsMessageData message = createMessageData(messageParts);
         String sender = message.getSender();
         String body = message.getBody();
         Xlog.i(TAG, "Received a new SMS message");

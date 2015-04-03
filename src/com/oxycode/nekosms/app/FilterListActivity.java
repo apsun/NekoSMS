@@ -21,7 +21,9 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     private static class FilterListItemTag {
         public SmsFilterData mFilterData;
         public TextView mPatternTextView;
-        public TextView mInfoTextView;
+        public TextView mFieldTextView;
+        public TextView mModeTextView;
+        public TextView mCaseSensitiveTextView;
     }
 
     private static class FilterAdapter extends ResourceCursorAdapter {
@@ -40,7 +42,9 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             View view = super.newView(context, cursor, parent);
             FilterListItemTag tag = new FilterListItemTag();
             tag.mPatternTextView = (TextView)view.findViewById(R.id.listitem_filter_list_pattern_textview);
-            tag.mInfoTextView = (TextView)view.findViewById(R.id.listitem_filter_list_info_textview);
+            tag.mFieldTextView = (TextView)view.findViewById(R.id.listitem_filter_list_field_textview);
+            tag.mModeTextView = (TextView)view.findViewById(R.id.listitem_filter_list_mode_textview);
+            tag.mCaseSensitiveTextView = (TextView)view.findViewById(R.id.listitem_filter_list_case_sensitive_textview);
             view.setTag(tag);
             return view;
         }
@@ -60,17 +64,10 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             String pattern = filterData.getPattern();
             boolean caseSensitive = filterData.isCaseSensitive();
 
-            StringBuilder infoBuilder = new StringBuilder();
-            infoBuilder.append(mSmsFilterFieldMap.get(field));
-            infoBuilder.append(" | ");
-            infoBuilder.append(mSmsFilterModeMap.get(mode));
-            if (!caseSensitive) {
-                infoBuilder.append(" | ");
-                infoBuilder.append(context.getString(R.string.filter_ignore_case));
-            }
-
-            tag.mPatternTextView.setText(pattern);
-            tag.mInfoTextView.setText(infoBuilder.toString());
+            tag.mPatternTextView.setText("Pattern: " + pattern);
+            tag.mFieldTextView.setText("Field: " + mSmsFilterFieldMap.get(field));
+            tag.mModeTextView.setText("Mode: " + mSmsFilterModeMap.get(mode));
+            tag.mCaseSensitiveTextView.setText("Case sensitive: " + caseSensitive);
         }
     }
 
@@ -106,8 +103,8 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         case R.id.menu_item_create_filter:
             startFilterEditorActivity(-1);
             return true;
-        case R.id.menu_item_import_from_sms:
-            Toast.makeText(this, "Not yet implemented", Toast.LENGTH_SHORT).show();
+        case R.id.menu_item_view_blocked_messages:
+            startBlockedSmsListActivity();
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -157,6 +154,11 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.changeCursor(null);
+    }
+
+    private void startBlockedSmsListActivity() {
+        Intent intent = new Intent(this, BlockedSmsListActivity.class);
+        startActivity(intent);
     }
 
     private void startFilterEditorActivity(long filterId) {

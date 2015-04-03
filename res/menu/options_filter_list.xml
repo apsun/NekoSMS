@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_item_import_from_sms"
-        android:title="@string/import_from_sms"
+        android:id="@+id/menu_item_view_blocked_messages"
+        android:title="@string/view_blocked_messages"
         android:icon="@drawable/ic_inbox_white_24dp"
         android:showAsAction="ifRoom"/>
     <item

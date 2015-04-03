@@ -24,7 +24,11 @@
         </activity>
         <activity
             android:name=".app.FilterEditorActivity"
-            android:label="Filter editor">
+            android:label="@string/filter_editor">
+        </activity>
+        <activity
+            android:name=".app.BlockedSmsListActivity"
+            android:label="@string/blocked_messages">
         </activity>
         <provider
             android:name=".provider.NekoSmsProvider"
