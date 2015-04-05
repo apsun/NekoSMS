@@ -7,8 +7,8 @@ public abstract class SmsFilter {
         switch (data.getMode()) {
         case REGEX:
             return new RegexSmsFilter(data);
-        case WILDCARD:
-            throw new UnsupportedOperationException("Not yet implemented");
+        // case WILDCARD:
+        //     throw new UnsupportedOperationException("Not yet implemented");
         case CONTAINS:
         case PREFIX:
         case SUFFIX:

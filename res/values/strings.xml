@@ -29,8 +29,8 @@
     <string name="filter_mode_regex">Regular expression</string>
     <string name="filter_mode_wildcard">Wildcard</string>
     <string name="filter_mode_contains">Contains</string>
-    <string name="filter_mode_prefix">Prefix</string>
-    <string name="filter_mode_suffix">Suffix</string>
+    <string name="filter_mode_prefix">Starts with</string>
+    <string name="filter_mode_suffix">Ends with</string>
     <string name="filter_mode_equals">Equals</string>
     <string name="filter_field_sender">Sender</string>
     <string name="filter_field_body">Body</string>

@@ -27,7 +27,7 @@ public final class FilterEnumMaps {
 
         Map<SmsFilterMode, String> modeMap = new HashMap<SmsFilterMode, String>(6);
         modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
-        modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
+        // modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
         modeMap.put(SmsFilterMode.CONTAINS, resources.getString(R.string.filter_mode_contains));
         modeMap.put(SmsFilterMode.PREFIX, resources.getString(R.string.filter_mode_prefix));
         modeMap.put(SmsFilterMode.SUFFIX, resources.getString(R.string.filter_mode_suffix));

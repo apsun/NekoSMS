@@ -2,7 +2,7 @@ package com.oxycode.nekosms.data;
 
 public enum SmsFilterMode {
     REGEX,
-    WILDCARD,
+    // WILDCARD,
     CONTAINS,
     PREFIX,
     SUFFIX,
