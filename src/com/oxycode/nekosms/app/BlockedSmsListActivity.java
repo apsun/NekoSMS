@@ -3,15 +3,12 @@ package com.oxycode.nekosms.app;
 import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.content.Context;
-import android.content.CursorLoader;
-import android.content.Loader;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
+import android.widget.AdapterView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toolbar;
@@ -106,6 +103,25 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_blockedsms_list, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        long rowId = info.id;
+        switch (item.getItemId()) {
+        case R.id.contextmenu_blockedsms_list_delete:
+            deleteSms(rowId);
+            return true;
+        default:
+            return super.onContextItemSelected(item);
+        }
+    }
+
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         String[] from = {
             NekoSmsContract.Blocked._ID,
@@ -126,5 +142,13 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         mAdapter.changeCursor(null);
+    }
+
+    private void deleteSms(long smsId) {
+        ContentResolver contentResolver = getContentResolver();
+        Uri filtersUri = NekoSmsContract.Blocked.CONTENT_URI;
+        Uri filterUri = ContentUris.withAppendedId(filtersUri, smsId);
+        int deletedRows = contentResolver.delete(filterUri, null, null);
+        // TODO: Check return value
     }
 }
