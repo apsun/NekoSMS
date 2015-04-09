@@ -6,12 +6,10 @@ import android.app.LoaderManager;
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ResourceCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toolbar;
+import android.widget.*;
 import com.oxycode.nekosms.R;
 import com.oxycode.nekosms.data.BlockedSmsLoader;
 import com.oxycode.nekosms.data.SmsMessageData;
@@ -95,10 +93,18 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:
-            finish();
+            finishTryTransition();
             return true;
         default:
             return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void finishTryTransition() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        } else {
+            finish();
         }
     }
 
@@ -115,6 +121,7 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         switch (item.getItemId()) {
         case R.id.contextmenu_blockedsms_list_delete:
             deleteSms(rowId);
+            Toast.makeText(this, R.string.message_deleted, Toast.LENGTH_SHORT).show();
             return true;
         default:
             return super.onContextItemSelected(item);

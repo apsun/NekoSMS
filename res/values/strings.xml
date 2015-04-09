@@ -10,6 +10,7 @@
     <string name="create_filter">Create filter</string>
     <string name="view_blocked_messages">View blocked messages</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
+    <string name="filter_deleted">Filter deleted</string>
 
     <!-- Filter editor -->
     <string name="filter_editor">Filter editor</string>
@@ -20,6 +21,7 @@
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>
     <string name="blocked_messages_empty_text">No blocked messages! Have a nice day!</string>
+    <string name="message_deleted">Message deleted</string>
 
     <!-- Filter properties -->
     <string name="filter_pattern">Pattern</string>

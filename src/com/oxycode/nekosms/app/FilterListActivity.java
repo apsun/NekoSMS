@@ -127,6 +127,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             return true;
         case R.id.contextmenu_filter_list_delete:
             deleteFilter(rowId);
+            Toast.makeText(this, R.string.filter_deleted, Toast.LENGTH_SHORT).show();
             return true;
         default:
             return super.onContextItemSelected(item);
