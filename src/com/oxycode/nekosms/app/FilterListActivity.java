@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
@@ -77,8 +78,11 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_list);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setActionBar(toolbar);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+            setActionBar(toolbar);
+        }
 
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);

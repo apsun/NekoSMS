@@ -72,12 +72,14 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blockedsms_list);
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setActionBar(toolbar);
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+            setActionBar(toolbar);
         }
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);

@@ -1,5 +1,6 @@
 package com.oxycode.nekosms.app;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -33,10 +34,16 @@ public class FilterEditorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.save_filter);
-        toolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
-        setActionBar(toolbar);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+            toolbar.setTitle(R.string.save_filter);
+            toolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
+            setActionBar(toolbar);
+        } else {
+            ActionBar actionBar = getActionBar();
+            actionBar.setTitle(R.string.save_filter);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         Intent intent = getIntent();
         Uri filterUri = intent.getData();
