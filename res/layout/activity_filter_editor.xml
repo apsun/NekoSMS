@@ -3,55 +3,47 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <include
-        layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
-    <LinearLayout
-        android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+    <EditText
+        android:id="@+id/activity_filter_editor_pattern_edittext"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
-        <EditText
-            android:id="@+id/activity_filter_editor_pattern_edittext"
-            android:layout_width="match_parent"
+        android:hint="@string/filter_pattern"/>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
-            android:hint="@string/filter_pattern"/>
-        <LinearLayout
-            android:orientation="horizontal"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp"
+            android:text="@string/filter_field"/>
+        <Spinner
+            android:id="@+id/activity_filter_editor_field_spinner"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="6dp"
-                android:text="@string/filter_field"/>
-            <Spinner
-                android:id="@+id/activity_filter_editor_field_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="6dp"
-                android:text="@string/filter_mode"/>
-            <Spinner
-                android:id="@+id/activity_filter_editor_mode_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-        <CheckBox
-            android:id="@+id/activity_filter_editor_ignorecase_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/filter_ignore_case"
-            android:clickable="true"/>
+            android:layout_height="wrap_content"/>
     </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp"
+            android:text="@string/filter_mode"/>
+        <Spinner
+            android:id="@+id/activity_filter_editor_mode_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+    <CheckBox
+        android:id="@+id/activity_filter_editor_ignorecase_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/filter_ignore_case"
+        android:clickable="true"/>
 </LinearLayout>

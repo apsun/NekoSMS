@@ -34,13 +34,8 @@ public class FilterEditorActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-            toolbar.setTitle(R.string.save_filter);
-            toolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
-            setActionBar(toolbar);
-        } else {
-            ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
             actionBar.setTitle(R.string.save_filter);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

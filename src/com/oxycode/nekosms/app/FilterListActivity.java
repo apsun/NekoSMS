@@ -79,11 +79,6 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_list);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-            setActionBar(toolbar);
-        }
-
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
 
