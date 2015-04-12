@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/menu_item_view_blocked_messages"
-        android:title="@string/view_blocked_messages"
+        android:title="@string/blocked_messages"
         android:icon="@drawable/ic_inbox_white_24dp"
         android:showAsAction="ifRoom"/>
     <item

@@ -1,6 +1,9 @@
 package com.oxycode.nekosms.data;
 
+import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 
 public final class BlockedSmsLoader {
@@ -52,5 +55,22 @@ public final class BlockedSmsLoader {
         data.setTimeSent(timeSent);
         data.setTimeReceived(timeReceived);
         return data;
+    }
+
+    public static SmsMessageData loadMessage(Context context, Uri messageUri) {
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(messageUri, PROJECTION, null, null, null);
+
+        if (!cursor.moveToFirst()) {
+            throw new IllegalArgumentException("URI does not match any message");
+        }
+
+        if (cursor.getCount() > 1) {
+            throw new IllegalArgumentException("URI matched more than one message");
+        }
+
+        SmsMessageData message = getMessageData(cursor, COLUMNS, null);
+        cursor.close();
+        return message;
     }
 }

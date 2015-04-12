@@ -5,12 +5,18 @@
     <!-- General -->
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
+    <string name="exit">Exit</string>
+    <string name="ignore">Ignore</string>
 
     <!-- Filter list -->
     <string name="create_filter">Create filter</string>
-    <string name="view_blocked_messages">View blocked messages</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
+    <string name="checking_module_status">Checking Xposed module status…</string>
+    <string name="module_init_failed">Initialization failed</string>
+    <string name="module_init_failed_timeout">Xposed module not initialized! Did you enable the module?</string>
+    <string name="module_init_failed_error">Xposed module initialization failed, an error occurred!</string>
+    <string name="report_bug">Report bug</string>
 
     <!-- Filter editor -->
     <string name="filter_editor">Filter editor</string>
