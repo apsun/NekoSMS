@@ -2,22 +2,31 @@ package com.oxycode.nekosms.app;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.*;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 import com.oxycode.nekosms.R;
 import com.oxycode.nekosms.data.SmsFilterData;
 import com.oxycode.nekosms.data.SmsFilterField;
 import com.oxycode.nekosms.data.SmsFilterLoader;
 import com.oxycode.nekosms.data.SmsFilterMode;
 import com.oxycode.nekosms.provider.NekoSmsContract;
+
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class FilterEditorActivity extends Activity {
     private EditText mPatternEditText;
@@ -72,7 +81,7 @@ public class FilterEditorActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        saveAndFinish();
+        saveIfValid();
     }
 
     @Override
@@ -86,7 +95,7 @@ public class FilterEditorActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case android.R.id.home:
-            saveAndFinish();
+            saveIfValid();
             return true;
         case R.id.menu_item_discard_changes:
             discardAndFinish();
@@ -102,6 +111,41 @@ public class FilterEditorActivity extends Activity {
         } else {
             finish();
         }
+    }
+
+    private int getInvalidPatternStringId() {
+        SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
+        if (mode != SmsFilterMode.REGEX) {
+            return 0;
+        }
+
+        String pattern = mPatternEditText.getText().toString();
+        try {
+            Pattern.compile(pattern);
+        } catch (PatternSyntaxException e) {
+            return R.string.invalid_pattern_regex;
+        }
+
+        return 0;
+    }
+
+    private boolean isPatternEmpty() {
+        return TextUtils.isEmpty(mPatternEditText.getText());
+    }
+
+    private void saveIfValid() {
+        if (isPatternEmpty()) {
+            discardAndFinish();
+            return;
+        }
+
+        int invalidPatternStringId = getInvalidPatternStringId();
+        if (invalidPatternStringId != 0) {
+            showInvalidPatternDialog(invalidPatternStringId);
+            return;
+        }
+
+        saveAndFinish();
     }
 
     private void saveAndFinish() {
@@ -150,5 +194,22 @@ public class FilterEditorActivity extends Activity {
         }
 
         return filterUri;
+    }
+
+    private void showInvalidPatternDialog(int messageId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(R.string.invalid_pattern_title)
+            .setMessage(messageId)
+            .setIconAttribute(android.R.attr.alertDialogIcon)
+            .setPositiveButton(R.string.ok, null)
+            .setNegativeButton(R.string.discard, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    discardAndFinish();
+                }
+            });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

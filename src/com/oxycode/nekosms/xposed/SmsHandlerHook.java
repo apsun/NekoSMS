@@ -5,21 +5,16 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.os.ResultReceiver;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import com.oxycode.nekosms.data.Intents;
 import com.oxycode.nekosms.data.SmsFilterData;
 import com.oxycode.nekosms.data.SmsFilterLoader;
 import com.oxycode.nekosms.data.SmsMessageData;
 import com.oxycode.nekosms.filters.SmsFilter;
 import com.oxycode.nekosms.provider.NekoSmsContract;
 import com.oxycode.nekosms.utils.Xlog;
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.util.ArrayList;
@@ -28,10 +23,11 @@ import java.util.List;
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
 
+    private static final String PHONE_PACKAGE_NAME = "com.android.phone";
+    private static final String NEKOSMS_PACKAGE_NAME = "com.oxycode.nekosms";
+
     private final Object mFiltersLock = new Object();
-    private boolean mInitSuccessful;
     private ContentObserver mContentObserver;
-    private BroadcastReceiver mBroadcastReceiver;
     private List<SmsFilter> mSmsFilters;
 
     private static SmsMessageData createMessageData(SmsMessage[] messageParts) {
@@ -77,31 +73,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         ContentResolver contentResolver = context.getContentResolver();
         contentResolver.registerContentObserver(filtersUri, true, contentObserver);
         return contentObserver;
-    }
-
-    private BroadcastReceiver registerBroadcastReceiver(Context context) {
-        Xlog.i(TAG, "Registering module status query receiver");
-
-        BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (!Intents.ACTION_GET_MODULE_STATUS.equals(action)) {
-                    return;
-                }
-
-                boolean success = mInitSuccessful;
-                Xlog.d(TAG, "Querying module status -> %s", success);
-
-                ResultReceiver resultReceiver = intent.getParcelableExtra(Intents.EXTRA_RESULT_RECEIVER);
-                int resultCode = success ? Intents.RESULT_INIT_SUCCESSFUL : Intents.RESULT_INIT_FAILED;
-                resultReceiver.send(resultCode, null);
-            }
-        };
-
-        IntentFilter filter = new IntentFilter(Intents.ACTION_GET_MODULE_STATUS);
-        context.registerReceiver(broadcastReceiver, filter);
-        return broadcastReceiver;
     }
 
     private Uri writeBlockedSms(Context context, SmsMessageData message) {
@@ -151,9 +122,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Context context = (Context)param.args[1];
         if (mContentObserver == null) {
             mContentObserver = registerContentObserver(context);
-        }
-        if (mBroadcastReceiver == null) {
-            mBroadcastReceiver = registerBroadcastReceiver(context);
         }
     }
 
@@ -265,6 +233,20 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
+    private void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
+        String className = "com.oxycode.nekosms.utils.XposedUtils";
+        String methodName = "isModuleEnabled";
+
+        Xlog.i(TAG, "Hooking Xposed module status checker");
+
+        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName, new XC_MethodReplacement() {
+            @Override
+            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                return true;
+            }
+        });
+    }
+
     private static void printDeviceInfo() {
         Xlog.i(TAG, "Phone manufacturer: %s", Build.MANUFACTURER);
         Xlog.i(TAG, "Phone model: %s", Build.MODEL);
@@ -274,19 +256,27 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!"com.android.phone".equals(lpparam.packageName)) {
-            return;
+        String packageName = lpparam.packageName;
+
+        if (NEKOSMS_PACKAGE_NAME.equals(packageName)) {
+            try {
+                hookXposedUtils(lpparam);
+            } catch (Throwable e) {
+                Xlog.e(TAG, "Failed to hook Xposed module status checker", e);
+                throw e;
+            }
         }
 
-        Xlog.i(TAG, "NekoSMS initializing...");
-        printDeviceInfo();
-        try {
-            hookSmsHandler(lpparam);
-            mInitSuccessful = true;
+        if (PHONE_PACKAGE_NAME.equals(packageName)) {
+            Xlog.i(TAG, "NekoSMS initializing...");
+            printDeviceInfo();
+            try {
+                hookSmsHandler(lpparam);
+            } catch (Throwable e) {
+                Xlog.e(TAG, "Failed to hook SMS handler", e);
+                throw e;
+            }
             Xlog.i(TAG, "NekoSMS initialization complete!");
-        } catch (Throwable e) {
-            mInitSuccessful = false;
-            Xlog.e(TAG, "Failed to hook SMS handler", e);
         }
     }
 }

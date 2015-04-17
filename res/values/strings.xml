@@ -3,6 +3,7 @@
     <string name="app_name">NekoSMS</string>
 
     <!-- General -->
+    <string name="ok">OK</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
     <string name="exit">Exit</string>
@@ -13,16 +14,18 @@
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
     <string name="checking_module_status">Checking Xposed module status…</string>
-    <string name="module_init_failed">Initialization failed</string>
-    <string name="module_init_failed_timeout">Xposed module not initialized! Did you enable the module?</string>
-    <string name="module_init_failed_error">Xposed module initialization failed, an error occurred!</string>
+    <string name="module_not_enabled_title">Initialization failed</string>
+    <string name="module_not_enabled_message">Xposed module not enabled!</string>
     <string name="report_bug">Report bug</string>
 
     <!-- Filter editor -->
     <string name="filter_editor">Filter editor</string>
     <string name="save_filter">Save filter</string>
+    <string name="discard">Discard</string>
     <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter saved</string>
+    <string name="invalid_pattern_title">Invalid pattern</string>
+    <string name="invalid_pattern_regex">The pattern you have entered is not a legal regular expression!</string>
 
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>

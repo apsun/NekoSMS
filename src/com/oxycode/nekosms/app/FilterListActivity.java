@@ -3,22 +3,23 @@ package com.oxycode.nekosms.app;
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.app.ProgressDialog;
 import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.*;
+import com.oxycode.nekosms.data.SmsFilterData;
+import com.oxycode.nekosms.data.SmsFilterField;
+import com.oxycode.nekosms.data.SmsFilterLoader;
+import com.oxycode.nekosms.data.SmsFilterMode;
 import com.oxycode.nekosms.provider.NekoSmsContract;
+import com.oxycode.nekosms.utils.XposedUtils;
 
 import java.util.Map;
 
@@ -76,16 +77,9 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         }
     }
 
-    private static final int INIT_STATUS_CHECK_TIMEOUT = 3000;
-    private static final int INIT_RESULT_TIMEOUT = 1;
-    private static final int INIT_RESULT_ERROR = 2;
     private static final String REPORT_BUG_URL = "https://bitbucket.org/crossbowffs/nekosms/issues/new";
 
     private FilterAdapter mAdapter;
-    private Handler mHandler;
-    private Runnable mShowInitFailedDialogAction;
-    private ProgressDialog mStatusCheckDialog;
-    private AlertDialog mInitFailedDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -101,16 +95,9 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
 
         registerForContextMenu(getListView());
 
-        mHandler = new Handler();
-        mShowInitFailedDialogAction = new Runnable() {
-            @Override
-            public void run() {
-                hideStatusCheckDialog();
-                showInitFailedDialog(INIT_RESULT_TIMEOUT);
-            }
-        };
-
-        beginStatusCheck();
+        if (!XposedUtils.isModuleEnabled()) {
+            showInitFailedDialog();
+        }
     }
 
     @Override
@@ -211,58 +198,10 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         // TODO: Check return value
     }
 
-    private void beginStatusCheck() {
-        ResultReceiver resultReceiver = new ResultReceiver(mHandler) {
-            @Override
-            protected void onReceiveResult(int resultCode, Bundle resultData) {
-                cancelDelayedShowInitFailedDialog();
-                hideStatusCheckDialog();
-
-                boolean initSuccess = resultCode == Intents.RESULT_INIT_SUCCESSFUL;
-                if (initSuccess) {
-                    hideInitFailedDialog();
-                } else {
-                    showInitFailedDialog(INIT_RESULT_ERROR);
-                }
-            }
-        };
-
-        Intent intent = new Intent(Intents.ACTION_GET_MODULE_STATUS);
-        intent.putExtra(Intents.EXTRA_RESULT_RECEIVER, resultReceiver);
-        sendBroadcast(intent);
-        showStatusCheckDialog();
-        delayedShowInitFailedDialog(INIT_STATUS_CHECK_TIMEOUT);
-    }
-
-    private void showStatusCheckDialog() {
-        if (mStatusCheckDialog == null) {
-            mStatusCheckDialog = new ProgressDialog(this);
-            mStatusCheckDialog.setIndeterminate(true);
-            mStatusCheckDialog.setMessage(getString(R.string.checking_module_status));
-            mStatusCheckDialog.setCancelable(false);
-        }
-
-        mStatusCheckDialog.show();
-    }
-
-    private void hideStatusCheckDialog() {
-        if (mStatusCheckDialog != null) {
-            mStatusCheckDialog.dismiss();
-            mStatusCheckDialog = null;
-        }
-    }
-
-    private void delayedShowInitFailedDialog(int timeout) {
-        mHandler.postDelayed(mShowInitFailedDialogAction, timeout);
-    }
-
-    private void cancelDelayedShowInitFailedDialog() {
-        mHandler.removeCallbacks(mShowInitFailedDialogAction);
-    }
-
-    private void showInitFailedDialog(int reason) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(FilterListActivity.this)
-            .setTitle(R.string.module_init_failed)
+    private void showInitFailedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(R.string.module_not_enabled_title)
+            .setMessage(R.string.module_not_enabled_message)
             .setIconAttribute(android.R.attr.alertDialogIcon)
             .setCancelable(false)
             .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
@@ -282,20 +221,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             })
             .setNegativeButton(R.string.ignore, null);
 
-        if (reason == INIT_RESULT_TIMEOUT) {
-            builder.setMessage(R.string.module_init_failed_timeout);
-        } else if (reason == INIT_RESULT_ERROR) {
-            builder.setMessage(R.string.module_init_failed_error);
-        }
-
-        mInitFailedDialog = builder.create();
-        mInitFailedDialog.show();
-    }
-
-    private void hideInitFailedDialog() {
-        if (mInitFailedDialog != null) {
-            mInitFailedDialog.dismiss();
-            mInitFailedDialog = null;
-        }
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
