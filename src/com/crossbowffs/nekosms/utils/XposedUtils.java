@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.utils;
+package com.crossbowffs.nekosms.utils;
 
 public final class XposedUtils {
     private XposedUtils() { }

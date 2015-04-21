@@ -1,9 +1,9 @@
-package com.oxycode.nekosms.provider;
+package com.crossbowffs.nekosms.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.oxycode.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();

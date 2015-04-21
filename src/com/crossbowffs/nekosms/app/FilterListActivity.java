@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.app;
+package com.crossbowffs.nekosms.app;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -13,13 +13,13 @@ import android.widget.AdapterView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.SmsFilterData;
-import com.oxycode.nekosms.data.SmsFilterField;
-import com.oxycode.nekosms.data.SmsFilterLoader;
-import com.oxycode.nekosms.data.SmsFilterMode;
-import com.oxycode.nekosms.provider.NekoSmsContract;
-import com.oxycode.nekosms.utils.XposedUtils;
+import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.XposedUtils;
 
 import java.util.Map;
 

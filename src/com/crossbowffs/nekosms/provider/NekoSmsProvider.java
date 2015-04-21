@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.provider;
+package com.crossbowffs.nekosms.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;

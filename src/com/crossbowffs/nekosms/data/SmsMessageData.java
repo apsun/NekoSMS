@@ -1,7 +1,7 @@
-package com.oxycode.nekosms.data;
+package com.crossbowffs.nekosms.data;
 
 import android.content.ContentValues;
-import com.oxycode.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 public class SmsMessageData {
     private long mId;

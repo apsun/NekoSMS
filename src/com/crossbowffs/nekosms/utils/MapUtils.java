@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.utils;
+package com.crossbowffs.nekosms.utils;
 
 import android.util.SparseArray;
 

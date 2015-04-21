@@ -1,8 +1,8 @@
-package com.oxycode.nekosms.filters;
+package com.crossbowffs.nekosms.filters;
 
-import com.oxycode.nekosms.data.SmsFilterData;
-import com.oxycode.nekosms.data.SmsFilterField;
-import com.oxycode.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

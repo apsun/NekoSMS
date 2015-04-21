@@ -1,6 +1,6 @@
-package com.oxycode.nekosms.filters;
+package com.crossbowffs.nekosms.filters;
 
-import com.oxycode.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterData;
 
 public abstract class SmsFilter {
     public static SmsFilter create(SmsFilterData data) {

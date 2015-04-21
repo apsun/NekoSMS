@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.oxycode.nekosms"
+    package="com.crossbowffs.nekosms"
     android:versionCode="1"
     android:versionName="1.0">
     <uses-sdk
@@ -15,7 +15,7 @@
         android:theme="@style/AppTheme"
         android:allowBackup="true">
         <activity
-            android:name=".app.FilterListActivity"
+            android:name="com.crossbowffs.nekosms.app.FilterListActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -23,17 +23,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.FilterEditorActivity"
+            android:name="com.crossbowffs.nekosms.app.FilterEditorActivity"
             android:label="@string/filter_editor">
         </activity>
         <activity
-            android:name=".app.BlockedSmsListActivity"
+            android:name="com.crossbowffs.nekosms.app.BlockedSmsListActivity"
             android:label="@string/blocked_messages">
         </activity>
         <provider
-            android:name=".provider.NekoSmsProvider"
+            android:name="com.crossbowffs.nekosms.provider.NekoSmsProvider"
             android:label="NekoSmsProvider"
-            android:authorities="com.oxycode.nekosms.provider"
+            android:authorities="com.crossbowffs.nekosms.provider"
             android:readPermission="android.permission.READ_SMS"
             android:writePermission="android.permission.WRITE_SMS"
             android:exported="true"/>

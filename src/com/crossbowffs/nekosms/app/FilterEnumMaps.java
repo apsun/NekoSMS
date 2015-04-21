@@ -1,10 +1,10 @@
-package com.oxycode.nekosms.app;
+package com.crossbowffs.nekosms.app;
 
 import android.content.Context;
 import android.content.res.Resources;
-import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.SmsFilterField;
-import com.oxycode.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
 
 import java.util.HashMap;
 import java.util.Map;

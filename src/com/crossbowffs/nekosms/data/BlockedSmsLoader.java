@@ -1,10 +1,10 @@
-package com.oxycode.nekosms.data;
+package com.crossbowffs.nekosms.data;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.oxycode.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 public final class BlockedSmsLoader {
     private static final String[] PROJECTION = {

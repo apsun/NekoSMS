@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.app;
+package com.crossbowffs.nekosms.app;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -18,12 +18,12 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.SmsFilterData;
-import com.oxycode.nekosms.data.SmsFilterField;
-import com.oxycode.nekosms.data.SmsFilterLoader;
-import com.oxycode.nekosms.data.SmsFilterMode;
-import com.oxycode.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -187,6 +187,9 @@ public class FilterEditorActivity extends Activity {
         if (mFilterUri != null) {
             filterUri = mFilterUri;
             int updatedRows = contentResolver.update(filterUri, values, null, null);
+            if (updatedRows == 0) {
+                filterUri = mFilterUri = contentResolver.insert(filtersUri, values);
+            }
             // TODO: Check return value
         } else {
             filterUri = contentResolver.insert(filtersUri, values);

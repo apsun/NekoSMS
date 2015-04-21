@@ -1,18 +1,18 @@
-package com.oxycode.nekosms.provider;
+package com.crossbowffs.nekosms.provider;
 
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 public final class NekoSmsContract {
-    public static final String AUTHORITY = "com.oxycode.nekosms.provider";
+    public static final String AUTHORITY = "com.crossbowffs.nekosms.provider";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     public static class Blocked implements BaseColumns {
         public static final String TABLE = "blocked";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(NekoSmsContract.CONTENT_URI, TABLE);
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.oxycode.sms";
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.oxycode.sms";
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.crossbowffs.sms";
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.crossbowffs.sms";
 
         public static final String SENDER             = "sender";
         public static final String BODY               = "body";
@@ -23,8 +23,8 @@ public final class NekoSmsContract {
     public static class Filters implements BaseColumns {
         public static final String TABLE = "filters";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(NekoSmsContract.CONTENT_URI, TABLE);
-        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.oxycode.filter";
-        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.oxycode.filter";
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.crossbowffs.filter";
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.crossbowffs.filter";
 
         public static final String FIELD              = "field";
         public static final String MODE               = "mode";

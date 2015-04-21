@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.data;
+package com.crossbowffs.nekosms.data;
 
 public enum SmsFilterMode {
     REGEX,

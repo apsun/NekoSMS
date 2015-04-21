@@ -1,11 +1,11 @@
-package com.oxycode.nekosms.data;
+package com.crossbowffs.nekosms.data;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.oxycode.nekosms.provider.NekoSmsContract;
-import com.oxycode.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.ArrayList;
 import java.util.List;

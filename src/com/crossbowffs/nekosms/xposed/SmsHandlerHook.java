@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.xposed;
+package com.crossbowffs.nekosms.xposed;
 
 import android.content.*;
 import android.database.ContentObserver;
@@ -8,12 +8,12 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import com.oxycode.nekosms.data.SmsFilterData;
-import com.oxycode.nekosms.data.SmsFilterLoader;
-import com.oxycode.nekosms.data.SmsMessageData;
-import com.oxycode.nekosms.filters.SmsFilter;
-import com.oxycode.nekosms.provider.NekoSmsContract;
-import com.oxycode.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.filters.SmsFilter;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.Xlog;
 import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -22,9 +22,6 @@ import java.util.List;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
-
-    private static final String PHONE_PACKAGE_NAME = "com.android.phone";
-    private static final String NEKOSMS_PACKAGE_NAME = "com.oxycode.nekosms";
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
@@ -234,7 +231,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.oxycode.nekosms.utils.XposedUtils";
+        String className = "com.crossbowffs.nekosms.utils.XposedUtils";
         String methodName = "isModuleEnabled";
 
         Xlog.i(TAG, "Hooking Xposed module status checker");
@@ -258,7 +255,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         String packageName = lpparam.packageName;
 
-        if (NEKOSMS_PACKAGE_NAME.equals(packageName)) {
+        if ("com.crossbowffs.nekosms".equals(packageName)) {
             try {
                 hookXposedUtils(lpparam);
             } catch (Throwable e) {
@@ -267,7 +264,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             }
         }
 
-        if (PHONE_PACKAGE_NAME.equals(packageName)) {
+        if ("com.android.phone".equals(packageName)) {
             Xlog.i(TAG, "NekoSMS initializing...");
             printDeviceInfo();
             try {

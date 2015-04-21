@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.app;
+package com.crossbowffs.nekosms.app;
 
 import android.app.ActionBar;
 import android.app.ListActivity;
@@ -10,10 +10,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-import com.oxycode.nekosms.R;
-import com.oxycode.nekosms.data.BlockedSmsLoader;
-import com.oxycode.nekosms.data.SmsMessageData;
-import com.oxycode.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.BlockedSmsLoader;
+import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

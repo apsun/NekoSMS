@@ -1,4 +1,4 @@
-package com.oxycode.nekosms.app;
+package com.crossbowffs.nekosms.app;
 
 import android.content.Context;
 import android.view.LayoutInflater;
