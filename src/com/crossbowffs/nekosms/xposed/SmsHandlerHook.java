@@ -1,6 +1,9 @@
 package com.crossbowffs.nekosms.xposed;
 
+import android.app.AppOpsManager;
 import android.content.*;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +25,8 @@ import java.util.List;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
+
+    private static final String NEKOSMS_PACKAGE = "com.crossbowffs.nekosms";
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
@@ -103,6 +108,35 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return false;
     }
 
+    private void grantWriteSmsPermissions(Context context) {
+        AppOpsManager appOps = (AppOpsManager)context.getSystemService(Context.APP_OPS_SERVICE);
+        PackageManager packageManager = context.getPackageManager();
+        PackageInfo packageInfo;
+        try {
+            packageInfo = packageManager.getPackageInfo(NEKOSMS_PACKAGE, 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            Xlog.e(TAG, "Failed to find our own package");
+            return;
+        }
+
+        int uid = packageInfo.applicationInfo.uid;
+
+        Xlog.i(TAG, "Checking if we have OP_WRITE_SMS permission");
+        int mode = (Integer)XposedHelpers.callMethod(appOps, "checkOp",
+            new Class<?>[] {int.class, int.class, String.class},
+            15, uid, NEKOSMS_PACKAGE);
+
+        if (mode == AppOpsManager.MODE_ALLOWED) {
+            Xlog.i(TAG, "Already have OP_WRITE_SMS permission");
+            return;
+        }
+
+        Xlog.i(TAG, "Giving our package OP_WRITE_SMS permission");
+        XposedHelpers.callMethod(appOps, "setMode",
+            new Class<?>[] {int.class, int.class, String.class, int.class},
+            15, uid, NEKOSMS_PACKAGE, AppOpsManager.MODE_ALLOWED);
+    }
+
     private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
         Xlog.d(TAG, "Removing raw SMS data from database");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
@@ -120,6 +154,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         if (mContentObserver == null) {
             mContentObserver = registerContentObserver(context);
         }
+        grantWriteSmsPermissions(context);
     }
 
     private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param) {
@@ -231,7 +266,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.crossbowffs.nekosms.utils.XposedUtils";
+        String className = NEKOSMS_PACKAGE + ".utils.XposedUtils";
         String methodName = "isModuleEnabled";
 
         Xlog.i(TAG, "Hooking Xposed module status checker");
@@ -255,7 +290,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         String packageName = lpparam.packageName;
 
-        if ("com.crossbowffs.nekosms".equals(packageName)) {
+        if (NEKOSMS_PACKAGE.equals(packageName)) {
             try {
                 hookXposedUtils(lpparam);
             } catch (Throwable e) {
