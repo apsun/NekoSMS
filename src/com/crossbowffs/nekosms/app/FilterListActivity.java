@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -36,11 +37,21 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         private int[] mColumns;
         private Map<SmsFilterField, String> mSmsFilterFieldMap;
         private Map<SmsFilterMode, String> mSmsFilterModeMap;
+        private String mPatternFormatString;
+        private String mFieldFormatString;
+        private String mModeFormatString;
+        private String mCaseSensitiveFormatString;
 
         public FilterAdapter(Context context) {
             super(context, R.layout.listitem_filter_list, null, 0);
             mSmsFilterFieldMap = FilterEnumMaps.getFieldMap(context);
             mSmsFilterModeMap = FilterEnumMaps.getModeMap(context);
+
+            Resources resources = context.getResources();
+            mPatternFormatString = resources.getString(R.string.format_filter_pattern);
+            mFieldFormatString = resources.getString(R.string.format_filter_field);
+            mModeFormatString = resources.getString(R.string.format_filter_mode);
+            mCaseSensitiveFormatString = resources.getString(R.string.format_filter_case_sensitive);
         }
 
         @Override
@@ -70,10 +81,10 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             String pattern = filterData.getPattern();
             boolean caseSensitive = filterData.isCaseSensitive();
 
-            tag.mPatternTextView.setText("Pattern: " + pattern);
-            tag.mFieldTextView.setText("Field: " + mSmsFilterFieldMap.get(field));
-            tag.mModeTextView.setText("Mode: " + mSmsFilterModeMap.get(mode));
-            tag.mCaseSensitiveTextView.setText("Case sensitive: " + caseSensitive);
+            tag.mPatternTextView.setText(String.format(mPatternFormatString, pattern));
+            tag.mFieldTextView.setText(String.format(mFieldFormatString, mSmsFilterFieldMap.get(field)));
+            tag.mModeTextView.setText(String.format(mModeFormatString, mSmsFilterModeMap.get(mode)));
+            tag.mCaseSensitiveTextView.setText(String.format(mCaseSensitiveFormatString, caseSensitive));
         }
     }
 

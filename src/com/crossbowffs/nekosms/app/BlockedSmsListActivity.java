@@ -4,25 +4,20 @@ import android.app.ActionBar;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.text.format.DateUtils;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ResourceCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BlockedSmsLoader;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
 
 public class BlockedSmsListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static class MessageListItemTag {
@@ -33,10 +28,20 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
     }
 
     private static class BlockedSmsAdapter extends ResourceCursorAdapter {
+        private Context mContext;
         private int[] mColumns;
+        private String mSenderFormatString;
+        private String mBodyFormatString;
+        private String mTimeSentFormatString;
 
         public BlockedSmsAdapter(Context context) {
             super(context, R.layout.listitem_blockedsms_list, null, 0);
+
+            mContext = context;
+            Resources resources = context.getResources();
+            mSenderFormatString = resources.getString(R.string.format_message_sender);
+            mBodyFormatString = resources.getString(R.string.format_message_body);
+            mTimeSentFormatString = resources.getString(R.string.format_message_time_sent);
         }
 
         @Override
@@ -60,14 +65,14 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
             SmsMessageData messageData = BlockedSmsLoader.getMessageData(cursor, mColumns, tag.mMessageData);
             tag.mMessageData = messageData;
 
-            tag.mSenderTextView.setText("Sender: " + messageData.getSender());
-            tag.mBodyTextView.setText("Body: " + messageData.getBody());
+            String sender = messageData.getSender();
+            String body = messageData.getBody();
+            long timeSent = messageData.getTimeSent();
+            String timeSentString = DateUtils.getRelativeTimeSpanString(mContext, timeSent).toString();
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(messageData.getTimeSent());
-            String timeSentStr = dateFormat.format(calendar.getTime());
-            tag.mTimeSentTextView.setText("Sent at: " + timeSentStr);
+            tag.mSenderTextView.setText(String.format(mSenderFormatString, sender));
+            tag.mBodyTextView.setText(String.format(mBodyFormatString, body));
+            tag.mTimeSentTextView.setText(String.format(mTimeSentFormatString, timeSentString));
         }
     }
 
@@ -92,7 +97,8 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         setListAdapter(adapter);
         mAdapter = adapter;
 
-        registerForContextMenu(getListView());
+        ListView listView = getListView();
+        registerForContextMenu(listView);
     }
 
     @Override
@@ -129,9 +135,9 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         switch (item.getItemId()) {
         case R.id.contextmenu_blockedsms_list_restore:
             if (restoreSms(rowId)) {
-                Toast.makeText(this, "Message restored to inbox", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_restored, Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Message could not be restored", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
             }
             return true;
         case R.id.contextmenu_blockedsms_list_delete:
