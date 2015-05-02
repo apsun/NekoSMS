@@ -13,9 +13,10 @@
     <string name="create_filter">Create filter</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
-    <string name="checking_module_status">Checking Xposed module status…</string>
     <string name="module_not_enabled_title">Initialization failed</string>
-    <string name="module_not_enabled_message">Xposed module not enabled!</string>
+    <string name="module_not_enabled_message">Xposed module not enabled.</string>
+    <string name="module_outdated_title">Xposed module updated</string>
+    <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
     <string name="report_bug">Report bug</string>
     <string name="format_filter_pattern">Pattern: %s</string>
     <string name="format_filter_field">Field: %s</string>

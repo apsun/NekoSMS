@@ -109,6 +109,10 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         if (!XposedUtils.isModuleEnabled()) {
             showInitFailedDialog();
         }
+
+        if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
+            showModuleOutdatedDialog();
+        }
     }
 
     @Override
@@ -228,6 +232,24 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
                     Uri url = Uri.parse(REPORT_BUG_URL);
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
                     startActivity(browserIntent);
+                }
+            })
+            .setNegativeButton(R.string.ignore, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void showModuleOutdatedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(R.string.module_outdated_title)
+            .setMessage(R.string.module_outdated_message)
+            .setIconAttribute(android.R.attr.alertDialogIcon)
+            .setCancelable(false)
+            .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finishTryTransition();
                 }
             })
             .setNegativeButton(R.string.ignore, null);

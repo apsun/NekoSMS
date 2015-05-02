@@ -17,6 +17,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.utils.XposedUtils;
 import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -266,17 +267,31 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = NEKOSMS_PACKAGE + ".utils.XposedUtils";
-        String methodName = "isModuleEnabled";
+        String className = XposedUtils.class.getName();
 
         Xlog.i(TAG, "Hooking Xposed module status checker");
 
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName, new XC_MethodReplacement() {
-            @Override
-            protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                return true;
-            }
-        });
+        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "isModuleEnabled",
+            new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    return true;
+                }
+            });
+
+        // This is the version as fetched when the *module* is loaded
+        // If the app is updated, this value will be changed within the
+        // app, but will not be changed here. Thus, we can use this to
+        // check whether the app and module versions are out of sync.
+        final int moduleVersion = XposedUtils.getModuleVersion();
+
+        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "getModuleVersion",
+            new XC_MethodReplacement() {
+                @Override
+                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
+                    return moduleVersion;
+                }
+            });
     }
 
     private static void printDeviceInfo() {
