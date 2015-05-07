@@ -10,4 +10,8 @@
         android:title="@string/create_filter"
         android:icon="@drawable/ic_create_white_24dp"
         android:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_item_about"
+        android:title="@string/about"
+        android:showAsAction="never"/>
 </menu>

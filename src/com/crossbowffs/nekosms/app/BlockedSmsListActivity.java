@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.text.Html;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.view.*;
 import android.widget.*;
@@ -249,21 +250,11 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         String timeSentString = DateUtils.getRelativeDateTimeString(
             this, timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
 
-        Resources resources = getResources();
-        String senderFormatString = resources.getString(R.string.message_property_sender);
-        String bodyFormatString = resources.getString(R.string.message_property_body);
-        String timeSentFormatString = resources.getString(R.string.message_property_time_sent);
-
-        String html = String.format(
-            "<b>%s</b><br>%s<br><br>" +
-            "<b>%s</b><br>%s<br><br>" +
-            "<b>%s</b><br>%s",
-            senderFormatString, sender,
-            timeSentFormatString, timeSentString,
-            bodyFormatString, escapedBody);
+        Spanned html = Html.fromHtml(getString(R.string.format_message_details,
+            sender, timeSentString, escapedBody));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setMessage(Html.fromHtml(html))
+            .setMessage(html)
             .setPositiveButton(R.string.close, null)
             .setNeutralButton(R.string.restore, new DialogInterface.OnClickListener() {
                 @Override

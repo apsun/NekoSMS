@@ -4,11 +4,16 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.*;
 import android.widget.AdapterView;
 import android.widget.ResourceCursorAdapter;
@@ -88,7 +93,9 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         }
     }
 
-    private static final String REPORT_BUG_URL = "https://bitbucket.org/crossbowffs/nekosms/issues/new";
+    private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
+    private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
+    private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
 
     private FilterAdapter mAdapter;
 
@@ -129,6 +136,9 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         case R.id.menu_item_view_blocked_messages:
             startBlockedSmsListActivity();
             return true;
+        case R.id.menu_item_about:
+            showAboutDialog();
+            return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -149,8 +159,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             startFilterEditorActivity(rowId);
             return true;
         case R.id.contextmenu_filter_list_delete:
-            deleteFilter(rowId);
-            Toast.makeText(this, R.string.filter_deleted, Toast.LENGTH_SHORT).show();
+            deleteFilterUI(rowId);
             return true;
         default:
             return super.onContextItemSelected(item);
@@ -203,12 +212,29 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         startActivity(intent);
     }
 
-    private void deleteFilter(long filterId) {
+    private void deleteFilterUI(long filterId) {
+        if (deleteFilter(filterId)) {
+            Toast.makeText(this, R.string.filter_deleted, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean deleteFilter(long filterId) {
         ContentResolver contentResolver = getContentResolver();
         Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
         Uri filterUri = ContentUris.withAppendedId(filtersUri, filterId);
         int deletedRows = contentResolver.delete(filterUri, null, null);
-        // TODO: Check return value
+        return deletedRows > 0;
+    }
+
+    private String getPackageVersion() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            String packageName = getPackageName();
+            PackageInfo pi = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA);
+            return pi.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
     private void showInitFailedDialog() {
@@ -254,5 +280,22 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void showAboutDialog() {
+        Spanned html = Html.fromHtml(getString(R.string.format_about_message,
+            TWITTER_URL, BITBUCKET_URL, REPORT_BUG_URL));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.app_name) + " " + getPackageVersion())
+            .setMessage(html)
+            .setCancelable(false)
+            .setPositiveButton(R.string.ok, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView textView = (TextView)dialog.findViewById(android.R.id.message);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
