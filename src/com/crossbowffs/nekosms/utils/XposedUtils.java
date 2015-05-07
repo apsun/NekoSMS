@@ -13,7 +13,7 @@ public final class XposedUtils {
     }
 
     public static int getAppVersion() {
-        // This is *NOT* be hooked by the module; it must
+        // This method is *NOT* hooked by the module; it must
         // be compared to the value of getModuleVersion()
         // to check whether the app and module are out of sync.
         return VERSION;

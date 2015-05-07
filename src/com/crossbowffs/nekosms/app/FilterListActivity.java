@@ -108,9 +108,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
 
         if (!XposedUtils.isModuleEnabled()) {
             showInitFailedDialog();
-        }
-
-        if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
+        } else if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
             showModuleOutdatedDialog();
         }
     }

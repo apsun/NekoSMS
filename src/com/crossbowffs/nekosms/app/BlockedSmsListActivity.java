@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
@@ -10,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.text.Html;
 import android.text.format.DateUtils;
 import android.view.*;
 import android.widget.*;
@@ -99,6 +101,12 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
 
         ListView listView = getListView();
         registerForContextMenu(listView);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                showMessageDetailsDialog(id);
+            }
+        });
     }
 
     @Override
@@ -134,15 +142,10 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         long rowId = info.id;
         switch (item.getItemId()) {
         case R.id.contextmenu_blockedsms_list_restore:
-            if (restoreSms(rowId)) {
-                Toast.makeText(this, R.string.message_restored, Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
-            }
+            restoreSmsUI(rowId);
             return true;
         case R.id.contextmenu_blockedsms_list_delete:
-            deleteSms(rowId);
-            Toast.makeText(this, R.string.message_deleted, Toast.LENGTH_SHORT).show();
+            deleteSmsUI(rowId);
             return true;
         default:
             return super.onContextItemSelected(item);
@@ -191,6 +194,14 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
     }
 
+    private void restoreSmsUI(long smsId) {
+        if (restoreSms(smsId)) {
+            Toast.makeText(this, R.string.message_restored, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private boolean restoreSms(long smsId) {
         Uri messageUri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, smsId);
         SmsMessageData messageData = BlockedSmsLoader.loadMessage(this, messageUri);
@@ -213,11 +224,61 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         }
     }
 
-    private void deleteSms(long smsId) {
+    private void deleteSmsUI(long smsId) {
+        if (deleteSms(smsId)) {
+            Toast.makeText(this, R.string.message_deleted, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean deleteSms(long smsId) {
         ContentResolver contentResolver = getContentResolver();
         Uri messagesUri = NekoSmsContract.Blocked.CONTENT_URI;
         Uri messageUri = ContentUris.withAppendedId(messagesUri, smsId);
         int deletedRows = contentResolver.delete(messageUri, null, null);
-        // TODO: Check return value
+        return deletedRows > 0;
+    }
+
+    private void showMessageDetailsDialog(final long smsId) {
+        Uri messageUri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, smsId);
+        SmsMessageData messageData = BlockedSmsLoader.loadMessage(this, messageUri);
+
+        String sender = messageData.getSender();
+        String body = messageData.getBody();
+        long timeSent = messageData.getTimeSent();
+        String escapedBody = Html.escapeHtml(body).replace("&#10;", "<br>");
+        String timeSentString = DateUtils.getRelativeDateTimeString(
+            this, timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
+
+        Resources resources = getResources();
+        String senderFormatString = resources.getString(R.string.message_property_sender);
+        String bodyFormatString = resources.getString(R.string.message_property_body);
+        String timeSentFormatString = resources.getString(R.string.message_property_time_sent);
+
+        String html = String.format(
+            "<b>%s</b><br>%s<br><br>" +
+            "<b>%s</b><br>%s<br><br>" +
+            "<b>%s</b><br>%s",
+            senderFormatString, sender,
+            timeSentFormatString, timeSentString,
+            bodyFormatString, escapedBody);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setMessage(Html.fromHtml(html))
+            .setPositiveButton(R.string.close, null)
+            .setNeutralButton(R.string.restore, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    restoreSmsUI(smsId);
+                }
+            })
+            .setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteSmsUI(smsId);
+                }
+            });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

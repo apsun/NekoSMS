@@ -8,6 +8,8 @@
     <string name="edit">Edit</string>
     <string name="exit">Exit</string>
     <string name="ignore">Ignore</string>
+    <string name="close">Close</string>
+    <string name="restore">Restore</string>
 
     <!-- Filter list -->
     <string name="create_filter">Create filter</string>
@@ -41,6 +43,9 @@
     <string name="format_message_sender">Sender: %s</string>
     <string name="format_message_body">Body: %s</string>
     <string name="format_message_time_sent">Sent at: %s</string>
+    <string name="message_property_sender">Sender</string>
+    <string name="message_property_body">Body</string>
+    <string name="message_property_time_sent">Sent at</string>
 
     <!-- Filter properties -->
     <string name="filter_pattern">Pattern</string>
