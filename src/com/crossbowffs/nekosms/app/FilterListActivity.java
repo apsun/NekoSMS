@@ -230,8 +230,8 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         try {
             PackageManager packageManager = getPackageManager();
             String packageName = getPackageName();
-            PackageInfo pi = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA);
-            return pi.versionName;
+            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA);
+            return packageInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             return null;
         }
@@ -289,7 +289,6 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_name) + " " + getPackageVersion())
             .setMessage(html)
-            .setCancelable(false)
             .setPositiveButton(R.string.ok, null);
 
         AlertDialog dialog = builder.create();
