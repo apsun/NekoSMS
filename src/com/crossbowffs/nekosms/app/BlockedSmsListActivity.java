@@ -255,8 +255,8 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setMessage(html)
-            .setPositiveButton(R.string.close, null)
-            .setNeutralButton(R.string.restore, new DialogInterface.OnClickListener() {
+            .setNeutralButton(R.string.close, null)
+            .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     restoreSmsUI(smsId);
