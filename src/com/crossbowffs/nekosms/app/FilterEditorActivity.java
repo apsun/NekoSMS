@@ -76,6 +76,10 @@ public class FilterEditorActivity extends Activity {
             mModeSpinner.setSelection(mSmsFilterModeAdapter.getPosition(filter.getMode()));
             mPatternEditText.setText(filter.getPattern());
             mIgnoreCaseCheckBox.setChecked(!filter.isCaseSensitive());
+        } else {
+            mFieldSpinner.setSelection(mSmsFilterFieldAdapter.getPosition(SmsFilterField.BODY));
+            mModeSpinner.setSelection(mSmsFilterModeAdapter.getPosition(SmsFilterMode.CONTAINS));
+            mIgnoreCaseCheckBox.setChecked(true);
         }
     }
 
