@@ -1,18 +1,21 @@
 package com.crossbowffs.nekosms.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
+
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 
 public final class BlockedSmsLoader {
     private static final String[] DEFAULT_PROJECTION = {
-        NekoSmsContract.Blocked._ID,
-        NekoSmsContract.Blocked.SENDER,
-        NekoSmsContract.Blocked.BODY,
-        NekoSmsContract.Blocked.TIME_SENT,
-        NekoSmsContract.Blocked.TIME_RECEIVED,
+        Blocked._ID,
+        Blocked.SENDER,
+        Blocked.BODY,
+        Blocked.TIME_SENT,
+        Blocked.TIME_RECEIVED,
     };
     private static final int COL_ID = 0;
     private static final int COL_SENDER = 1;
@@ -26,11 +29,11 @@ public final class BlockedSmsLoader {
 
     public static int[] getColumns(Cursor cursor) {
         int[] columns = new int[5];
-        columns[COL_ID] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked._ID);
-        columns[COL_SENDER] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked.SENDER);
-        columns[COL_BODY] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked.BODY);
-        columns[COL_TIME_SENT] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked.TIME_SENT);
-        columns[COL_TIME_RECEIVED] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked.TIME_RECEIVED);
+        columns[COL_ID] = cursor.getColumnIndexOrThrow(Blocked._ID);
+        columns[COL_SENDER] = cursor.getColumnIndexOrThrow(Blocked.SENDER);
+        columns[COL_BODY] = cursor.getColumnIndexOrThrow(Blocked.BODY);
+        columns[COL_TIME_SENT] = cursor.getColumnIndexOrThrow(Blocked.TIME_SENT);
+        columns[COL_TIME_RECEIVED] = cursor.getColumnIndexOrThrow(Blocked.TIME_RECEIVED);
         return columns;
     }
 
@@ -61,6 +64,14 @@ public final class BlockedSmsLoader {
         return data;
     }
 
+    private static Uri convertIdToUri(long messageId) {
+        return ContentUris.withAppendedId(Blocked.CONTENT_URI, messageId);
+    }
+
+    public static SmsMessageData loadMessage(Context context, long messageId) {
+        return loadMessage(context, convertIdToUri(messageId));
+    }
+
     public static SmsMessageData loadMessage(Context context, Uri messageUri) {
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(messageUri, DEFAULT_PROJECTION, null, null, null);
@@ -73,8 +84,39 @@ public final class BlockedSmsLoader {
             throw new IllegalArgumentException("URI matched more than one message");
         }
 
-        SmsMessageData message = getMessageData(cursor, getDefaultColumns(cursor), null);
+        SmsMessageData data = getMessageData(cursor, getDefaultColumns(cursor), null);
         cursor.close();
-        return message;
+        return data;
+    }
+
+    public static Uri writeMessage(Context context, SmsMessageData messageData) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues values = messageData.serialize();
+        Uri uri = contentResolver.insert(Blocked.CONTENT_URI, values);
+        long id = ContentUris.parseId(uri);
+        if (id < 0) {
+            throw new IllegalArgumentException("Failed to write message");
+        } else {
+            return uri;
+        }
+    }
+
+    public static void deleteMessage(Context context, long messageId) {
+        deleteMessage(context, convertIdToUri(messageId));
+    }
+
+    public static void deleteMessage(Context context, Uri messageUri) {
+        ContentResolver contentResolver = context.getContentResolver();
+        int deletedRows = contentResolver.delete(messageUri, null, null);
+        if (deletedRows == 0) {
+            throw new IllegalArgumentException("URI does not match any message");
+        }
+    }
+
+    public static SmsMessageData loadAndDeleteMessage(Context context, long messageId) {
+        Uri messageUri = convertIdToUri(messageId);
+        SmsMessageData messageData = loadMessage(context, messageUri);
+        deleteMessage(context, messageUri);
+        return messageData;
     }
 }

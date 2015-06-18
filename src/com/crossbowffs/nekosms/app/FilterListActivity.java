@@ -1,7 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
 import android.content.pm.PackageInfo;
@@ -11,14 +10,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.*;
-import android.widget.AdapterView;
-import android.widget.ResourceCursorAdapter;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
@@ -29,7 +27,7 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
 
 import java.util.Map;
 
-public class FilterListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static class FilterListItemTag {
         public SmsFilterData mFilterData;
         public TextView mPatternTextView;
@@ -97,6 +95,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
 
+    private View mContentView;
     private FilterAdapter mAdapter;
 
     @Override
@@ -104,14 +103,17 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_list);
 
+        mContentView = findViewById(android.R.id.content);
+
+        FilterAdapter adapter = new FilterAdapter(this);
+        mAdapter = adapter;
+
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
 
-        FilterAdapter adapter = new FilterAdapter(this);
-        setListAdapter(adapter);
-        mAdapter = adapter;
-
-        registerForContextMenu(getListView());
+        ListView listView = (ListView)findViewById(android.R.id.list);
+        listView.setAdapter(adapter);
+        registerForContextMenu(listView);
 
         if (!XposedUtils.isModuleEnabled()) {
             showInitFailedDialog();
@@ -159,7 +161,7 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
             startFilterEditorActivity(rowId);
             return true;
         case R.id.contextmenu_filter_list_delete:
-            deleteFilterUI(rowId);
+            deleteFilter(rowId);
             return true;
         default:
             return super.onContextItemSelected(item);
@@ -205,25 +207,22 @@ public class FilterListActivity extends ListActivity implements LoaderManager.Lo
     private void startFilterEditorActivity(long filterId) {
         Intent intent = new Intent(this, FilterEditorActivity.class);
         if (filterId >= 0) {
-            Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
-            Uri filterUri = ContentUris.withAppendedId(filtersUri, filterId);
+            Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, filterId);
             intent.setData(filterUri);
         }
         startActivity(intent);
     }
 
-    private void deleteFilterUI(long filterId) {
-        if (deleteFilter(filterId)) {
-            Toast.makeText(this, R.string.filter_deleted, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private boolean deleteFilter(long filterId) {
-        ContentResolver contentResolver = getContentResolver();
-        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
-        Uri filterUri = ContentUris.withAppendedId(filtersUri, filterId);
-        int deletedRows = contentResolver.delete(filterUri, null, null);
-        return deletedRows > 0;
+    private void deleteFilter(long filterId) {
+        final SmsFilterData filterData = SmsFilterLoader.loadAndDeleteFilter(this, filterId);
+        Snackbar.make(mContentView, R.string.filter_deleted, Snackbar.LENGTH_LONG)
+            .setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SmsFilterLoader.writeFilter(FilterListActivity.this, filterData);
+                }
+            })
+            .show();
     }
 
     private String getPackageVersion() {

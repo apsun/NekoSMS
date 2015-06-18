@@ -1,15 +1,13 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,12 +21,11 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class FilterEditorActivity extends Activity {
+public class FilterEditorActivity extends AppCompatActivity {
     private EditText mPatternEditText;
     private Spinner mFieldSpinner;
     private Spinner mModeSpinner;
@@ -154,6 +151,7 @@ public class FilterEditorActivity extends Activity {
 
     private void saveAndFinish() {
         Uri filterUri = writeFilterData();
+        // TODO: Check return value
         Toast.makeText(this, R.string.filter_saved, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
         intent.setData(filterUri);
@@ -166,7 +164,7 @@ public class FilterEditorActivity extends Activity {
         finishTryTransition();
     }
 
-    private ContentValues createFilterData() {
+    private SmsFilterData createFilterData() {
         SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
         SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
         String pattern = mPatternEditText.getText().toString();
@@ -180,27 +178,12 @@ public class FilterEditorActivity extends Activity {
         data.setMode(mode);
         data.setPattern(pattern);
         data.setCaseSensitive(caseSensitive);
-        return data.serialize();
+        return data;
     }
 
     private Uri writeFilterData() {
-        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
-        ContentResolver contentResolver = getContentResolver();
-        ContentValues values = createFilterData();
-        Uri filterUri;
-        if (mFilterUri != null) {
-            filterUri = mFilterUri;
-            int updatedRows = contentResolver.update(filterUri, values, null, null);
-            if (updatedRows == 0) {
-                filterUri = mFilterUri = contentResolver.insert(filtersUri, values);
-            }
-            // TODO: Check return value
-        } else {
-            filterUri = contentResolver.insert(filtersUri, values);
-            // TODO: Check return value
-        }
-
-        return filterUri;
+        SmsFilterData filterData = createFilterData();
+        return mFilterUri = SmsFilterLoader.updateFilter(this, mFilterUri, filterData, true);
     }
 
     private void showInvalidPatternDialog(int messageId) {

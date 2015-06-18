@@ -11,6 +11,7 @@
     <string name="ignore">Ignore</string>
     <string name="close">Close</string>
     <string name="restore">Restore</string>
+    <string name="undo">Undo</string>
 
     <!-- Filter list -->
     <string name="create_filter">Create filter</string>

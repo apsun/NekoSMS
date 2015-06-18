@@ -5,6 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.crossbowffs.nekosms.utils.Xlog;
 
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
+
 public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
@@ -12,21 +15,21 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 7;
 
     private static final String CREATE_FILTERS_TABLE =
-        "CREATE TABLE " + NekoSmsContract.Filters.TABLE + "(" +
-            NekoSmsContract.Filters._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            NekoSmsContract.Filters.FIELD              + " TEXT NOT NULL," +
-            NekoSmsContract.Filters.MODE               + " TEXT NOT NULL," +
-            NekoSmsContract.Filters.PATTERN            + " TEXT NOT NULL," +
-            NekoSmsContract.Filters.CASE_SENSITIVE     + " INTEGER NOT NULL" +
+        "CREATE TABLE " + Filters.TABLE + "(" +
+            Filters._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            Filters.FIELD              + " TEXT NOT NULL," +
+            Filters.MODE               + " TEXT NOT NULL," +
+            Filters.PATTERN            + " TEXT NOT NULL," +
+            Filters.CASE_SENSITIVE     + " INTEGER NOT NULL" +
         ");";
 
     private static final String CREATE_BLOCKED_TABLE =
-        "CREATE TABLE " + NekoSmsContract.Blocked.TABLE + "(" +
-            NekoSmsContract.Blocked._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            NekoSmsContract.Blocked.SENDER             + " TEXT," +
-            NekoSmsContract.Blocked.BODY               + " TEXT," +
-            NekoSmsContract.Blocked.TIME_SENT          + " INTEGER," +
-            NekoSmsContract.Blocked.TIME_RECEIVED      + " INTEGER" +
+        "CREATE TABLE " + Blocked.TABLE + "(" +
+            Blocked._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            Blocked.SENDER             + " TEXT," +
+            Blocked.BODY               + " TEXT," +
+            Blocked.TIME_SENT          + " INTEGER," +
+            Blocked.TIME_RECEIVED      + " INTEGER" +
         ");";
 
     public NekoSmsDbHelper(Context context) {
@@ -42,8 +45,8 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Xlog.i(TAG, "Upgrading database from v%d to v%d", oldVersion, newVersion);
-        db.execSQL("DROP TABLE IF EXISTS " + NekoSmsContract.Filters.TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + NekoSmsContract.Blocked.TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + Filters.TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + Blocked.TABLE);
         onCreate(db);
     }
 }

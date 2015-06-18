@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
+
 public class NekoSmsProvider extends ContentProvider {
     private static final int FILTERS_ITEM_ID = 0;
     private static final int FILTERS_ITEMS_ID = 1;
@@ -21,10 +24,10 @@ public class NekoSmsProvider extends ContentProvider {
 
     static {
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, NekoSmsContract.Filters.TABLE, FILTERS_ITEMS_ID);
-        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, NekoSmsContract.Filters.TABLE + "/#", FILTERS_ITEM_ID);
-        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, NekoSmsContract.Blocked.TABLE, BLOCKED_ITEMS_ID);
-        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, NekoSmsContract.Blocked.TABLE + "/#", BLOCKED_ITEM_ID);
+        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, Filters.TABLE, FILTERS_ITEMS_ID);
+        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, Filters.TABLE + "/#", FILTERS_ITEM_ID);
+        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, Blocked.TABLE, BLOCKED_ITEMS_ID);
+        sUriMatcher.addURI(NekoSmsContract.AUTHORITY, Blocked.TABLE + "/#", BLOCKED_ITEM_ID);
     }
 
     @Override
@@ -39,14 +42,14 @@ public class NekoSmsProvider extends ContentProvider {
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
         case FILTERS_ITEM_ID:
-            queryBuilder.appendWhere(NekoSmsContract.Filters._ID + "=" + uri.getLastPathSegment());
+            queryBuilder.appendWhere(Filters._ID + "=" + uri.getLastPathSegment());
         case FILTERS_ITEMS_ID:
-            queryBuilder.setTables(NekoSmsContract.Filters.TABLE);
+            queryBuilder.setTables(Filters.TABLE);
             break;
         case BLOCKED_ITEM_ID:
-            queryBuilder.appendWhere(NekoSmsContract.Blocked._ID + "=" + uri.getLastPathSegment());
+            queryBuilder.appendWhere(Blocked._ID + "=" + uri.getLastPathSegment());
         case BLOCKED_ITEMS_ID:
-            queryBuilder.setTables(NekoSmsContract.Blocked.TABLE);
+            queryBuilder.setTables(Blocked.TABLE);
             break;
         default:
             throw new IllegalArgumentException("Invalid query URI: " + uri);
@@ -63,10 +66,10 @@ public class NekoSmsProvider extends ContentProvider {
         long row;
         switch (sUriMatcher.match(uri)) {
         case FILTERS_ITEMS_ID:
-            row = db.insert(NekoSmsContract.Filters.TABLE, null, values);
+            row = db.insert(Filters.TABLE, null, values);
             break;
         case BLOCKED_ITEMS_ID:
-            row = db.insert(NekoSmsContract.Blocked.TABLE, null, values);
+            row = db.insert(Blocked.TABLE, null, values);
             break;
         default:
             throw new IllegalArgumentException("Invalid insert URI: " + uri);
@@ -85,14 +88,14 @@ public class NekoSmsProvider extends ContentProvider {
         int deletedRows;
         switch (sUriMatcher.match(uri)) {
         case FILTERS_ITEM_ID:
-            selection = getCombinedSelectionString(NekoSmsContract.Filters._ID, uri, selection);
+            selection = getCombinedSelectionString(Filters._ID, uri, selection);
         case FILTERS_ITEMS_ID:
-            deletedRows = db.delete(NekoSmsContract.Filters.TABLE, selection, selectionArgs);
+            deletedRows = db.delete(Filters.TABLE, selection, selectionArgs);
             break;
         case BLOCKED_ITEM_ID:
-            selection = getCombinedSelectionString(NekoSmsContract.Blocked._ID, uri, selection);
+            selection = getCombinedSelectionString(Blocked._ID, uri, selection);
         case BLOCKED_ITEMS_ID:
-            deletedRows = db.delete(NekoSmsContract.Blocked.TABLE, selection, selectionArgs);
+            deletedRows = db.delete(Blocked.TABLE, selection, selectionArgs);
             break;
         default:
             throw new IllegalArgumentException("Invalid delete URI: " + uri);
@@ -110,14 +113,14 @@ public class NekoSmsProvider extends ContentProvider {
         int updatedRows;
         switch (sUriMatcher.match(uri)) {
         case FILTERS_ITEM_ID:
-            selection = getCombinedSelectionString(NekoSmsContract.Filters._ID, uri, selection);
+            selection = getCombinedSelectionString(Filters._ID, uri, selection);
         case FILTERS_ITEMS_ID:
-            updatedRows = db.update(NekoSmsContract.Filters.TABLE, values, selection, selectionArgs);
+            updatedRows = db.update(Filters.TABLE, values, selection, selectionArgs);
             break;
         case BLOCKED_ITEM_ID:
-            selection = getCombinedSelectionString(NekoSmsContract.Blocked._ID, uri, selection);
+            selection = getCombinedSelectionString(Blocked._ID, uri, selection);
         case BLOCKED_ITEMS_ID:
-            updatedRows = db.update(NekoSmsContract.Blocked.TABLE, values, selection, selectionArgs);
+            updatedRows = db.update(Blocked.TABLE, values, selection, selectionArgs);
             break;
         default:
             throw new IllegalArgumentException("Invalid update URI: " + uri);
@@ -133,13 +136,13 @@ public class NekoSmsProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (sUriMatcher.match(uri)) {
         case FILTERS_ITEM_ID:
-            return NekoSmsContract.Filters.CONTENT_ITEM_TYPE;
+            return Filters.CONTENT_ITEM_TYPE;
         case FILTERS_ITEMS_ID:
-            return NekoSmsContract.Filters.CONTENT_TYPE;
+            return Filters.CONTENT_TYPE;
         case BLOCKED_ITEM_ID:
-            return NekoSmsContract.Blocked.CONTENT_ITEM_TYPE;
+            return Blocked.CONTENT_ITEM_TYPE;
         case BLOCKED_ITEMS_ID:
-            return NekoSmsContract.Blocked.CONTENT_TYPE;
+            return Blocked.CONTENT_TYPE;
         default:
             return null;
         }

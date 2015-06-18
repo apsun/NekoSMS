@@ -2,7 +2,6 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.*;
 import android.content.res.Resources;
@@ -10,7 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Telephony;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
@@ -18,11 +18,11 @@ import android.view.*;
 import android.widget.*;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BlockedSmsLoader;
+import com.crossbowffs.nekosms.data.InboxSmsLoader;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
-import com.crossbowffs.nekosms.utils.Xlog;
 
-public class BlockedSmsListActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BlockedSmsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static class MessageListItemTag {
         public SmsMessageData mMessageData;
         public TextView mSenderTextView;
@@ -79,8 +79,7 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         }
     }
 
-    private static final String TAG = BlockedSmsListActivity.class.getSimpleName();
-
+    private View mContentView;
     private BlockedSmsAdapter mAdapter;
 
     @Override
@@ -88,19 +87,21 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blockedsms_list);
 
+        mContentView = findViewById(android.R.id.content);
+
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        BlockedSmsAdapter adapter = new BlockedSmsAdapter(this);
+        mAdapter = adapter;
+
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
 
-        BlockedSmsAdapter adapter = new BlockedSmsAdapter(this);
-        setListAdapter(adapter);
-        mAdapter = adapter;
-
-        ListView listView = getListView();
+        ListView listView = (ListView)findViewById(android.R.id.list);
+        listView.setAdapter(adapter);
         registerForContextMenu(listView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -143,10 +144,10 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         long rowId = info.id;
         switch (item.getItemId()) {
         case R.id.contextmenu_blockedsms_list_restore:
-            restoreSmsUI(rowId);
+            restoreSms(rowId);
             return true;
         case R.id.contextmenu_blockedsms_list_delete:
-            deleteSmsUI(rowId);
+            deleteSms(rowId);
             return true;
         default:
             return super.onContextItemSelected(item);
@@ -190,53 +191,35 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
         message.setBody("This is a test");
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
-        ContentValues values = message.serialize();
-        ContentResolver contentResolver = getContentResolver();
-        contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
+        BlockedSmsLoader.writeMessage(this, message);
     }
 
-    private void restoreSmsUI(long smsId) {
-        if (restoreSms(smsId)) {
-            Toast.makeText(this, R.string.message_restored, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
-        }
+    private void restoreSms(long smsId) {
+        final SmsMessageData messageData = BlockedSmsLoader.loadAndDeleteMessage(this, smsId);
+        final Uri inboxSmsUri = InboxSmsLoader.writeMessage(this, messageData);
+        Snackbar
+            .make(mContentView, R.string.message_restored, Snackbar.LENGTH_LONG)
+            .setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    InboxSmsLoader.deleteMessage(BlockedSmsListActivity.this, inboxSmsUri);
+                    BlockedSmsLoader.writeMessage(BlockedSmsListActivity.this, messageData);
+                }
+            })
+            .show();
     }
 
-    private boolean restoreSms(long smsId) {
-        Uri messageUri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, smsId);
-        SmsMessageData messageData = BlockedSmsLoader.loadMessage(this, messageUri);
-        ContentValues values = new ContentValues(6);
-        values.put(Telephony.Sms.ADDRESS, messageData.getSender());
-        values.put(Telephony.Sms.BODY, messageData.getBody());
-        values.put(Telephony.Sms.DATE, messageData.getTimeReceived());
-        values.put(Telephony.Sms.DATE_SENT, messageData.getTimeSent());
-        values.put(Telephony.Sms.READ, 1);
-        values.put(Telephony.Sms.SEEN, 1);
-        ContentResolver contentResolver = getContentResolver();
-        Uri inboxMessageUri = contentResolver.insert(Telephony.Sms.CONTENT_URI, values);
-        long inboxMessageId = ContentUris.parseId(inboxMessageUri);
-        if (inboxMessageId == 0) {
-            Xlog.e(TAG, "Failed to write message to inbox, does app have OP_WRITE_SMS permission?");
-            return false;
-        } else {
-            deleteSms(smsId);
-            return true;
-        }
-    }
-
-    private void deleteSmsUI(long smsId) {
-        if (deleteSms(smsId)) {
-            Toast.makeText(this, R.string.message_deleted, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private boolean deleteSms(long smsId) {
-        ContentResolver contentResolver = getContentResolver();
-        Uri messagesUri = NekoSmsContract.Blocked.CONTENT_URI;
-        Uri messageUri = ContentUris.withAppendedId(messagesUri, smsId);
-        int deletedRows = contentResolver.delete(messageUri, null, null);
-        return deletedRows > 0;
+    private void deleteSms(long smsId) {
+        final SmsMessageData messageData = BlockedSmsLoader.loadAndDeleteMessage(this, smsId);
+        Snackbar
+            .make(mContentView, R.string.message_deleted, Snackbar.LENGTH_LONG)
+            .setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    BlockedSmsLoader.writeMessage(BlockedSmsListActivity.this, messageData);
+                }
+            })
+            .show();
     }
 
     private void showMessageDetailsDialog(final long smsId) {
@@ -259,13 +242,13 @@ public class BlockedSmsListActivity extends ListActivity implements LoaderManage
             .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    restoreSmsUI(smsId);
+                    restoreSms(smsId);
                 }
             })
             .setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    deleteSmsUI(smsId);
+                    deleteSms(smsId);
                 }
             });
 
