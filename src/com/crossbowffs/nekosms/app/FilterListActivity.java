@@ -112,6 +112,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         loaderManager.initLoader(0, null, this);
 
         ListView listView = (ListView)findViewById(android.R.id.list);
+        listView.setEmptyView(findViewById(android.R.id.empty));
         listView.setAdapter(adapter);
         registerForContextMenu(listView);
 
