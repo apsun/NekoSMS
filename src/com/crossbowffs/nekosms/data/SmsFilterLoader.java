@@ -12,7 +12,7 @@ import java.util.List;
 
 public final class SmsFilterLoader {
     public static final String TAG = SmsFilterLoader.class.getSimpleName();
-    private static final String[] PROJECTION = {
+    private static final String[] DEFAULT_PROJECTION = {
         NekoSmsContract.Filters._ID,
         NekoSmsContract.Filters.FIELD,
         NekoSmsContract.Filters.MODE,
@@ -24,13 +24,8 @@ public final class SmsFilterLoader {
     private static final int COL_MODE = 2;
     private static final int COL_PATTERN = 3;
     private static final int COL_CASE_SENSITIVE = 4;
-    private static final int[] COLUMNS = {
-        COL_ID,
-        COL_FIELD,
-        COL_MODE,
-        COL_PATTERN,
-        COL_CASE_SENSITIVE,
-    };
+
+    private static int[] sDefaultColumns;
 
     private SmsFilterLoader() { }
 
@@ -42,6 +37,15 @@ public final class SmsFilterLoader {
         columns[COL_PATTERN] = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.PATTERN);
         columns[COL_CASE_SENSITIVE] = cursor.getColumnIndexOrThrow(NekoSmsContract.Filters.CASE_SENSITIVE);
         return columns;
+    }
+
+    private static int[] getDefaultColumns(Cursor cursor) {
+        if (sDefaultColumns != null) {
+            return sDefaultColumns;
+        }
+
+        sDefaultColumns = getColumns(cursor);
+        return sDefaultColumns;
     }
 
     public static SmsFilterData getFilterData(Cursor cursor, int[] columns, SmsFilterData data) {
@@ -68,12 +72,13 @@ public final class SmsFilterLoader {
     public static List<SmsFilterData> loadAllFilters(Context context, boolean ignoreErrors) {
         Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(filtersUri, PROJECTION, null, null, null);
+        Cursor cursor = contentResolver.query(filtersUri, DEFAULT_PROJECTION, null, null, null);
+        int[] columns = getDefaultColumns(cursor);
         List<SmsFilterData> filters = new ArrayList<SmsFilterData>(cursor.getCount());
         while (cursor.moveToNext()) {
             SmsFilterData filter;
             try {
-                filter = getFilterData(cursor, COLUMNS, null);
+                filter = getFilterData(cursor, columns, null);
             } catch (IllegalArgumentException e) {
                 if (ignoreErrors) {
                     Xlog.e(TAG, "Failed to create SMS filter", e);
@@ -90,7 +95,7 @@ public final class SmsFilterLoader {
 
     public static SmsFilterData loadFilter(Context context, Uri filterUri) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(filterUri, PROJECTION, null, null, null);
+        Cursor cursor = contentResolver.query(filterUri, DEFAULT_PROJECTION, null, null, null);
 
         if (!cursor.moveToFirst()) {
             throw new IllegalArgumentException("URI does not match any filter");
@@ -100,7 +105,7 @@ public final class SmsFilterLoader {
             throw new IllegalArgumentException("URI matched more than one filter");
         }
 
-        SmsFilterData filter = getFilterData(cursor, COLUMNS, null);
+        SmsFilterData filter = getFilterData(cursor, getDefaultColumns(cursor), null);
         cursor.close();
         return filter;
     }

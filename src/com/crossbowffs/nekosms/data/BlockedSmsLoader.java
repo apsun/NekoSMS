@@ -7,7 +7,7 @@ import android.net.Uri;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 public final class BlockedSmsLoader {
-    private static final String[] PROJECTION = {
+    private static final String[] DEFAULT_PROJECTION = {
         NekoSmsContract.Blocked._ID,
         NekoSmsContract.Blocked.SENDER,
         NekoSmsContract.Blocked.BODY,
@@ -19,13 +19,8 @@ public final class BlockedSmsLoader {
     private static final int COL_BODY = 2;
     private static final int COL_TIME_SENT = 3;
     private static final int COL_TIME_RECEIVED = 4;
-    private static final int[] COLUMNS = {
-        COL_ID,
-        COL_SENDER,
-        COL_BODY,
-        COL_TIME_SENT,
-        COL_TIME_RECEIVED,
-    };
+
+    private static int[] sDefaultColumns;
 
     private BlockedSmsLoader() { }
 
@@ -37,6 +32,15 @@ public final class BlockedSmsLoader {
         columns[COL_TIME_SENT] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked.TIME_SENT);
         columns[COL_TIME_RECEIVED] = cursor.getColumnIndexOrThrow(NekoSmsContract.Blocked.TIME_RECEIVED);
         return columns;
+    }
+
+    private static int[] getDefaultColumns(Cursor cursor) {
+        if (sDefaultColumns != null) {
+            return sDefaultColumns;
+        }
+
+        sDefaultColumns = getColumns(cursor);
+        return sDefaultColumns;
     }
 
     public static SmsMessageData getMessageData(Cursor cursor, int[] columns, SmsMessageData data) {
@@ -59,7 +63,7 @@ public final class BlockedSmsLoader {
 
     public static SmsMessageData loadMessage(Context context, Uri messageUri) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(messageUri, PROJECTION, null, null, null);
+        Cursor cursor = contentResolver.query(messageUri, DEFAULT_PROJECTION, null, null, null);
 
         if (!cursor.moveToFirst()) {
             throw new IllegalArgumentException("URI does not match any message");
@@ -69,7 +73,7 @@ public final class BlockedSmsLoader {
             throw new IllegalArgumentException("URI matched more than one message");
         }
 
-        SmsMessageData message = getMessageData(cursor, COLUMNS, null);
+        SmsMessageData message = getMessageData(cursor, getDefaultColumns(cursor), null);
         cursor.close();
         return message;
     }
