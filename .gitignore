@@ -11,12 +11,20 @@
 # generated files
 bin/
 gen/
+build/
+
+# libraries
+libs/
 
 # Local configuration file (sdk path, etc)
 local.properties
 
 # Android Studio
 .idea/
+*.iml
+
+# Gradle
+.gradle/
 
 # Mac
 .DS_Store
