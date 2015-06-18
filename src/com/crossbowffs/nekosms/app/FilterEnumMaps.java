@@ -15,7 +15,7 @@ public final class FilterEnumMaps {
     public static Map<SmsFilterField, String> getFieldMap(Context context) {
         Resources resources = context.getResources();
 
-        Map<SmsFilterField, String> fieldMap = new HashMap<SmsFilterField, String>(2);
+        Map<SmsFilterField, String> fieldMap = new HashMap<>(2);
         fieldMap.put(SmsFilterField.SENDER, resources.getString(R.string.filter_field_sender));
         fieldMap.put(SmsFilterField.BODY, resources.getString(R.string.filter_field_body));
 
@@ -25,7 +25,7 @@ public final class FilterEnumMaps {
     public static Map<SmsFilterMode, String> getModeMap(Context context) {
         Resources resources = context.getResources();
 
-        Map<SmsFilterMode, String> modeMap = new HashMap<SmsFilterMode, String>(6);
+        Map<SmsFilterMode, String> modeMap = new HashMap<>(6);
         modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
         // modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
         modeMap.put(SmsFilterMode.CONTAINS, resources.getString(R.string.filter_mode_contains));

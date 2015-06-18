@@ -92,7 +92,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             if (smsFilters == null) {
                 Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
                 List<SmsFilterData> filterDatas = SmsFilterLoader.loadAllFilters(context, true);
-                List<SmsFilter> filters = new ArrayList<SmsFilter>(filterDatas.size());
+                List<SmsFilter> filters = new ArrayList<>(filterDatas.size());
                 for (SmsFilterData filterData : filterDatas) {
                     filters.add(SmsFilter.create(filterData));
                 }

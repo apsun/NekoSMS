@@ -55,11 +55,11 @@ public class FilterEditorActivity extends AppCompatActivity {
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
         mIgnoreCaseCheckBox = (CheckBox)findViewById(R.id.activity_filter_editor_ignorecase_checkbox);
 
-        mSmsFilterFieldAdapter = new EnumAdapter<SmsFilterField>(this,
+        mSmsFilterFieldAdapter = new EnumAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item, SmsFilterField.class);
         mSmsFilterFieldAdapter.setStringMap(FilterEnumMaps.getFieldMap(this));
 
-        mSmsFilterModeAdapter = new EnumAdapter<SmsFilterMode>(this,
+        mSmsFilterModeAdapter = new EnumAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
         mSmsFilterModeAdapter.setStringMap(FilterEnumMaps.getModeMap(this));
 

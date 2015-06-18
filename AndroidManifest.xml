@@ -42,7 +42,7 @@
             android:value="true"/>
         <meta-data
             android:name="xposeddescription"
-            android:value="Regular expression-based filtering for your SMS messages"/>
+            android:value="Pattern-based text message blocking for Android 4.4+"/>
         <meta-data
             android:name="xposedminversion"
             android:value="2"/>

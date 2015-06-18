@@ -77,7 +77,7 @@ public final class SmsFilterLoader {
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(filtersUri, DEFAULT_PROJECTION, null, null, null);
         int[] columns = getDefaultColumns(cursor);
-        List<SmsFilterData> filters = new ArrayList<SmsFilterData>(cursor.getCount());
+        List<SmsFilterData> filters = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             SmsFilterData data;
             try {

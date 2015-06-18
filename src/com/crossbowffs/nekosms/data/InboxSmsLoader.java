@@ -8,8 +8,10 @@ import android.net.Uri;
 import android.provider.Telephony;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-public class InboxSmsLoader {
+public final class InboxSmsLoader {
     private static final String TAG = InboxSmsLoader.class.getSimpleName();
+
+    private InboxSmsLoader() { }
 
     public static Uri writeMessage(Context context, SmsMessageData messageData) {
         ContentResolver contentResolver = context.getContentResolver();
