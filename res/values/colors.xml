@@ -2,6 +2,5 @@
 <resources>
     <item type="color" name="primary">#3f51b5</item>
     <item type="color" name="primary_dark">#303f9f</item>
-    <item type="color" name="accent">#8c9eff</item>
-    <item type="color" name="control_normal">#ffffff</item>
+    <item type="color" name="accent">#ff4081</item>
 </resources>

@@ -72,17 +72,15 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             }
         };
 
-        Uri filtersUri = NekoSmsContract.Filters.CONTENT_URI;
         ContentResolver contentResolver = context.getContentResolver();
-        contentResolver.registerContentObserver(filtersUri, true, contentObserver);
+        contentResolver.registerContentObserver(NekoSmsContract.Filters.CONTENT_URI, true, contentObserver);
         return contentObserver;
     }
 
     private Uri writeBlockedSms(Context context, SmsMessageData message) {
-        Uri messagesUri = NekoSmsContract.Blocked.CONTENT_URI;
         ContentResolver contentResolver = context.getContentResolver();
         ContentValues values = message.serialize();
-        return contentResolver.insert(messagesUri, values);
+        return contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
     }
 
     private boolean shouldFilterMessage(Context context, String sender, String body) {

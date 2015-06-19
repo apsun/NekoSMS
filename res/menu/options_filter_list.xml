@@ -8,10 +8,9 @@
         android:icon="@drawable/ic_inbox_white_24dp"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/menu_item_create_filter"
-        android:title="@string/create_filter"
-        android:icon="@drawable/ic_create_white_24dp"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/menu_item_import_export_filters"
+        android:title="@string/import_export_filters"
+        app:showAsAction="never"/>
     <item
         android:id="@+id/menu_item_about"
         android:title="@string/about"

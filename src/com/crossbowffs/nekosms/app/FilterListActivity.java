@@ -5,116 +5,60 @@ import android.app.LoaderManager;
 import android.content.*;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.*;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
-import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-import java.util.Map;
-
 public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static class FilterListItemTag {
-        public SmsFilterData mFilterData;
-        public TextView mPatternTextView;
-        public TextView mFieldTextView;
-        public TextView mModeTextView;
-        public TextView mCaseSensitiveTextView;
-    }
-
-    private static class FilterAdapter extends ResourceCursorAdapter {
-        private int[] mColumns;
-        private Map<SmsFilterField, String> mSmsFilterFieldMap;
-        private Map<SmsFilterMode, String> mSmsFilterModeMap;
-        private String mPatternFormatString;
-        private String mFieldFormatString;
-        private String mModeFormatString;
-        private String mCaseSensitiveFormatString;
-
-        public FilterAdapter(Context context) {
-            super(context, R.layout.listitem_filter_list, null, 0);
-            mSmsFilterFieldMap = FilterEnumMaps.getFieldMap(context);
-            mSmsFilterModeMap = FilterEnumMaps.getModeMap(context);
-
-            Resources resources = context.getResources();
-            mPatternFormatString = resources.getString(R.string.format_filter_pattern);
-            mFieldFormatString = resources.getString(R.string.format_filter_field);
-            mModeFormatString = resources.getString(R.string.format_filter_mode);
-            mCaseSensitiveFormatString = resources.getString(R.string.format_filter_case_sensitive);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            View view = super.newView(context, cursor, parent);
-            FilterListItemTag tag = new FilterListItemTag();
-            tag.mPatternTextView = (TextView)view.findViewById(R.id.listitem_filter_list_pattern_textview);
-            tag.mFieldTextView = (TextView)view.findViewById(R.id.listitem_filter_list_field_textview);
-            tag.mModeTextView = (TextView)view.findViewById(R.id.listitem_filter_list_mode_textview);
-            tag.mCaseSensitiveTextView = (TextView)view.findViewById(R.id.listitem_filter_list_case_sensitive_textview);
-            view.setTag(tag);
-            return view;
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            if (mColumns == null) {
-                mColumns = SmsFilterLoader.getColumns(cursor);
-            }
-
-            FilterListItemTag tag = (FilterListItemTag)view.getTag();
-            SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, tag.mFilterData);
-            tag.mFilterData = filterData;
-
-            SmsFilterField field = filterData.getField();
-            SmsFilterMode mode = filterData.getMode();
-            String pattern = filterData.getPattern();
-            boolean caseSensitive = filterData.isCaseSensitive();
-
-            tag.mPatternTextView.setText(String.format(mPatternFormatString, pattern));
-            tag.mFieldTextView.setText(String.format(mFieldFormatString, mSmsFilterFieldMap.get(field)));
-            tag.mModeTextView.setText(String.format(mModeFormatString, mSmsFilterModeMap.get(mode)));
-            tag.mCaseSensitiveTextView.setText(String.format(mCaseSensitiveFormatString, caseSensitive));
-        }
-    }
-
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
 
-    private View mContentView;
-    private FilterAdapter mAdapter;
+    private View mCoordinatorLayout;
+    private FilterListAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_list);
 
-        mContentView = findViewById(android.R.id.content);
+        mCoordinatorLayout = findViewById(R.id.activity_filter_list_root);
 
-        FilterAdapter adapter = new FilterAdapter(this);
+        FilterListAdapter adapter = new FilterListAdapter(this);
         mAdapter = adapter;
 
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
 
-        ListView listView = (ListView)findViewById(android.R.id.list);
-        listView.setEmptyView(findViewById(android.R.id.empty));
-        listView.setAdapter(adapter);
-        registerForContextMenu(listView);
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        registerForContextMenu(recyclerView);
+
+        FloatingActionButton createButton = (FloatingActionButton)findViewById(R.id.activity_filter_list_create_button);
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startFilterEditorActivity(-1);
+            }
+        });
 
         if (!XposedUtils.isModuleEnabled()) {
             showInitFailedDialog();
@@ -133,8 +77,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.menu_item_create_filter:
-            startFilterEditorActivity(-1);
+        case R.id.menu_item_import_export_filters:
+            // TODO
             return true;
         case R.id.menu_item_view_blocked_messages:
             startBlockedSmsListActivity();
@@ -216,7 +160,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
 
     private void deleteFilter(long filterId) {
         final SmsFilterData filterData = SmsFilterLoader.loadAndDeleteFilter(this, filterId);
-        Snackbar.make(mContentView, R.string.filter_deleted, Snackbar.LENGTH_LONG)
+        Snackbar.make(mCoordinatorLayout, R.string.filter_deleted, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

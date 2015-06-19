@@ -15,6 +15,7 @@
 
     <!-- Filter list -->
     <string name="create_filter">Create filter</string>
+    <string name="import_export_filters">Import/export</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
     <string name="module_not_enabled_title">Initialization failed</string>

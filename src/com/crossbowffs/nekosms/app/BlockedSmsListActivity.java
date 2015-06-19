@@ -104,6 +104,8 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         listView.setEmptyView(findViewById(android.R.id.empty));
         listView.setAdapter(adapter);
         registerForContextMenu(listView);
+
+        // TODO: implement interface on outer class
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
