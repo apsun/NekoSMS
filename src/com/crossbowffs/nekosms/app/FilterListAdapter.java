@@ -1,8 +1,11 @@
 package com.crossbowffs.nekosms.app;
 
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import android.widget.TextView;
@@ -11,6 +14,7 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 import java.util.Map;
 
@@ -64,7 +68,7 @@ public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.F
             mColumns = SmsFilterLoader.getColumns(cursor);
         }
 
-        SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, holder.mFilterData);
+        final SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, holder.mFilterData);
         holder.mFilterData = filterData;
 
         SmsFilterField field = filterData.getField();
@@ -76,5 +80,18 @@ public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.F
         holder.mFieldTextView.setText(String.format(mFieldFormatString, mSmsFilterFieldMap.get(field)));
         holder.mModeTextView.setText(String.format(mModeFormatString, mSmsFilterModeMap.get(mode)));
         holder.mCaseSensitiveTextView.setText(String.format(mCaseSensitiveFormatString, caseSensitive));
+
+        // TODO: Hack
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(holder.itemView.getContext(), FilterEditorActivity.class);
+                if (filterData.getId() >= 0) {
+                    Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, filterData.getId());
+                    intent.setData(filterUri);
+                }
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 }

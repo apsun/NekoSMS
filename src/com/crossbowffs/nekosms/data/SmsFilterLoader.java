@@ -123,7 +123,9 @@ public final class SmsFilterLoader {
         Uri uri = contentResolver.insert(Filters.CONTENT_URI, values);
         long id = ContentUris.parseId(uri);
         if (id < 0) {
-            throw new IllegalArgumentException("Failed to write filter");
+            // TODO: Hack!
+            return null;
+            // throw new IllegalArgumentException("Failed to write filter");
         } else {
             return uri;
         }
@@ -142,14 +144,18 @@ public final class SmsFilterLoader {
         if (filterUri == null && insertIfError) {
             return writeFilter(contentResolver, values);
         } else if (filterUri == null) {
-            throw new IllegalArgumentException("No filter URI provided, failed to write new filter");
+            // TODO: Hack!
+            return null;
+            // throw new IllegalArgumentException("No filter URI provided, failed to write new filter");
         }
 
         int updatedRows = contentResolver.update(filterUri, values, null, null);
         if (updatedRows == 0 && insertIfError) {
             return writeFilter(contentResolver, values);
         } else if (updatedRows == 0) {
-            throw new IllegalArgumentException("Could not update existing filter, failed to write new one");
+            // TODO: Hack!
+            return null;
+            // throw new IllegalArgumentException("Could not update existing filter, failed to write new one");
         } else {
             return filterUri;
         }
@@ -168,6 +174,7 @@ public final class SmsFilterLoader {
     }
 
     public static SmsFilterData loadAndDeleteFilter(Context context, long messageId) {
+        // TODO: Handle race conditions
         Uri filterUri = convertIdToUri(messageId);
         SmsFilterData filterData = loadFilter(context, filterUri);
         deleteFilter(context, filterUri);

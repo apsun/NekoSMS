@@ -151,8 +151,11 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     private void saveAndFinish() {
         Uri filterUri = writeFilterData();
-        // TODO: Check return value
-        Toast.makeText(this, R.string.filter_saved, Toast.LENGTH_SHORT).show();
+        if (filterUri != null) {
+            Toast.makeText(this, R.string.filter_saved, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, R.string.filter_already_exists, Toast.LENGTH_SHORT).show();
+        }
         Intent intent = new Intent();
         intent.setData(filterUri);
         setResult(RESULT_OK, intent);

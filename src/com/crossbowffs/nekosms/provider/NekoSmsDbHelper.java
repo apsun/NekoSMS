@@ -12,7 +12,7 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "nekosms.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     private static final String CREATE_FILTERS_TABLE =
         "CREATE TABLE " + Filters.TABLE + "(" +
@@ -20,7 +20,11 @@ public class NekoSmsDbHelper extends SQLiteOpenHelper {
             Filters.FIELD              + " TEXT NOT NULL," +
             Filters.MODE               + " TEXT NOT NULL," +
             Filters.PATTERN            + " TEXT NOT NULL," +
-            Filters.CASE_SENSITIVE     + " INTEGER NOT NULL" +
+            Filters.CASE_SENSITIVE     + " INTEGER NOT NULL," +
+            "UNIQUE(" +
+                Filters.FIELD + "," + Filters.MODE + "," +
+                Filters.PATTERN + "," + Filters.CASE_SENSITIVE +
+            ") ON CONFLICT IGNORE" +
         ");";
 
     private static final String CREATE_BLOCKED_TABLE =

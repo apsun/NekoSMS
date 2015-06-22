@@ -16,6 +16,8 @@
     <!-- Filter list -->
     <string name="create_filter">Create filter</string>
     <string name="import_export_filters">Import/export</string>
+    <string name="import_from_storage">Import from storage</string>
+    <string name="export_to_storage">Export to storage</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
     <string name="module_not_enabled_title">Initialization failed</string>
@@ -42,6 +44,7 @@
     <string name="discard">Discard</string>
     <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter saved</string>
+    <string name="filter_already_exists">Filter already exists</string>
     <string name="invalid_pattern_title">Invalid pattern</string>
     <string name="invalid_pattern_regex">The pattern you have entered is not a legal regular expression!</string>
 

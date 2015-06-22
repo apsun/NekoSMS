@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -24,11 +25,20 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterJsonLoader;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
 
 public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
@@ -55,9 +65,11 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         }
     }
 
+    private static final String TAG = FilterListActivity.class.getSimpleName();
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
+    private static final String EXPORT_FILE_PATH = "nekosms.json";
 
     private View mCoordinatorLayout;
     private FilterListAdapter mAdapter;
@@ -112,7 +124,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.menu_item_import_export_filters:
-            // TODO
+            showImportExportDialog();
             return true;
         case R.id.menu_item_view_blocked_messages:
             startBlockedSmsListActivity();
@@ -191,6 +203,101 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .translationY(mCreateButton.getHeight() + lp.bottomMargin)
             .setInterpolator(new AccelerateInterpolator(2))
             .start();
+    }
+
+    public void showImportExportDialog() {
+        String importStr = getString(R.string.import_from_storage);
+        String exportStr = getString(R.string.export_to_storage);
+        CharSequence[] items = {importStr, exportStr};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(R.string.import_export_filters)
+            .setItems(items, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (which == 0) {
+                        importFromStorage();
+                    } else if (which == 1) {
+                        exportToStorage();
+                    }
+                }
+            });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void importFromStorage() {
+        File sdCard = Environment.getExternalStorageDirectory();
+        File file = new File(sdCard, EXPORT_FILE_PATH);
+        FileInputStream in;
+        try {
+            in = new FileInputStream(file);
+        } catch (IOException e) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("No filter backup found")
+                .setPositiveButton(R.string.ok, null);
+                builder.show();
+            return;
+        }
+
+        List<SmsFilterData> filters;
+        try {
+            filters = SmsFilterJsonLoader.fromJson(in, true);
+        } catch (IOException e) {
+            Xlog.e(TAG, "Failed to import filters from storage", e);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("Read failed")
+                .setPositiveButton(R.string.ok, null);
+            builder.show();
+            return;
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                Xlog.e(TAG, "Failed to close input stream", e);
+            }
+        }
+
+        int successCount = 0;
+        for (SmsFilterData filter : filters) {
+            Uri uri = SmsFilterLoader.writeFilter(this, filter);
+            if (uri != null) {
+                ++successCount;
+            }
+        }
+
+        Toast.makeText(this, successCount + " filter(s) imported", Toast.LENGTH_SHORT).show();
+    }
+
+    private void exportToStorage() {
+        List<SmsFilterData> filters = SmsFilterLoader.loadAllFilters(this, true);
+        File sdCard = Environment.getExternalStorageDirectory();
+        File file = new File(sdCard, EXPORT_FILE_PATH);
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(file);
+            SmsFilterJsonLoader.toJson(out, filters);
+        } catch (IOException e) {
+            Xlog.e(TAG, "Failed to export filters to storage", e);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage("Write failed")
+                .setPositiveButton(R.string.ok, null);
+            builder.show();
+            return;
+        } finally {
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    Xlog.e(TAG, "Failed to close output stream", e);
+                }
+            }
+        }
+
+        Toast.makeText(this, filters.size() + " filter(s) exported", Toast.LENGTH_SHORT).show();
     }
 
     private void startBlockedSmsListActivity() {
