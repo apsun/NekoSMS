@@ -1,6 +1,5 @@
 package com.crossbowffs.nekosms.app;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.*;
@@ -11,11 +10,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.view.*;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ResourceCursorAdapter;
+import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BlockedSmsLoader;
 import com.crossbowffs.nekosms.data.InboxSmsLoader;
@@ -89,10 +92,9 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
 
         mContentView = findViewById(android.R.id.content);
 
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         BlockedSmsAdapter adapter = new BlockedSmsAdapter(this);
         mAdapter = adapter;

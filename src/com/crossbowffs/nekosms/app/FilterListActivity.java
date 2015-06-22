@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -45,18 +46,11 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             if (mControlsVisible && mScrollDistance > HIDE_THRESHOLD) {
                 mControlsVisible = false;
                 mScrollDistance = 0;
-                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)mCreateButton.getLayoutParams();
-                mCreateButton.animate()
-                    .translationY(mCreateButton.getHeight() + lp.bottomMargin)
-                    .setInterpolator(new AccelerateInterpolator(2))
-                    .start();
+                hideCreateButton();
             } else if (!mControlsVisible && mScrollDistance < -SHOW_THRESHOLD) {
                 mControlsVisible = true;
                 mScrollDistance = 0;
-                mCreateButton.animate()
-                    .translationY(0)
-                    .setInterpolator(new DecelerateInterpolator(2))
-                    .start();
+                showCreateButton();
             }
         }
     }
@@ -76,27 +70,29 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
 
         mCoordinatorLayout = findViewById(R.id.activity_filter_list_root);
 
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         FilterListAdapter adapter = new FilterListAdapter(this);
         mAdapter = adapter;
 
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
 
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.addOnScrollListener(new ScrollListener());
-        registerForContextMenu(recyclerView);
-
         FloatingActionButton createButton = (FloatingActionButton)findViewById(R.id.activity_filter_list_create_button);
         mCreateButton = createButton;
-
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startFilterEditorActivity(-1);
             }
         });
+
+        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new ScrollListener());
+        registerForContextMenu(recyclerView);
 
         if (!XposedUtils.isModuleEnabled()) {
             showInitFailedDialog();
@@ -180,6 +176,21 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         } else {
             finish();
         }
+    }
+
+    public void showCreateButton() {
+        mCreateButton.animate()
+            .translationY(0)
+            .setInterpolator(new DecelerateInterpolator(2))
+            .start();
+    }
+
+    public void hideCreateButton() {
+        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)mCreateButton.getLayoutParams();
+        mCreateButton.animate()
+            .translationY(mCreateButton.getHeight() + lp.bottomMargin)
+            .setInterpolator(new AccelerateInterpolator(2))
+            .start();
     }
 
     private void startBlockedSmsListActivity() {
