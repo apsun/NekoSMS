@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,8 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.*;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
@@ -27,12 +30,44 @@ import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    private class ScrollListener extends RecyclerView.OnScrollListener {
+        private static final int SHOW_THRESHOLD = 50;
+        private static final int HIDE_THRESHOLD = 100;
+        private int mScrollDistance = 0;
+        private boolean mControlsVisible = true;
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if ((mControlsVisible && dy > 0) || (!mControlsVisible && dy < 0)) {
+                mScrollDistance += dy;
+            }
+
+            if (mControlsVisible && mScrollDistance > HIDE_THRESHOLD) {
+                mControlsVisible = false;
+                mScrollDistance = 0;
+                CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)mCreateButton.getLayoutParams();
+                mCreateButton.animate()
+                    .translationY(mCreateButton.getHeight() + lp.bottomMargin)
+                    .setInterpolator(new AccelerateInterpolator(2))
+                    .start();
+            } else if (!mControlsVisible && mScrollDistance < -SHOW_THRESHOLD) {
+                mControlsVisible = true;
+                mScrollDistance = 0;
+                mCreateButton.animate()
+                    .translationY(0)
+                    .setInterpolator(new DecelerateInterpolator(2))
+                    .start();
+            }
+        }
+    }
+
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
 
     private View mCoordinatorLayout;
     private FilterListAdapter mAdapter;
+    private FloatingActionButton mCreateButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,9 +85,12 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.addOnScrollListener(new ScrollListener());
         registerForContextMenu(recyclerView);
 
         FloatingActionButton createButton = (FloatingActionButton)findViewById(R.id.activity_filter_list_create_button);
+        mCreateButton = createButton;
+
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
