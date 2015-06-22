@@ -6,10 +6,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 
 public final class BlockedSmsLoader {
+    private static final String TAG = BlockedSmsLoader.class.getSimpleName();
     private static final String[] DEFAULT_PROJECTION = {
         Blocked._ID,
         Blocked.SENDER,
@@ -77,11 +79,12 @@ public final class BlockedSmsLoader {
         Cursor cursor = contentResolver.query(messageUri, DEFAULT_PROJECTION, null, null, null);
 
         if (!cursor.moveToFirst()) {
-            throw new IllegalArgumentException("URI does not match any message");
+            Xlog.e(TAG, "URI does not match any message: ", messageUri);
+            return null;
         }
 
         if (cursor.getCount() > 1) {
-            throw new IllegalArgumentException("URI matched more than one message");
+            Xlog.w(TAG, "URI matched more than one message: ", messageUri);
         }
 
         SmsMessageData data = getMessageData(cursor, getDefaultColumns(cursor), null);
@@ -109,7 +112,7 @@ public final class BlockedSmsLoader {
         ContentResolver contentResolver = context.getContentResolver();
         int deletedRows = contentResolver.delete(messageUri, null, null);
         if (deletedRows == 0) {
-            throw new IllegalArgumentException("URI does not match any message");
+            Xlog.w(TAG, "URI does not match any message: %s", messageUri);
         }
     }
 

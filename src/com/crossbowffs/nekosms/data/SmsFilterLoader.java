@@ -109,9 +109,10 @@ public final class SmsFilterLoader {
         Cursor cursor = contentResolver.query(filterUri, DEFAULT_PROJECTION, null, null, null);
 
         if (!cursor.moveToFirst()) {
-            throw new IllegalArgumentException("URI does not match any filter");
+            Xlog.e(TAG, "URI does not match any filter: %s", filterUri);
+            return null;
         } else if (cursor.getCount() > 1) {
-            throw new IllegalArgumentException("URI matched more than one filter");
+            Xlog.w(TAG, "URI matched more than one filter: %s", filterUri);
         }
 
         SmsFilterData data = getFilterData(cursor, getDefaultColumns(cursor), null);
@@ -123,9 +124,8 @@ public final class SmsFilterLoader {
         Uri uri = contentResolver.insert(Filters.CONTENT_URI, values);
         long id = ContentUris.parseId(uri);
         if (id < 0) {
-            // TODO: Hack!
+            Xlog.w(TAG, "Failed to write filter, possibly already exists");
             return null;
-            // throw new IllegalArgumentException("Failed to write filter");
         } else {
             return uri;
         }
@@ -144,18 +144,15 @@ public final class SmsFilterLoader {
         if (filterUri == null && insertIfError) {
             return writeFilter(contentResolver, values);
         } else if (filterUri == null) {
-            // TODO: Hack!
-            return null;
-            // throw new IllegalArgumentException("No filter URI provided, failed to write new filter");
+            throw new IllegalArgumentException("No filter URI provided, failed to write new filter");
         }
 
         int updatedRows = contentResolver.update(filterUri, values, null, null);
         if (updatedRows == 0 && insertIfError) {
             return writeFilter(contentResolver, values);
         } else if (updatedRows == 0) {
-            // TODO: Hack!
+            Xlog.w(TAG, "Failed to update filter, possibly already exists");
             return null;
-            // throw new IllegalArgumentException("Could not update existing filter, failed to write new one");
         } else {
             return filterUri;
         }
@@ -169,12 +166,11 @@ public final class SmsFilterLoader {
         ContentResolver contentResolver = context.getContentResolver();
         int deletedRows = contentResolver.delete(filterUri, null, null);
         if (deletedRows == 0) {
-            throw new IllegalArgumentException("URI does not match any filter");
+            Xlog.w(TAG, "URI does not match any filter: %s", filterUri);
         }
     }
 
     public static SmsFilterData loadAndDeleteFilter(Context context, long messageId) {
-        // TODO: Handle race conditions
         Uri filterUri = convertIdToUri(messageId);
         SmsFilterData filterData = loadFilter(context, filterUri);
         deleteFilter(context, filterUri);

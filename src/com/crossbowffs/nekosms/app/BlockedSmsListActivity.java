@@ -24,6 +24,7 @@ import com.crossbowffs.nekosms.data.BlockedSmsLoader;
 import com.crossbowffs.nekosms.data.InboxSmsLoader;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static class MessageListItemTag {
@@ -81,6 +82,8 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             tag.mTimeSentTextView.setText(String.format(mTimeSentFormatString, timeSentString));
         }
     }
+
+    private static final String TAG = BlockedSmsListActivity.class.getSimpleName();
 
     private View mContentView;
     private BlockedSmsAdapter mAdapter;
@@ -201,6 +204,11 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
 
     private void restoreSms(long smsId) {
         final SmsMessageData messageData = BlockedSmsLoader.loadAndDeleteMessage(this, smsId);
+        if (messageData == null) {
+            Xlog.e(TAG, "Failed to restore message: could not load data");
+            return;
+        }
+
         final Uri inboxSmsUri = InboxSmsLoader.writeMessage(this, messageData);
         Snackbar
             .make(mContentView, R.string.message_restored, Snackbar.LENGTH_LONG)
@@ -216,6 +224,11 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
 
     private void deleteSms(long smsId) {
         final SmsMessageData messageData = BlockedSmsLoader.loadAndDeleteMessage(this, smsId);
+        if (messageData == null) {
+            Xlog.e(TAG, "Failed to delete message: could not load data");
+            return;
+        }
+
         Snackbar
             .make(mContentView, R.string.message_deleted, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
@@ -230,6 +243,10 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
     private void showMessageDetailsDialog(final long smsId) {
         Uri messageUri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, smsId);
         SmsMessageData messageData = BlockedSmsLoader.loadMessage(this, messageUri);
+        if (messageData == null) {
+            Xlog.e(TAG, "Failed to show message details: could not load data");
+            return;
+        }
 
         String sender = messageData.getSender();
         String body = messageData.getBody();

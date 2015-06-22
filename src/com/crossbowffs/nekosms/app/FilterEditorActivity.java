@@ -66,9 +66,12 @@ public class FilterEditorActivity extends AppCompatActivity {
         mFieldSpinner.setAdapter(mSmsFilterFieldAdapter);
         mModeSpinner.setAdapter(mSmsFilterModeAdapter);
 
+        SmsFilterData filter = null;
         if (filterUri != null) {
-            SmsFilterData filter = SmsFilterLoader.loadFilter(this, filterUri);
-            mFilter = filter;
+            filter = mFilter = SmsFilterLoader.loadFilter(this, filterUri);
+        }
+
+        if (filter != null) {
             mFieldSpinner.setSelection(mSmsFilterFieldAdapter.getPosition(filter.getField()));
             mModeSpinner.setSelection(mSmsFilterModeAdapter.getPosition(filter.getMode()));
             mPatternEditText.setText(filter.getPattern());
@@ -130,12 +133,29 @@ public class FilterEditorActivity extends AppCompatActivity {
         return 0;
     }
 
-    private boolean isPatternEmpty() {
-        return TextUtils.isEmpty(mPatternEditText.getText());
+    private boolean shouldSaveFilter() {
+        String pattern = mPatternEditText.getText().toString();
+
+        if (TextUtils.isEmpty(pattern)) {
+            return false;
+        }
+
+        if (mFilter == null) {
+            return true;
+        }
+
+        SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
+        SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
+        boolean caseSensitive = !mIgnoreCaseCheckBox.isChecked();
+
+        return !(mFilter.getPattern().equals(pattern) &&
+                 mFilter.getField() == field &&
+                 mFilter.getMode() == mode &&
+                 mFilter.isCaseSensitive() == caseSensitive);
     }
 
     private void saveIfValid() {
-        if (isPatternEmpty()) {
+        if (!shouldSaveFilter()) {
             discardAndFinish();
             return;
         }

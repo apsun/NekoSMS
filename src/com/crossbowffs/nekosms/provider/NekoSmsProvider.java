@@ -10,8 +10,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
 public class NekoSmsProvider extends ContentProvider {
     private static final int FILTERS_ITEM_ID = 0;

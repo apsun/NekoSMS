@@ -65,6 +65,39 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         }
     }
 
+    private class FilterLoadCallbackImpl implements SmsFilterJsonLoader.FilterLoadCallback {
+        private int mSuccessCount;
+        private int mDuplicateCount;
+        private int mErrorCount;
+
+        @Override
+        public void onSuccess(SmsFilterData filter) {
+            Uri uri = SmsFilterLoader.writeFilter(FilterListActivity.this, filter);
+            if (uri != null) {
+                mSuccessCount++;
+            } else {
+                mDuplicateCount++;
+            }
+        }
+
+        @Override
+        public void onError(IllegalArgumentException e) {
+            mErrorCount++;
+        }
+
+        public int getSuccessCount() {
+            return mSuccessCount;
+        }
+
+        public int getDuplicateCount() {
+            return mDuplicateCount;
+        }
+
+        public int getErrorCount() {
+            return mErrorCount;
+        }
+    }
+
     private static final String TAG = FilterListActivity.class.getSimpleName();
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
@@ -241,9 +274,9 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             return;
         }
 
-        List<SmsFilterData> filters;
+        FilterLoadCallbackImpl callback = new FilterLoadCallbackImpl();
         try {
-            filters = SmsFilterJsonLoader.fromJson(in, true);
+            SmsFilterJsonLoader.fromJson(in, callback);
         } catch (IOException e) {
             Xlog.e(TAG, "Failed to import filters from storage", e);
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
@@ -260,15 +293,12 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             }
         }
 
-        int successCount = 0;
-        for (SmsFilterData filter : filters) {
-            Uri uri = SmsFilterLoader.writeFilter(this, filter);
-            if (uri != null) {
-                ++successCount;
-            }
-        }
+        Xlog.d(TAG, "Filter import completed: ");
+        Xlog.d(TAG, "  %d succeeded", callback.getSuccessCount());
+        Xlog.d(TAG, "  %d duplicates", callback.getDuplicateCount());
+        Xlog.d(TAG, "  %d failed", callback.getErrorCount());
 
-        Toast.makeText(this, successCount + " filter(s) imported", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, callback.getSuccessCount() + " filter(s) imported successfully", Toast.LENGTH_SHORT).show();
     }
 
     private void exportToStorage() {
@@ -316,6 +346,11 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
 
     private void deleteFilter(long filterId) {
         final SmsFilterData filterData = SmsFilterLoader.loadAndDeleteFilter(this, filterId);
+        if (filterData == null) {
+            Xlog.e(TAG, "Failed to delete filter: could not load data");
+            return;
+        }
+
         Snackbar.make(mCoordinatorLayout, R.string.filter_deleted, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override

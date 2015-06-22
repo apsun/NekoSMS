@@ -2,12 +2,18 @@ package com.crossbowffs.nekosms.data;
 
 import android.util.JsonReader;
 import android.util.JsonWriter;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class SmsFilterJsonLoader {
+    public interface FilterLoadCallback {
+        void onSuccess(SmsFilterData filter);
+        void onError(IllegalArgumentException e);
+    }
+
+    private static final String TAG = SmsFilterJsonLoader.class.getSimpleName();
     private static final String KEY_FIELD = "field";
     private static final String KEY_MODE = "mode";
     private static final String KEY_PATTERN = "pattern";
@@ -18,6 +24,7 @@ public final class SmsFilterJsonLoader {
     public static void toJson(OutputStream out, List<SmsFilterData> filters) throws IOException {
         OutputStreamWriter streamWriter = new OutputStreamWriter(out, "UTF-8");
         JsonWriter jsonWriter = new JsonWriter(streamWriter);
+        jsonWriter.setIndent("\t");
         try {
             writeFiltersArray(jsonWriter, filters);
         } finally {
@@ -42,57 +49,66 @@ public final class SmsFilterJsonLoader {
         jsonWriter.endObject();
     }
 
-    public static List<SmsFilterData> fromJson(InputStream in, boolean ignoreErrors) throws IOException {
+    public static void fromJson(InputStream in, FilterLoadCallback callback) throws IOException {
         InputStreamReader streamReader = new InputStreamReader(in, "UTF-8");
         JsonReader jsonReader = new JsonReader(streamReader);
         try {
-            return readFiltersArray(jsonReader, ignoreErrors);
+            readFiltersArray(jsonReader, callback);
         } finally {
             jsonReader.close();
         }
     }
 
-    private static List<SmsFilterData> readFiltersArray(JsonReader jsonReader, boolean ignoreErrors) throws IOException {
-        List<SmsFilterData> filters = new ArrayList<>();
+    private static void readFiltersArray(JsonReader jsonReader, FilterLoadCallback callback) throws IOException {
         jsonReader.beginArray();
         while (jsonReader.hasNext()) {
-            SmsFilterData filter;
+            SmsFilterData filter = new SmsFilterData();
             try {
-                filter = readFilter(jsonReader);
+                readFilter(jsonReader, filter);
             } catch (IllegalArgumentException e) {
-                if (ignoreErrors) {
-                    continue;
-                } else {
-                    throw new IOException(e);
-                }
+                Xlog.e(TAG, "Failed to create SMS filter", e);
+                callback.onError(e);
+                continue;
             }
-            filters.add(filter);
+            callback.onSuccess(filter);
         }
         jsonReader.endArray();
-        return filters;
     }
 
-    private static SmsFilterData readFilter(JsonReader jsonReader) throws IOException {
-        SmsFilterData data = new SmsFilterData();
+    private static void readFilter(JsonReader jsonReader, SmsFilterData filter) throws IOException {
+        String fieldString = null;
+        String modeString = null;
+        String pattern = null;
+        Boolean caseSensitive = null;
+
         jsonReader.beginObject();
         while (jsonReader.hasNext()) {
             String name = jsonReader.nextName();
             if (name.equals(KEY_FIELD)) {
-                data.setField(SmsFilterField.valueOf(jsonReader.nextString()));
+                fieldString = jsonReader.nextString();
             } else if (name.equals(KEY_MODE)) {
-                data.setMode(SmsFilterMode.valueOf(jsonReader.nextString()));
+                modeString = jsonReader.nextString();
             } else if (name.equals(KEY_PATTERN)) {
-                data.setPattern(jsonReader.nextString());
+                pattern = jsonReader.nextString();
             } else if (name.equals(KEY_CASE_SENSITIVE)) {
-                data.setCaseSensitive(jsonReader.nextBoolean());
+                caseSensitive = jsonReader.nextBoolean();
             } else {
                 jsonReader.skipValue();
             }
         }
         jsonReader.endObject();
-        if (data.getField() == null || data.getMode() == null || data.getPattern() == null) {
+
+        if (fieldString == null || modeString == null ||
+            pattern == null || caseSensitive == null) {
             throw new IllegalArgumentException("Incomplete filter data");
         }
-        return data;
+
+        SmsFilterField field = SmsFilterField.valueOf(fieldString);
+        SmsFilterMode mode = SmsFilterMode.valueOf(modeString);
+
+        filter.setField(field);
+        filter.setMode(mode);
+        filter.setPattern(pattern);
+        filter.setCaseSensitive(caseSensitive);
     }
 }
