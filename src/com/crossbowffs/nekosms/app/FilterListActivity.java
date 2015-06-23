@@ -103,6 +103,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
     private static final String EXPORT_FILE_PATH = "nekosms.json";
+    private static final String XPOSED_ACTION = "de.robv.android.xposed.installer.OPEN_SECTION";
 
     private View mCoordinatorLayout;
     private FilterListAdapter mAdapter;
@@ -372,22 +373,32 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         }
     }
 
+    private void startXposedActivity(String section) {
+        Intent intent = new Intent(XPOSED_ACTION);
+        intent.putExtra("section", section);
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Xlog.e(TAG, "Could not start Xposed activity", e);
+            Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void showInitFailedDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.module_not_enabled_title)
             .setMessage(R.string.module_not_enabled_message)
             .setIconAttribute(android.R.attr.alertDialogIcon)
             .setCancelable(false)
-            .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+            .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    finishTryTransition();
+                    startXposedActivity("modules");
                 }
             })
             .setNeutralButton(R.string.report_bug, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    finishTryTransition();
                     Uri url = Uri.parse(REPORT_BUG_URL);
                     Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
                     startActivity(browserIntent);
@@ -405,10 +416,10 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .setMessage(R.string.module_outdated_message)
             .setIconAttribute(android.R.attr.alertDialogIcon)
             .setCancelable(false)
-            .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
+            .setPositiveButton(R.string.reboot, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    finishTryTransition();
+                    startXposedActivity("install");
                 }
             })
             .setNegativeButton(R.string.ignore, null);

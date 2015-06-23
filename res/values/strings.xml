@@ -6,7 +6,8 @@
     <string name="ok">OK</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
-    <string name="exit">Exit</string>
+    <string name="enable">Enable</string>
+    <string name="reboot">Reboot</string>
     <string name="about">About</string>
     <string name="ignore">Ignore</string>
     <string name="close">Close</string>
@@ -24,6 +25,7 @@
     <string name="module_not_enabled_message">Xposed module not enabled.</string>
     <string name="module_outdated_title">Xposed module updated</string>
     <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
+    <string name="xposed_not_installed">Xposed not installed</string>
     <string name="report_bug">Report bug</string>
     <string name="format_filter_pattern">Pattern: %s</string>
     <string name="format_filter_field">Field: %s</string>
