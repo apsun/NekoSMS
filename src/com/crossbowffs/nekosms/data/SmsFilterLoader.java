@@ -53,13 +53,13 @@ public final class SmsFilterLoader {
 
     public static SmsFilterData getFilterData(Cursor cursor, int[] columns, SmsFilterData data) {
         long id = cursor.getLong(columns[COL_ID]);
-        String fieldStr = cursor.getString(columns[COL_FIELD]);
-        String modeStr = cursor.getString(columns[COL_MODE]);
+        String fieldString = cursor.getString(columns[COL_FIELD]);
+        String modeString = cursor.getString(columns[COL_MODE]);
         String pattern = cursor.getString(columns[COL_PATTERN]);
         boolean caseSensitive = cursor.getInt(columns[COL_CASE_SENSITIVE]) != 0;
 
-        SmsFilterField field = SmsFilterField.valueOf(fieldStr);
-        SmsFilterMode mode = SmsFilterMode.valueOf(modeStr);
+        SmsFilterField field = SmsFilterField.parse(fieldString);
+        SmsFilterMode mode = SmsFilterMode.parse(modeString);
 
         if (data == null) {
             data = new SmsFilterData();
@@ -69,6 +69,7 @@ public final class SmsFilterLoader {
         data.setMode(mode);
         data.setPattern(pattern);
         data.setCaseSensitive(caseSensitive);
+        data.validate();
         return data;
     }
 
@@ -82,7 +83,7 @@ public final class SmsFilterLoader {
             SmsFilterData data;
             try {
                 data = getFilterData(cursor, columns, null);
-            } catch (IllegalArgumentException e) {
+            } catch (InvalidFilterException e) {
                 if (ignoreErrors) {
                     Xlog.e(TAG, "Failed to create SMS filter", e);
                     continue;

@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.InvalidFilterException;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterJsonLoader;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
@@ -81,7 +82,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         }
 
         @Override
-        public void onError(IllegalArgumentException e) {
+        public void onError(InvalidFilterException e) {
             mErrorCount++;
         }
 

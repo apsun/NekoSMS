@@ -3,6 +3,9 @@ package com.crossbowffs.nekosms.data;
 import android.content.ContentValues;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 public class SmsFilterData {
     private long mId;
     private SmsFilterField mField;
@@ -57,5 +60,27 @@ public class SmsFilterData {
 
     public boolean isCaseSensitive() {
         return mCaseSensitive;
+    }
+
+    public void validate() {
+        if (mField == null) {
+            throw new InvalidFilterException("Missing filter field");
+        }
+
+        if (mMode == null) {
+            throw new InvalidFilterException("Missing filter mode");
+        }
+
+        if (mPattern == null || mPattern.isEmpty()) {
+            throw new InvalidFilterException("Missing filter pattern");
+        }
+
+        if (mMode == SmsFilterMode.REGEX) {
+            try {
+                Pattern.compile(mPattern);
+            } catch (PatternSyntaxException e) {
+                throw new InvalidFilterException("Invalid regular expression pattern: " + mPattern, e);
+            }
+        }
     }
 }

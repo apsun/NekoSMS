@@ -10,7 +10,7 @@ import java.util.List;
 public final class SmsFilterJsonLoader {
     public interface FilterLoadCallback {
         void onSuccess(SmsFilterData filter);
-        void onError(IllegalArgumentException e);
+        void onError(InvalidFilterException e);
     }
 
     private static final String TAG = SmsFilterJsonLoader.class.getSimpleName();
@@ -65,7 +65,7 @@ public final class SmsFilterJsonLoader {
             SmsFilterData filter = new SmsFilterData();
             try {
                 readFilter(jsonReader, filter);
-            } catch (IllegalArgumentException e) {
+            } catch (InvalidFilterException e) {
                 Xlog.e(TAG, "Failed to create SMS filter", e);
                 callback.onError(e);
                 continue;
@@ -79,7 +79,7 @@ public final class SmsFilterJsonLoader {
         String fieldString = null;
         String modeString = null;
         String pattern = null;
-        Boolean caseSensitive = null;
+        boolean caseSensitive = true;
 
         jsonReader.beginObject();
         while (jsonReader.hasNext()) {
@@ -98,17 +98,13 @@ public final class SmsFilterJsonLoader {
         }
         jsonReader.endObject();
 
-        if (fieldString == null || modeString == null ||
-            pattern == null || caseSensitive == null) {
-            throw new IllegalArgumentException("Incomplete filter data");
-        }
-
-        SmsFilterField field = SmsFilterField.valueOf(fieldString);
-        SmsFilterMode mode = SmsFilterMode.valueOf(modeString);
+        SmsFilterField field = SmsFilterField.parse(fieldString);
+        SmsFilterMode mode = SmsFilterMode.parse(modeString);
 
         filter.setField(field);
         filter.setMode(mode);
         filter.setPattern(pattern);
         filter.setCaseSensitive(caseSensitive);
+        filter.validate();
     }
 }
