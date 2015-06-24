@@ -35,10 +35,7 @@ import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -241,9 +238,9 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     }
 
     public void showImportExportDialog() {
-        String importStr = getString(R.string.import_from_storage);
-        String exportStr = getString(R.string.export_to_storage);
-        CharSequence[] items = {importStr, exportStr};
+        String importString = getString(R.string.import_from_storage);
+        String exportString = getString(R.string.export_to_storage);
+        CharSequence[] items = {importString, exportString};
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.import_export_filters)
             .setItems(items, new DialogInterface.OnClickListener() {
@@ -267,12 +264,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         FileInputStream in;
         try {
             in = new FileInputStream(file);
-        } catch (IOException e) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("No filter backup found")
-                .setPositiveButton(R.string.ok, null);
-                builder.show();
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, R.string.no_filter_backup_found, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -281,11 +274,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             SmsFilterJsonLoader.fromJson(in, callback);
         } catch (IOException e) {
             Xlog.e(TAG, "Failed to import filters from storage", e);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("Read failed")
-                .setPositiveButton(R.string.ok, null);
-            builder.show();
+            Toast.makeText(this, R.string.filter_import_failed, Toast.LENGTH_SHORT).show();
             return;
         } finally {
             try {
@@ -295,12 +284,17 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             }
         }
 
-        Xlog.d(TAG, "Filter import completed: ");
-        Xlog.d(TAG, "  %d succeeded", callback.getSuccessCount());
-        Xlog.d(TAG, "  %d duplicates", callback.getDuplicateCount());
-        Xlog.d(TAG, "  %d failed", callback.getErrorCount());
+        int successCount = callback.getSuccessCount();
+        int duplicateCount = callback.getDuplicateCount();
+        int errorCount = callback.getErrorCount();
 
-        Toast.makeText(this, callback.getSuccessCount() + " filter(s) imported successfully", Toast.LENGTH_SHORT).show();
+        Xlog.d(TAG, "Filter import completed: ");
+        Xlog.d(TAG, "  %d succeeded", successCount);
+        Xlog.d(TAG, "  %d duplicates", duplicateCount);
+        Xlog.d(TAG, "  %d failed", errorCount);
+
+        String message = getString(R.string.format_filters_imported, successCount, errorCount);
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void exportToStorage() {
@@ -313,11 +307,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             SmsFilterJsonLoader.toJson(out, filters);
         } catch (IOException e) {
             Xlog.e(TAG, "Failed to export filters to storage", e);
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("Error")
-                .setMessage("Write failed")
-                .setPositiveButton(R.string.ok, null);
-            builder.show();
+            Toast.makeText(this, R.string.filter_export_failed, Toast.LENGTH_SHORT).show();
             return;
         } finally {
             if (out != null) {
@@ -329,7 +319,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             }
         }
 
-        Toast.makeText(this, filters.size() + " filter(s) exported", Toast.LENGTH_SHORT).show();
+        String message = getString(R.string.format_filters_exported, filters.size());
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private void startBlockedSmsListActivity() {
@@ -374,6 +365,12 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         }
     }
 
+    private void startReportBugActivity() {
+        Uri url = Uri.parse(REPORT_BUG_URL);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
+        startActivity(browserIntent);
+    }
+
     private void startXposedActivity(String section) {
         Intent intent = new Intent(XPOSED_ACTION);
         intent.putExtra("section", section);
@@ -400,9 +397,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .setNeutralButton(R.string.report_bug, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Uri url = Uri.parse(REPORT_BUG_URL);
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
-                    startActivity(browserIntent);
+                    startReportBugActivity();
                 }
             })
             .setNegativeButton(R.string.ignore, null);

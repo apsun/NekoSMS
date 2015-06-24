@@ -19,6 +19,11 @@
     <string name="import_export_filters">Import/export</string>
     <string name="import_from_storage">Import from storage</string>
     <string name="export_to_storage">Export to storage</string>
+    <string name="no_filter_backup_found">No filter backup found</string>
+    <string name="format_filters_imported">%1$d filter(s) imported, %2$d failed</string>
+    <string name="format_filters_exported">%d filter(s) exported</string>
+    <string name="filter_import_failed">Filter import failed</string>
+    <string name="filter_export_failed">Filter export failed</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
     <string name="module_not_enabled_title">Initialization failed</string>
