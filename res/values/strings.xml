@@ -20,7 +20,8 @@
     <string name="import_from_storage">Import from storage</string>
     <string name="export_to_storage">Export to storage</string>
     <string name="no_filter_backup_found">No filter backup found</string>
-    <string name="format_filters_imported">%1$d filter(s) imported, %2$d failed</string>
+    <string name="format_filters_imported">%d new filter(s) imported</string>
+    <string name="format_filters_imported_error">%1$d new filter(s) imported, %2$d failed</string>
     <string name="format_filters_exported">%d filter(s) exported</string>
     <string name="filter_import_failed">Filter import failed</string>
     <string name="filter_export_failed">Filter export failed</string>

@@ -293,7 +293,13 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         Xlog.d(TAG, "  %d duplicates", duplicateCount);
         Xlog.d(TAG, "  %d failed", errorCount);
 
-        String message = getString(R.string.format_filters_imported, successCount, errorCount);
+
+        String message;
+        if (errorCount > 0) {
+            message = getString(R.string.format_filters_imported_error, successCount, errorCount);
+        } else {
+            message = getString(R.string.format_filters_imported, successCount);
+        }
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
