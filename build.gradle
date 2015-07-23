@@ -11,8 +11,8 @@ buildscript {
 apply plugin: "com.android.application"
 
 dependencies {
-    compile "com.android.support:support-v4:22.2.0"
-    compile "com.android.support:appcompat-v7:22.2.0"
+    compile "com.android.support:support-v4:22.2.1"
+    compile "com.android.support:appcompat-v7:22.2.1"
     compile "com.android.support:recyclerview-v7:22.2.0"
     compile "com.android.support:design:22.2.0"
     provided files("libs/XposedBridgeApi-20150213.jar")
