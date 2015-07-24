@@ -7,7 +7,7 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegexSmsFilter extends SmsFilter {
+/* package */ class RegexSmsFilter extends SmsFilter {
     private static final String TAG = RegexSmsFilter.class.getSimpleName();
 
     private final SmsFilterField mField;

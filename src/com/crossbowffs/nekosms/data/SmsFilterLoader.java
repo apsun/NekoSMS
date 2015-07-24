@@ -8,9 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
 public final class SmsFilterLoader {
@@ -73,28 +70,22 @@ public final class SmsFilterLoader {
         return data;
     }
 
-    public static List<SmsFilterData> loadAllFilters(Context context, boolean ignoreErrors) {
+    public static void loadAllFilters(Context context, SmsFilterLoadCallback callback) {
         Uri filtersUri = Filters.CONTENT_URI;
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(filtersUri, DEFAULT_PROJECTION, null, null, null);
         int[] columns = getDefaultColumns(cursor);
-        List<SmsFilterData> filters = new ArrayList<>(cursor.getCount());
+        SmsFilterData data = new SmsFilterData();
+        callback.onBegin(cursor.getCount());
         while (cursor.moveToNext()) {
-            SmsFilterData data;
             try {
-                data = getFilterData(cursor, columns, null);
+                data = getFilterData(cursor, columns, data);
             } catch (InvalidFilterException e) {
-                if (ignoreErrors) {
-                    Xlog.e(TAG, "Failed to create SMS filter", e);
-                    continue;
-                } else {
-                    throw e;
-                }
+                callback.onError(e);
             }
-            filters.add(data);
+            callback.onSuccess(data);
         }
         cursor.close();
-        return filters;
     }
 
     private static Uri convertIdToUri(long messageId) {

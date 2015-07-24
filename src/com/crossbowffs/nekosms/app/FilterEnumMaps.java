@@ -9,7 +9,7 @@ import com.crossbowffs.nekosms.data.SmsFilterMode;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FilterEnumMaps {
+/* package */ final class FilterEnumMaps {
     private FilterEnumMaps() { }
 
     public static Map<SmsFilterField, String> getFieldMap(Context context) {

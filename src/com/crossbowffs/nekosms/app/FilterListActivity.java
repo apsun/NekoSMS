@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,16 +26,14 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.InvalidFilterException;
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterJsonLoader;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.backup.SmsFilterStorageLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 import java.io.*;
-import java.util.List;
 
 public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
@@ -62,40 +59,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             }
         }
     }
-
-    private class FilterLoadCallbackImpl implements SmsFilterJsonLoader.FilterLoadCallback {
-        private int mSuccessCount;
-        private int mDuplicateCount;
-        private int mErrorCount;
-
-        @Override
-        public void onSuccess(SmsFilterData filter) {
-            Uri uri = SmsFilterLoader.writeFilter(FilterListActivity.this, filter);
-            if (uri != null) {
-                mSuccessCount++;
-            } else {
-                mDuplicateCount++;
-            }
-        }
-
-        @Override
-        public void onError(InvalidFilterException e) {
-            mErrorCount++;
-        }
-
-        public int getSuccessCount() {
-            return mSuccessCount;
-        }
-
-        public int getDuplicateCount() {
-            return mDuplicateCount;
-        }
-
-        public int getErrorCount() {
-            return mErrorCount;
-        }
-    }
-
     private static final String TAG = FilterListActivity.class.getSimpleName();
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
@@ -258,40 +221,26 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void importFromStorage() {
-        File sdCard = Environment.getExternalStorageDirectory();
-        File file = new File(sdCard, EXPORT_FILE_PATH);
-        FileInputStream in;
+        SmsFilterStorageLoader.FilterImportResult result;
         try {
-            in = new FileInputStream(file);
+            result = SmsFilterStorageLoader.importFromStorage(this);
         } catch (FileNotFoundException e) {
             Toast.makeText(this, R.string.no_filter_backup_found, Toast.LENGTH_SHORT).show();
             return;
-        }
-
-        FilterLoadCallbackImpl callback = new FilterLoadCallbackImpl();
-        try {
-            SmsFilterJsonLoader.fromJson(in, callback);
         } catch (IOException e) {
             Xlog.e(TAG, "Failed to import filters from storage", e);
             Toast.makeText(this, R.string.filter_import_failed, Toast.LENGTH_SHORT).show();
             return;
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-                Xlog.e(TAG, "Failed to close input stream", e);
-            }
         }
 
-        int successCount = callback.getSuccessCount();
-        int duplicateCount = callback.getDuplicateCount();
-        int errorCount = callback.getErrorCount();
+        int successCount = result.mSuccessCount;
+        int duplicateCount = result.mDuplicateCount;
+        int errorCount = result.mErrorCount;
 
         Xlog.d(TAG, "Filter import completed: ");
         Xlog.d(TAG, "  %d succeeded", successCount);
         Xlog.d(TAG, "  %d duplicates", duplicateCount);
         Xlog.d(TAG, "  %d failed", errorCount);
-
 
         String message;
         if (errorCount > 0) {
@@ -303,28 +252,18 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void exportToStorage() {
-        List<SmsFilterData> filters = SmsFilterLoader.loadAllFilters(this, true);
-        File sdCard = Environment.getExternalStorageDirectory();
-        File file = new File(sdCard, EXPORT_FILE_PATH);
-        FileOutputStream out = null;
+        SmsFilterStorageLoader.FilterExportResult result;
         try {
-            out = new FileOutputStream(file);
-            SmsFilterJsonLoader.toJson(out, filters);
+            result = SmsFilterStorageLoader.exportToStorage(this);
         } catch (IOException e) {
             Xlog.e(TAG, "Failed to export filters to storage", e);
             Toast.makeText(this, R.string.filter_export_failed, Toast.LENGTH_SHORT).show();
             return;
-        } finally {
-            if (out != null) {
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    Xlog.e(TAG, "Failed to close output stream", e);
-                }
-            }
         }
 
-        String message = getString(R.string.format_filters_exported, filters.size());
+        int successCount = result.mSuccessCount;
+
+        String message = getString(R.string.format_filters_exported, successCount);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 

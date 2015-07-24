@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
+/* package */ class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
     public interface ViewBinder<U> {
         boolean bindView(Context context, View view, U item);
     }

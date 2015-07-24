@@ -210,8 +210,7 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         }
 
         final Uri inboxSmsUri = InboxSmsLoader.writeMessage(this, messageData);
-        Snackbar
-            .make(mContentView, R.string.message_restored, Snackbar.LENGTH_LONG)
+        Snackbar.make(mContentView, R.string.message_restored, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -229,8 +228,7 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             return;
         }
 
-        Snackbar
-            .make(mContentView, R.string.message_deleted, Snackbar.LENGTH_LONG)
+        Snackbar.make(mContentView, R.string.message_deleted, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

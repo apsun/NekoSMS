@@ -8,7 +8,7 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 
-public class NekoSmsDbHelper extends SQLiteOpenHelper {
+/* package */ class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "nekosms.db";

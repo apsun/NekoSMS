@@ -20,7 +20,7 @@ import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 import java.util.Map;
 
-public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.FilterListItemHolder> {
+/* package */ class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.FilterListItemHolder> {
     public class FilterListItemHolder extends RecyclerView.ViewHolder {
         public SmsFilterData mFilterData;
         public TextView mPatternTextView;
@@ -70,9 +70,10 @@ public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.F
             mColumns = SmsFilterLoader.getColumns(cursor);
         }
 
-        final SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, holder.mFilterData);
+        SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, holder.mFilterData);
         holder.mFilterData = filterData;
 
+        final long id = filterData.getId();
         SmsFilterField field = filterData.getField();
         SmsFilterMode mode = filterData.getMode();
         String pattern = filterData.getPattern();
@@ -88,12 +89,9 @@ public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.F
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
-                long id = filterData.getId();
                 Intent intent = new Intent(context, FilterEditorActivity.class);
-                if (id >= 0) {
-                    Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, id);
-                    intent.setData(filterUri);
-                }
+                Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, id);
+                intent.setData(filterUri);
                 context.startActivity(intent);
             }
         });

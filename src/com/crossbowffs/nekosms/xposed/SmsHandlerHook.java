@@ -12,9 +12,7 @@ import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterLoader;
-import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -23,7 +21,6 @@ import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
@@ -32,7 +29,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
-    private List<SmsFilter> mSmsFilters;
+    private ArrayList<SmsFilter> mSmsFilters;
 
     private static SmsMessageData createMessageData(SmsMessage[] messageParts) {
         String sender = messageParts[0].getDisplayOriginatingAddress();
@@ -84,22 +81,42 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
     }
 
-    private boolean shouldFilterMessage(Context context, String sender, String body) {
-        List<SmsFilter> smsFilters;
-        synchronized (mFiltersLock) {
-            smsFilters = mSmsFilters;
-            if (smsFilters == null) {
-                Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
-                List<SmsFilterData> filterDatas = SmsFilterLoader.loadAllFilters(context, true);
-                List<SmsFilter> filters = new ArrayList<>(filterDatas.size());
-                for (SmsFilterData filterData : filterDatas) {
-                    filters.add(SmsFilter.create(filterData));
-                }
-                smsFilters = mSmsFilters = filters;
+    private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
+        final ArrayList<SmsFilter> filters = new ArrayList<>(0);
+        SmsFilterLoader.loadAllFilters(context, new SmsFilterLoadCallback() {
+            @Override
+            public void onBegin(int count) {
+                filters.ensureCapacity(count);
             }
+
+            @Override
+            public void onSuccess(SmsFilterData filterData) {
+                SmsFilter filter = SmsFilter.create(filterData);
+                filters.add(filter);
+            }
+
+            @Override
+            public void onError(InvalidFilterException e) {
+                Xlog.e(TAG, "Failed to load SMS filter", e);
+            }
+        });
+
+        return filters;
+    }
+
+    private boolean shouldFilterMessage(Context context, String sender, String body) {
+        ArrayList<SmsFilter> filters;
+
+        synchronized (mFiltersLock) {
+            if (mSmsFilters == null) {
+                Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
+                mSmsFilters = loadSmsFilters(context);
+            }
+
+            filters = mSmsFilters;
         }
 
-        for (SmsFilter filter : smsFilters) {
+        for (SmsFilter filter : filters) {
             if (filter.matches(sender, body)) {
                 return true;
             }
@@ -115,8 +132,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             packageInfo = packageManager.getPackageInfo(NEKOSMS_PACKAGE, 0);
         } catch (PackageManager.NameNotFoundException e) {
-            Xlog.e(TAG, "Failed to find our own package", e);
-            return;
+            throw new AssertionError(e);
         }
 
         int uid = packageInfo.applicationInfo.uid;

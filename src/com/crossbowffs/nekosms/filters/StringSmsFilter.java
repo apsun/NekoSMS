@@ -5,7 +5,7 @@ import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-public class StringSmsFilter extends SmsFilter {
+/* package */ class StringSmsFilter extends SmsFilter {
     private static final String TAG = StringSmsFilter.class.getSimpleName();
 
     private final SmsFilterField mField;
