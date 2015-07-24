@@ -79,12 +79,12 @@ public final class BlockedSmsLoader {
         Cursor cursor = contentResolver.query(messageUri, DEFAULT_PROJECTION, null, null, null);
 
         if (!cursor.moveToFirst()) {
-            Xlog.e(TAG, "URI does not match any message: ", messageUri);
+            Xlog.e(TAG, "URI does not match any message: %s", messageUri);
             return null;
         }
 
         if (cursor.getCount() > 1) {
-            Xlog.w(TAG, "URI matched more than one message: ", messageUri);
+            Xlog.w(TAG, "URI matched more than one message: %s", messageUri);
         }
 
         SmsMessageData data = getMessageData(cursor, getDefaultColumns(cursor), null);

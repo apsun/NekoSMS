@@ -1,9 +1,16 @@
 package com.crossbowffs.nekosms.utils;
 
+import android.content.Context;
+import android.content.Intent;
+
 public final class XposedUtils {
-    // This number should be incremented every time the module
-    // is modified
+    // This number should be incremented every time the module is modified
     private static final int VERSION = 1;
+
+    private static final String XPOSED_ACTION = "de.robv.android.xposed.installer.OPEN_SECTION";
+    private static final String XPOSED_EXTRA_SECTION = "section";
+    public static final String XPOSED_SECTION_MODULES = "modules";
+    public static final String XPOSED_SECTION_INSTALL = "install";
 
     private XposedUtils() { }
 
@@ -24,5 +31,11 @@ public final class XposedUtils {
         // value of XposedUtils.VERSION, as seen from the
         // module side.
         return VERSION;
+    }
+
+    public static void startXposedActivity(Context context, String section) {
+        Intent intent = new Intent(XPOSED_ACTION);
+        intent.putExtra(XPOSED_EXTRA_SECTION, section);
+        context.startActivity(intent);
     }
 }

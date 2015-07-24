@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
+import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterLoader;
 import com.crossbowffs.nekosms.data.SmsMessageData;
@@ -27,7 +28,7 @@ import java.util.List;
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
 
-    private static final String NEKOSMS_PACKAGE = "com.crossbowffs.nekosms";
+    private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
@@ -114,7 +115,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             packageInfo = packageManager.getPackageInfo(NEKOSMS_PACKAGE, 0);
         } catch (PackageManager.NameNotFoundException e) {
-            Xlog.e(TAG, "Failed to find our own package");
+            Xlog.e(TAG, "Failed to find our own package", e);
             return;
         }
 

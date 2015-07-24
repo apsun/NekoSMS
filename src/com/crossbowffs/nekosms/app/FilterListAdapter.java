@@ -65,7 +65,7 @@ public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.F
     }
 
     @Override
-    public void onBindViewHolder(final FilterListItemHolder holder, Cursor cursor) {
+    public void onBindViewHolder(FilterListItemHolder holder, Cursor cursor) {
         if (mColumns == null) {
             mColumns = SmsFilterLoader.getColumns(cursor);
         }
@@ -87,12 +87,14 @@ public class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.F
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(holder.itemView.getContext(), FilterEditorActivity.class);
-                if (filterData.getId() >= 0) {
-                    Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, filterData.getId());
+                Context context = v.getContext();
+                long id = filterData.getId();
+                Intent intent = new Intent(context, FilterEditorActivity.class);
+                if (id >= 0) {
+                    Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, id);
                     intent.setData(filterUri);
                 }
-                holder.itemView.getContext().startActivity(intent);
+                context.startActivity(intent);
             }
         });
     }

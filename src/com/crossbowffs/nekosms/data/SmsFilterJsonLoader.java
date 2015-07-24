@@ -14,6 +14,7 @@ public final class SmsFilterJsonLoader {
     }
 
     private static final String TAG = SmsFilterJsonLoader.class.getSimpleName();
+    private static final String JSON_ENCODING = "UTF-8";
     private static final String KEY_FIELD = "field";
     private static final String KEY_MODE = "mode";
     private static final String KEY_PATTERN = "pattern";
@@ -22,7 +23,7 @@ public final class SmsFilterJsonLoader {
     private SmsFilterJsonLoader() { }
 
     public static void toJson(OutputStream out, List<SmsFilterData> filters) throws IOException {
-        OutputStreamWriter streamWriter = new OutputStreamWriter(out, "UTF-8");
+        OutputStreamWriter streamWriter = new OutputStreamWriter(out, JSON_ENCODING);
         JsonWriter jsonWriter = new JsonWriter(streamWriter);
         jsonWriter.setIndent("\t");
         try {
@@ -50,7 +51,7 @@ public final class SmsFilterJsonLoader {
     }
 
     public static void fromJson(InputStream in, FilterLoadCallback callback) throws IOException {
-        InputStreamReader streamReader = new InputStreamReader(in, "UTF-8");
+        InputStreamReader streamReader = new InputStreamReader(in, JSON_ENCODING);
         JsonReader jsonReader = new JsonReader(streamReader);
         try {
             readFiltersArray(jsonReader, callback);

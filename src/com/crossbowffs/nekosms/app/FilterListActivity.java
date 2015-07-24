@@ -101,7 +101,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
     private static final String EXPORT_FILE_PATH = "nekosms.json";
-    private static final String XPOSED_ACTION = "de.robv.android.xposed.installer.OPEN_SECTION";
 
     private View mCoordinatorLayout;
     private FilterListAdapter mAdapter;
@@ -378,10 +377,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void startXposedActivity(String section) {
-        Intent intent = new Intent(XPOSED_ACTION);
-        intent.putExtra("section", section);
         try {
-            startActivity(intent);
+            XposedUtils.startXposedActivity(this, section);
         } catch (ActivityNotFoundException e) {
             Xlog.e(TAG, "Could not start Xposed activity", e);
             Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
@@ -397,7 +394,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    startXposedActivity("modules");
+                    startXposedActivity(XposedUtils.XPOSED_SECTION_MODULES);
                 }
             })
             .setNeutralButton(R.string.report_bug, new DialogInterface.OnClickListener() {
@@ -421,7 +418,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .setPositiveButton(R.string.reboot, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    startXposedActivity("install");
+                    startXposedActivity(XposedUtils.XPOSED_SECTION_INSTALL);
                 }
             })
             .setNegativeButton(R.string.ignore, null);
