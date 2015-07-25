@@ -15,14 +15,19 @@
     <string name="undo">Undo</string>
 
     <!-- Filter list -->
-    <string name="create_filter">Create filter</string>
-    <string name="import_export_filters">Import/export</string>
+    <string name="import_export">Import/export</string>
+    <string name="import_export_filters">Import/export filters</string>
     <string name="import_from_storage">Import from storage</string>
     <string name="export_to_storage">Export to storage</string>
     <string name="no_filter_backup_found">No filter backup found</string>
-    <string name="format_filters_imported">%d new filter(s) imported</string>
-    <string name="format_filters_imported_error">%1$d new filter(s) imported, %2$d failed</string>
-    <string name="format_filters_exported">%d filter(s) exported</string>
+    <plurals name="format_filters_imported">
+        <item quantity="one">%d new filter successfully imported</item>
+        <item quantity="other">%d new filters successfully imported</item>
+    </plurals>
+    <plurals name="format_filters_exported">
+        <item quantity="one">%d filter successfully exported</item>
+        <item quantity="other">%d filters successfully exported</item>
+    </plurals>
     <string name="filter_import_failed">Filter import failed</string>
     <string name="filter_export_failed">Filter export failed</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
@@ -61,7 +66,6 @@
     <string name="blocked_messages_empty_text">No blocked messages! Have a nice day!</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
-    <string name="message_restore_failed">Message could not be restored</string>
     <string name="format_message_sender">Sender: %s</string>
     <string name="format_message_body">Body: %s</string>
     <string name="format_message_time_sent">Sent at: %s</string>

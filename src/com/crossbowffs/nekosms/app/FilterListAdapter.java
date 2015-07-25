@@ -22,11 +22,11 @@ import java.util.Map;
 
 /* package */ class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.FilterListItemHolder> {
     public class FilterListItemHolder extends RecyclerView.ViewHolder {
+        public final TextView mPatternTextView;
+        public final TextView mFieldTextView;
+        public final TextView mModeTextView;
+        public final TextView mCaseSensitiveTextView;
         public SmsFilterData mFilterData;
-        public TextView mPatternTextView;
-        public TextView mFieldTextView;
-        public TextView mModeTextView;
-        public TextView mCaseSensitiveTextView;
 
         public FilterListItemHolder(View itemView) {
             super(itemView);
@@ -38,13 +38,13 @@ import java.util.Map;
         }
     }
 
+    private final Map<SmsFilterField, String> mSmsFilterFieldMap;
+    private final Map<SmsFilterMode, String> mSmsFilterModeMap;
+    private final String mPatternFormatString;
+    private final String mFieldFormatString;
+    private final String mModeFormatString;
+    private final String mCaseSensitiveFormatString;
     private int[] mColumns;
-    private Map<SmsFilterField, String> mSmsFilterFieldMap;
-    private Map<SmsFilterMode, String> mSmsFilterModeMap;
-    private String mPatternFormatString;
-    private String mFieldFormatString;
-    private String mModeFormatString;
-    private String mCaseSensitiveFormatString;
 
     public FilterListAdapter(Context context) {
         mSmsFilterFieldMap = FilterEnumMaps.getFieldMap(context);

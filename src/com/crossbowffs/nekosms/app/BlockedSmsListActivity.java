@@ -35,11 +35,11 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
     }
 
     private static class BlockedSmsAdapter extends ResourceCursorAdapter {
-        private Context mContext;
+        private final Context mContext;
+        private final String mSenderFormatString;
+        private final String mBodyFormatString;
+        private final String mTimeSentFormatString;
         private int[] mColumns;
-        private String mSenderFormatString;
-        private String mBodyFormatString;
-        private String mTimeSentFormatString;
 
         public BlockedSmsAdapter(Context context) {
             super(context, R.layout.listitem_blockedsms_list, null, 0);
@@ -110,7 +110,6 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         listView.setAdapter(adapter);
         registerForContextMenu(listView);
 
-        // TODO: implement interface on outer class
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -9,7 +9,7 @@
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_item_import_export_filters"
-        android:title="@string/import_export_filters"
+        android:title="@string/import_export"
         app:showAsAction="never"/>
     <item
         android:id="@+id/menu_item_about"

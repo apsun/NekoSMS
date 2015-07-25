@@ -12,7 +12,7 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
 public final class SmsFilterDbLoader {
-    public static final String TAG = SmsFilterDbLoader.class.getSimpleName();
+    private static final String TAG = SmsFilterDbLoader.class.getSimpleName();
     private static final String[] DEFAULT_PROJECTION = {
         Filters._ID,
         Filters.FIELD,

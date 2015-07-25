@@ -16,7 +16,9 @@ public final class XposedUtils {
 
     public static boolean isModuleEnabled() {
         // This method is hooked by the module to return true.
-        return false;
+        // Use non-constexpr to prevent optimization and
+        // suppress constant return value warnings.
+        return Boolean.parseBoolean("false");
     }
 
     public static int getAppVersion() {

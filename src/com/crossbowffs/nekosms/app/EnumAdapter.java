@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 /* package */ class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
-    private Context mContext;
-    private LayoutInflater mInflater;
-    private int mLayout;
-    private List<T> mItems;
+    private final Context mContext;
+    private final LayoutInflater mInflater;
+    private final int mLayout;
+    private final List<T> mItems;
     private Map<T, String> mStringMap;
 
     public EnumAdapter(Context context, int layout, Class<T> cls) {

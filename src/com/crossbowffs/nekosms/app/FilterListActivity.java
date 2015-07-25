@@ -2,8 +2,7 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.LoaderManager;
 import android.content.*;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,10 +23,11 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.backup.SmsFilterStorageLoader;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
-import com.crossbowffs.nekosms.backup.SmsFilterStorageLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
@@ -176,14 +176,14 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         mAdapter.changeCursor(null);
     }
 
-    public void showCreateButton() {
+    private void showCreateButton() {
         mCreateButton.animate()
             .translationY(0)
             .setInterpolator(new DecelerateInterpolator(2))
             .start();
     }
 
-    public void hideCreateButton() {
+    private void hideCreateButton() {
         CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)mCreateButton.getLayoutParams();
         mCreateButton.animate()
             .translationY(mCreateButton.getHeight() + lp.bottomMargin)
@@ -191,7 +191,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .start();
     }
 
-    public void showImportExportDialog() {
+    private void showImportExportDialog() {
         String importString = getString(R.string.import_from_storage);
         String exportString = getString(R.string.export_to_storage);
         CharSequence[] items = {importString, exportString};
@@ -234,12 +234,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         Xlog.d(TAG, "  %d duplicates", duplicateCount);
         Xlog.d(TAG, "  %d failed", errorCount);
 
-        String message;
-        if (errorCount > 0) {
-            message = getString(R.string.format_filters_imported_error, successCount, errorCount);
-        } else {
-            message = getString(R.string.format_filters_imported, successCount);
-        }
+        Resources resources = getResources();
+        String message = resources.getQuantityString(R.plurals.format_filters_imported, successCount, successCount);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
@@ -255,7 +251,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
 
         int successCount = result.mSuccessCount;
 
-        String message = getString(R.string.format_filters_exported, successCount);
+        Resources resources = getResources();
+        String message = resources.getQuantityString(R.plurals.format_filters_exported, successCount, successCount);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
@@ -288,17 +285,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
                 }
             })
             .show();
-    }
-
-    private String getPackageVersion() {
-        try {
-            PackageManager packageManager = getPackageManager();
-            String packageName = getPackageName();
-            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA);
-            return packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
     }
 
     private void startReportBugActivity() {
@@ -363,7 +349,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             TWITTER_URL, BITBUCKET_URL, REPORT_BUG_URL));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.app_name) + " " + getPackageVersion())
+            .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
             .setMessage(html)
             .setPositiveButton(R.string.ok, null);
 

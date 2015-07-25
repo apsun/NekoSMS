@@ -32,8 +32,6 @@ public class FilterEditorActivity extends AppCompatActivity {
     private CheckBox mIgnoreCaseCheckBox;
     private Uri mFilterUri;
     private SmsFilterData mFilter;
-    private EnumAdapter<SmsFilterField> mSmsFilterFieldAdapter;
-    private EnumAdapter<SmsFilterMode> mSmsFilterModeAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,16 +53,15 @@ public class FilterEditorActivity extends AppCompatActivity {
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
         mIgnoreCaseCheckBox = (CheckBox)findViewById(R.id.activity_filter_editor_ignorecase_checkbox);
 
-        mSmsFilterFieldAdapter = new EnumAdapter<>(this,
+        EnumAdapter<SmsFilterField> fieldAdapter = new EnumAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item, SmsFilterField.class);
-        mSmsFilterFieldAdapter.setStringMap(FilterEnumMaps.getFieldMap(this));
+        fieldAdapter.setStringMap(FilterEnumMaps.getFieldMap(this));
+        mFieldSpinner.setAdapter(fieldAdapter);
 
-        mSmsFilterModeAdapter = new EnumAdapter<>(this,
+        EnumAdapter<SmsFilterMode> modeAdapter = new EnumAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
-        mSmsFilterModeAdapter.setStringMap(FilterEnumMaps.getModeMap(this));
-
-        mFieldSpinner.setAdapter(mSmsFilterFieldAdapter);
-        mModeSpinner.setAdapter(mSmsFilterModeAdapter);
+        modeAdapter.setStringMap(FilterEnumMaps.getModeMap(this));
+        mModeSpinner.setAdapter(modeAdapter);
 
         SmsFilterData filter = null;
         if (filterUri != null) {
@@ -72,13 +69,13 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
 
         if (filter != null) {
-            mFieldSpinner.setSelection(mSmsFilterFieldAdapter.getPosition(filter.getField()));
-            mModeSpinner.setSelection(mSmsFilterModeAdapter.getPosition(filter.getMode()));
+            mFieldSpinner.setSelection(fieldAdapter.getPosition(filter.getField()));
+            mModeSpinner.setSelection(modeAdapter.getPosition(filter.getMode()));
             mPatternEditText.setText(filter.getPattern());
             mIgnoreCaseCheckBox.setChecked(!filter.isCaseSensitive());
         } else {
-            mFieldSpinner.setSelection(mSmsFilterFieldAdapter.getPosition(SmsFilterField.BODY));
-            mModeSpinner.setSelection(mSmsFilterModeAdapter.getPosition(SmsFilterMode.CONTAINS));
+            mFieldSpinner.setSelection(fieldAdapter.getPosition(SmsFilterField.BODY));
+            mModeSpinner.setSelection(modeAdapter.getPosition(SmsFilterMode.CONTAINS));
             mIgnoreCaseCheckBox.setChecked(true);
         }
     }
