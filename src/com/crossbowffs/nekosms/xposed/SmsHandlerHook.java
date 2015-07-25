@@ -13,6 +13,7 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -83,7 +84,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
         final ArrayList<SmsFilter> filters = new ArrayList<>(0);
-        SmsFilterLoader.loadAllFilters(context, new SmsFilterLoadCallback() {
+        SmsFilterDbLoader.loadAllFilters(context, new SmsFilterLoadCallback() {
             @Override
             public void onBegin(int count) {
                 filters.ensureCapacity(count);

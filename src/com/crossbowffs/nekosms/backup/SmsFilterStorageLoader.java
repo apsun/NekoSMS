@@ -6,12 +6,12 @@ import android.os.Environment;
 import com.crossbowffs.nekosms.data.InvalidFilterException;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterLoadCallback;
-import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.io.*;
 
-public class SmsFilterStorageLoader {
+public final class SmsFilterStorageLoader {
     // This is required in order to pass checked exceptions
     // across closure boundaries. Wrap the checked exception
     // using this, then catch the exception outside the
@@ -41,6 +41,8 @@ public class SmsFilterStorageLoader {
     private static final String TAG = SmsFilterStorageLoader.class.getSimpleName();
     private static final String EXPORT_FILE_PATH = "nekosms.json";
 
+    private SmsFilterStorageLoader() { }
+
     public static FilterImportResult importFromStorage(final Context context) throws IOException {
         File sdCard = Environment.getExternalStorageDirectory();
         File file = new File(sdCard, EXPORT_FILE_PATH);
@@ -51,7 +53,7 @@ public class SmsFilterStorageLoader {
             jsonDeserializer.read(new SmsFilterLoadCallback() {
                 @Override
                 public void onSuccess(SmsFilterData filterData) {
-                    Uri filterUri = SmsFilterLoader.writeFilter(context, filterData);
+                    Uri filterUri = SmsFilterDbLoader.writeFilter(context, filterData);
                     if (filterUri != null) {
                         result.mSuccessCount++;
                     } else {
@@ -80,7 +82,7 @@ public class SmsFilterStorageLoader {
         final FilterExportResult result = new FilterExportResult();
         try {
             jsonSerializer.begin();
-            SmsFilterLoader.loadAllFilters(context, new SmsFilterLoadCallback() {
+            SmsFilterDbLoader.loadAllFilters(context, new SmsFilterLoadCallback() {
                 @Override
                 public void onSuccess(SmsFilterData filterData) {
                     try {

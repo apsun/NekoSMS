@@ -12,15 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 /* package */ class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
-    public interface ViewBinder<U> {
-        boolean bindView(Context context, View view, U item);
-    }
-
     private Context mContext;
     private LayoutInflater mInflater;
     private int mLayout;
     private List<T> mItems;
-    private ViewBinder<T> mBinder;
     private Map<T, String> mStringMap;
 
     public EnumAdapter(Context context, int layout, Class<T> cls) {
@@ -36,14 +31,6 @@ import java.util.Map;
 
     public Map<T, String> getStringMap() {
         return mStringMap;
-    }
-
-    public void setViewBinder(ViewBinder<T> binder) {
-        mBinder = binder;
-    }
-
-    public ViewBinder<T> getViewBinder() {
-        return mBinder;
     }
 
     public int getPosition(T item) {
@@ -85,10 +72,6 @@ import java.util.Map;
     }
 
     protected void bindView(Context context, View view, T item) {
-        if (mBinder != null && mBinder.bindView(context, view, item)) {
-            return;
-        }
-
         if (view instanceof TextView) {
             TextView textView = (TextView)view;
             String itemString = getItemString(item);

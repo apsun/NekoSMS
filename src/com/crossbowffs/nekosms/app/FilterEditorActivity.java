@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 
 import java.util.regex.Pattern;
@@ -68,7 +68,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
         SmsFilterData filter = null;
         if (filterUri != null) {
-            filter = mFilter = SmsFilterLoader.loadFilter(this, filterUri);
+            filter = mFilter = SmsFilterDbLoader.loadFilter(this, filterUri);
         }
 
         if (filter != null) {
@@ -206,7 +206,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     private Uri writeFilterData() {
         SmsFilterData filterData = createFilterData();
-        return mFilterUri = SmsFilterLoader.updateFilter(this, mFilterUri, filterData, true);
+        return mFilterUri = SmsFilterDbLoader.updateFilter(this, mFilterUri, filterData, true);
     }
 
     private void showInvalidPatternDialog(int messageId) {

@@ -14,7 +14,7 @@ import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
@@ -67,10 +67,10 @@ import java.util.Map;
     @Override
     public void onBindViewHolder(FilterListItemHolder holder, Cursor cursor) {
         if (mColumns == null) {
-            mColumns = SmsFilterLoader.getColumns(cursor);
+            mColumns = SmsFilterDbLoader.getColumns(cursor);
         }
 
-        SmsFilterData filterData = SmsFilterLoader.getFilterData(cursor, mColumns, holder.mFilterData);
+        SmsFilterData filterData = SmsFilterDbLoader.getFilterData(cursor, mColumns, holder.mFilterData);
         holder.mFilterData = filterData;
 
         final long id = filterData.getId();

@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.data;
+package com.crossbowffs.nekosms.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -6,12 +6,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.provider.Telephony;
+import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-public final class InboxSmsLoader {
-    private static final String TAG = InboxSmsLoader.class.getSimpleName();
+public final class InboxSmsDbLoader {
+    private static final String TAG = InboxSmsDbLoader.class.getSimpleName();
 
-    private InboxSmsLoader() { }
+    private InboxSmsDbLoader() { }
 
     public static Uri writeMessage(Context context, SmsMessageData messageData) {
         ContentResolver contentResolver = context.getContentResolver();

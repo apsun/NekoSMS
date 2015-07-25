@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.data;
+package com.crossbowffs.nekosms.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -6,12 +6,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 
-public final class BlockedSmsLoader {
-    private static final String TAG = BlockedSmsLoader.class.getSimpleName();
+public final class BlockedSmsDbLoader {
+    private static final String TAG = BlockedSmsDbLoader.class.getSimpleName();
     private static final String[] DEFAULT_PROJECTION = {
         Blocked._ID,
         Blocked.SENDER,
@@ -27,7 +28,7 @@ public final class BlockedSmsLoader {
 
     private static int[] sDefaultColumns;
 
-    private BlockedSmsLoader() { }
+    private BlockedSmsDbLoader() { }
 
     public static int[] getColumns(Cursor cursor) {
         int[] columns = new int[5];

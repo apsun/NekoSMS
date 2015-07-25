@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.data;
+package com.crossbowffs.nekosms.database;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -6,12 +6,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
-public final class SmsFilterLoader {
-    public static final String TAG = SmsFilterLoader.class.getSimpleName();
+public final class SmsFilterDbLoader {
+    public static final String TAG = SmsFilterDbLoader.class.getSimpleName();
     private static final String[] DEFAULT_PROJECTION = {
         Filters._ID,
         Filters.FIELD,
@@ -27,7 +28,7 @@ public final class SmsFilterLoader {
 
     private static int[] sDefaultColumns;
 
-    private SmsFilterLoader() { }
+    private SmsFilterDbLoader() { }
 
     public static int[] getColumns(Cursor cursor) {
         int[] columns = new int[5];

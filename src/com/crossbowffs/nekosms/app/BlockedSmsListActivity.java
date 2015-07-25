@@ -20,8 +20,8 @@ import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.BlockedSmsLoader;
-import com.crossbowffs.nekosms.data.InboxSmsLoader;
+import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
+import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -65,11 +65,11 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
             if (mColumns == null) {
-                mColumns = BlockedSmsLoader.getColumns(cursor);
+                mColumns = BlockedSmsDbLoader.getColumns(cursor);
             }
 
             MessageListItemTag tag = (MessageListItemTag)view.getTag();
-            SmsMessageData messageData = BlockedSmsLoader.getMessageData(cursor, mColumns, tag.mMessageData);
+            SmsMessageData messageData = BlockedSmsDbLoader.getMessageData(cursor, mColumns, tag.mMessageData);
             tag.mMessageData = messageData;
 
             String sender = messageData.getSender();
@@ -199,30 +199,30 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         message.setBody("This is a test");
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
-        BlockedSmsLoader.writeMessage(this, message);
+        BlockedSmsDbLoader.writeMessage(this, message);
     }
 
     private void restoreSms(long smsId) {
-        final SmsMessageData messageData = BlockedSmsLoader.loadAndDeleteMessage(this, smsId);
+        final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(this, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
             return;
         }
 
-        final Uri inboxSmsUri = InboxSmsLoader.writeMessage(this, messageData);
+        final Uri inboxSmsUri = InboxSmsDbLoader.writeMessage(this, messageData);
         Snackbar.make(mContentView, R.string.message_restored, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    InboxSmsLoader.deleteMessage(BlockedSmsListActivity.this, inboxSmsUri);
-                    BlockedSmsLoader.writeMessage(BlockedSmsListActivity.this, messageData);
+                    InboxSmsDbLoader.deleteMessage(BlockedSmsListActivity.this, inboxSmsUri);
+                    BlockedSmsDbLoader.writeMessage(BlockedSmsListActivity.this, messageData);
                 }
             })
             .show();
     }
 
     private void deleteSms(long smsId) {
-        final SmsMessageData messageData = BlockedSmsLoader.loadAndDeleteMessage(this, smsId);
+        final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(this, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to delete message: could not load data");
             return;
@@ -232,7 +232,7 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    BlockedSmsLoader.writeMessage(BlockedSmsListActivity.this, messageData);
+                    BlockedSmsDbLoader.writeMessage(BlockedSmsListActivity.this, messageData);
                 }
             })
             .show();
@@ -240,7 +240,7 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
 
     private void showMessageDetailsDialog(final long smsId) {
         Uri messageUri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, smsId);
-        SmsMessageData messageData = BlockedSmsLoader.loadMessage(this, messageUri);
+        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(this, messageUri);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to show message details: could not load data");
             return;

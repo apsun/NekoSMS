@@ -6,7 +6,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -27,13 +26,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterLoader;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.backup.SmsFilterStorageLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
@@ -59,11 +59,11 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             }
         }
     }
+
     private static final String TAG = FilterListActivity.class.getSimpleName();
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
-    private static final String EXPORT_FILE_PATH = "nekosms.json";
 
     private View mCoordinatorLayout;
     private FilterListAdapter mAdapter;
@@ -176,14 +176,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         mAdapter.changeCursor(null);
     }
 
-    private void finishTryTransition() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            finishAfterTransition();
-        } else {
-            finish();
-        }
-    }
-
     public void showCreateButton() {
         mCreateButton.animate()
             .translationY(0)
@@ -282,7 +274,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void deleteFilter(long filterId) {
-        final SmsFilterData filterData = SmsFilterLoader.loadAndDeleteFilter(this, filterId);
+        final SmsFilterData filterData = SmsFilterDbLoader.loadAndDeleteFilter(this, filterId);
         if (filterData == null) {
             Xlog.e(TAG, "Failed to delete filter: could not load data");
             return;
@@ -292,7 +284,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SmsFilterLoader.writeFilter(FilterListActivity.this, filterData);
+                    SmsFilterDbLoader.writeFilter(FilterListActivity.this, filterData);
                 }
             })
             .show();

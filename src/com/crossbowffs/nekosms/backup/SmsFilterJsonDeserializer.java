@@ -43,8 +43,6 @@ import java.io.UnsupportedEncodingException;
         String pattern = null;
         boolean caseSensitive = true;
 
-        // TODO: What happens if an exception occurs in here?
-        // Do we need to finally { endObject(); }?
         mJsonReader.beginObject();
         while (mJsonReader.hasNext()) {
             String name = mJsonReader.nextName();
