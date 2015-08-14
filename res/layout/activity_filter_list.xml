@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="0dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/toolbar"/>
@@ -11,18 +10,18 @@
         android:id="@+id/activity_filter_list_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <android.support.v7.widget.RecyclerView
+        <com.crossbowffs.nekosms.app.EmptyRecyclerView
             android:id="@+id/activity_filter_list_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical"/>
-        <!--TextView
+        <TextView
             android:id="@android:id/empty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="@string/filter_list_empty_text"/-->
+            android:text="@string/filter_list_empty_text"/>
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/activity_filter_list_create_button"
             android:layout_width="wrap_content"

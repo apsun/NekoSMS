@@ -94,8 +94,9 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
+        EmptyRecyclerView recyclerView = (EmptyRecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
         recyclerView.setAdapter(adapter);
+        recyclerView.setEmptyView(findViewById(android.R.id.empty));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addOnScrollListener(new ScrollListener());
         registerForContextMenu(recyclerView);

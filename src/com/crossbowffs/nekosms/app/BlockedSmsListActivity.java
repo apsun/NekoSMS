@@ -2,7 +2,6 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.LoaderManager;
 import android.content.*;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -20,9 +19,9 @@ import android.widget.ListView;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
-import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -30,25 +29,15 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
     private static class MessageListItemTag {
         public SmsMessageData mMessageData;
         public TextView mSenderTextView;
-        public TextView mBodyTextView;
         public TextView mTimeSentTextView;
+        public TextView mBodyTextView;
     }
 
     private static class BlockedSmsAdapter extends ResourceCursorAdapter {
-        private final Context mContext;
-        private final String mSenderFormatString;
-        private final String mBodyFormatString;
-        private final String mTimeSentFormatString;
         private int[] mColumns;
 
         public BlockedSmsAdapter(Context context) {
             super(context, R.layout.listitem_blockedsms_list, null, 0);
-
-            mContext = context;
-            Resources resources = context.getResources();
-            mSenderFormatString = resources.getString(R.string.format_message_sender);
-            mBodyFormatString = resources.getString(R.string.format_message_body);
-            mTimeSentFormatString = resources.getString(R.string.format_message_time_sent);
         }
 
         @Override
@@ -56,8 +45,8 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             View view = super.newView(context, cursor, parent);
             MessageListItemTag tag = new MessageListItemTag();
             tag.mSenderTextView = (TextView)view.findViewById(R.id.listitem_blockedsms_list_sender_textview);
-            tag.mBodyTextView = (TextView)view.findViewById(R.id.listitem_blockedsms_list_body_textview);
             tag.mTimeSentTextView = (TextView)view.findViewById(R.id.listitem_blockedsms_list_timesent_textview);
+            tag.mBodyTextView = (TextView)view.findViewById(R.id.listitem_blockedsms_list_body_textview);
             view.setTag(tag);
             return view;
         }
@@ -73,13 +62,13 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             tag.mMessageData = messageData;
 
             String sender = messageData.getSender();
-            String body = messageData.getBody();
             long timeSent = messageData.getTimeSent();
-            String timeSentString = DateUtils.getRelativeTimeSpanString(mContext, timeSent).toString();
+            String body = messageData.getBody();
+            String timeSentString = DateUtils.getRelativeTimeSpanString(context, timeSent).toString();
 
-            tag.mSenderTextView.setText(String.format(mSenderFormatString, sender));
-            tag.mBodyTextView.setText(String.format(mBodyFormatString, body));
-            tag.mTimeSentTextView.setText(String.format(mTimeSentFormatString, timeSentString));
+            tag.mSenderTextView.setText(sender);
+            tag.mTimeSentTextView.setText(timeSentString);
+            tag.mBodyTextView.setText(body);
         }
     }
 
@@ -171,7 +160,7 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             NekoSmsContract.Blocked.TIME_RECEIVED
         };
         Uri uri = NekoSmsContract.Blocked.CONTENT_URI;
-        return new CursorLoader(this, uri, from, null, null, null);
+        return new CursorLoader(this, uri, from, null, null, NekoSmsContract.Blocked.TIME_SENT + " DESC");
     }
 
     @Override
@@ -195,9 +184,9 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
     private void createTestSms() {
         SmsMessageData message = new SmsMessageData();
         message.setSender("1234567890");
-        message.setBody("This is a test");
+        message.setBody("This is a test message\nwith\nloooooooooong content");
         message.setTimeReceived(System.currentTimeMillis());
-        message.setTimeSent(System.currentTimeMillis());
+        message.setTimeSent(0);
         BlockedSmsDbLoader.writeMessage(this, message);
     }
 

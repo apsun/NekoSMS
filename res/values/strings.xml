@@ -66,18 +66,15 @@
     <string name="blocked_messages_empty_text">No blocked messages! Have a nice day!</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
-    <string name="format_message_sender">Sender: %s</string>
-    <string name="format_message_body">Body: %s</string>
-    <string name="format_message_time_sent">Sent at: %s</string>
     <string name="format_message_details">
         <![CDATA[
             <b>Sender</b><br>
             %1$s<br><br>
 
-            <b>Time</b><br>
+            <b>Time sent</b><br>
             %2$s<br><br>
 
-            <b>Body</b><br>
+            <b>Message body</b><br>
             %3$s
         ]]>
     </string>
