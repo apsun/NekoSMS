@@ -10,7 +10,7 @@
         android:id="@+id/activity_filter_list_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.crossbowffs.nekosms.app.EmptyRecyclerView
+        <com.crossbowffs.nekosms.app.ListRecyclerView
             android:id="@+id/activity_filter_list_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

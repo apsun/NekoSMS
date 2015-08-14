@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,17 +16,17 @@ import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.SmsFilterStorageLoader;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
@@ -65,7 +64,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
     private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
 
-    private View mCoordinatorLayout;
     private FilterListAdapter mAdapter;
     private FloatingActionButton mCreateButton;
 
@@ -73,8 +71,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_list);
-
-        mCoordinatorLayout = findViewById(R.id.activity_filter_list_root);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -90,16 +86,16 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startFilterEditorActivity(-1);
+                Intent intent = new Intent(FilterListActivity.this, FilterEditorActivity.class);
+                startActivity(intent);
             }
         });
 
-        EmptyRecyclerView recyclerView = (EmptyRecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
+        ListRecyclerView recyclerView = (ListRecyclerView)findViewById(R.id.activity_filter_list_recyclerview);
         recyclerView.setAdapter(adapter);
         recyclerView.setEmptyView(findViewById(android.R.id.empty));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addOnScrollListener(new ScrollListener());
-        registerForContextMenu(recyclerView);
 
         if (!XposedUtils.isModuleEnabled()) {
             showInitFailedDialog();
@@ -129,28 +125,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             return true;
         default:
             return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_filter_list, menu);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-        long rowId = info.id;
-        switch (item.getItemId()) {
-        case R.id.contextmenu_filter_list_edit:
-            startFilterEditorActivity(rowId);
-            return true;
-        case R.id.contextmenu_filter_list_delete:
-            deleteFilter(rowId);
-            return true;
-        default:
-            return super.onContextItemSelected(item);
         }
     }
 
@@ -260,32 +234,6 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     private void startBlockedSmsListActivity() {
         Intent intent = new Intent(this, BlockedSmsListActivity.class);
         startActivity(intent);
-    }
-
-    private void startFilterEditorActivity(long filterId) {
-        Intent intent = new Intent(this, FilterEditorActivity.class);
-        if (filterId >= 0) {
-            Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, filterId);
-            intent.setData(filterUri);
-        }
-        startActivity(intent);
-    }
-
-    private void deleteFilter(long filterId) {
-        final SmsFilterData filterData = SmsFilterDbLoader.loadAndDeleteFilter(this, filterId);
-        if (filterData == null) {
-            Xlog.e(TAG, "Failed to delete filter: could not load data");
-            return;
-        }
-
-        Snackbar.make(mCoordinatorLayout, R.string.filter_deleted, Snackbar.LENGTH_LONG)
-            .setAction(R.string.undo, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SmsFilterDbLoader.writeFilter(FilterListActivity.this, filterData);
-                }
-            })
-            .show();
     }
 
     private void startReportBugActivity() {

@@ -65,8 +65,9 @@ public class FilterEditorActivity extends AppCompatActivity {
 
         SmsFilterData filter = null;
         if (filterUri != null) {
-            filter = mFilter = SmsFilterDbLoader.loadFilter(this, filterUri);
+            filter = SmsFilterDbLoader.loadFilter(this, filterUri);
         }
+        mFilter = filter;
 
         if (filter != null) {
             mFieldSpinner.setSelection(fieldAdapter.getPosition(filter.getField()));
@@ -168,11 +169,8 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     private void saveAndFinish() {
         Uri filterUri = writeFilterData();
-        if (filterUri != null) {
-            Toast.makeText(this, R.string.filter_saved, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.filter_already_exists, Toast.LENGTH_SHORT).show();
-        }
+        int messageId = (filterUri != null) ? R.string.filter_saved : R.string.filter_already_exists;
+        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
         intent.setData(filterUri);
         setResult(RESULT_OK, intent);

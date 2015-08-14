@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class EmptyRecyclerView extends RecyclerView {
+public class ListRecyclerView extends RecyclerView {
     private final AdapterDataObserver mAdapterObserver = new AdapterDataObserver() {
         @Override
         public void onChanged() {
@@ -15,16 +15,19 @@ public class EmptyRecyclerView extends RecyclerView {
 
     private View mEmptyView;
 
-    public EmptyRecyclerView(Context context) {
+    public ListRecyclerView(Context context) {
         super(context);
+        addListDividers(context);
     }
 
-    public EmptyRecyclerView(Context context, AttributeSet attrs) {
+    public ListRecyclerView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        addListDividers(context);
     }
 
-    public EmptyRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public ListRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        addListDividers(context);
     }
 
     @Override
@@ -47,6 +50,10 @@ public class EmptyRecyclerView extends RecyclerView {
 
     public View getEmptyView() {
         return mEmptyView;
+    }
+
+    private void addListDividers(Context context) {
+        addItemDecoration(new ListDividerDecoration(context));
     }
 
     private void updateEmptyView() {

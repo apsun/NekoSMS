@@ -1,11 +1,11 @@
 package com.crossbowffs.nekosms.app;
 
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +14,15 @@ import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.Map;
 
 /* package */ class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.FilterListItemHolder> {
-    public class FilterListItemHolder extends RecyclerView.ViewHolder {
+    public static class FilterListItemHolder extends RecyclerView.ViewHolder {
         public final TextView mPatternTextView;
         public final TextView mFieldTextView;
         public final TextView mModeTextView;
@@ -38,6 +39,10 @@ import java.util.Map;
         }
     }
 
+    private static final String TAG = FilterListAdapter.class.getSimpleName();
+
+    private final FilterListActivity mActivity;
+    private final CoordinatorLayout mCoordinatorLayout;
     private final Map<SmsFilterField, String> mSmsFilterFieldMap;
     private final Map<SmsFilterMode, String> mSmsFilterModeMap;
     private final String mPatternFormatString;
@@ -46,20 +51,20 @@ import java.util.Map;
     private final String mCaseSensitiveFormatString;
     private int[] mColumns;
 
-    public FilterListAdapter(Context context) {
-        mSmsFilterFieldMap = FilterEnumMaps.getFieldMap(context);
-        mSmsFilterModeMap = FilterEnumMaps.getModeMap(context);
-
-        Resources resources = context.getResources();
-        mPatternFormatString = resources.getString(R.string.format_filter_pattern);
-        mFieldFormatString = resources.getString(R.string.format_filter_field);
-        mModeFormatString = resources.getString(R.string.format_filter_mode);
-        mCaseSensitiveFormatString = resources.getString(R.string.format_filter_case_sensitive);
+    public FilterListAdapter(FilterListActivity activity) {
+        mActivity = activity;
+        mCoordinatorLayout = (CoordinatorLayout)activity.findViewById(R.id.activity_filter_list_root);
+        mSmsFilterFieldMap = FilterEnumMaps.getFieldMap(activity);
+        mSmsFilterModeMap = FilterEnumMaps.getModeMap(activity);
+        mPatternFormatString = activity.getString(R.string.format_filter_pattern);
+        mFieldFormatString = activity.getString(R.string.format_filter_field);
+        mModeFormatString = activity.getString(R.string.format_filter_mode);
+        mCaseSensitiveFormatString = activity.getString(R.string.format_filter_case_sensitive);
     }
 
     @Override
     public FilterListItemHolder onCreateViewHolder(ViewGroup group, int i) {
-        LayoutInflater layoutInflater = LayoutInflater.from(group.getContext());
+        LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         View view = layoutInflater.inflate(R.layout.listitem_filter_list, group, false);
         return new FilterListItemHolder(view);
     }
@@ -84,16 +89,39 @@ import java.util.Map;
         holder.mModeTextView.setText(String.format(mModeFormatString, mSmsFilterModeMap.get(mode)));
         holder.mCaseSensitiveTextView.setText(String.format(mCaseSensitiveFormatString, caseSensitive));
 
-        // TODO: Hack
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Context context = v.getContext();
-                Intent intent = new Intent(context, FilterEditorActivity.class);
+                Intent intent = new Intent(mActivity, FilterEditorActivity.class);
                 Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, id);
                 intent.setData(filterUri);
-                context.startActivity(intent);
+                mActivity.startActivity(intent);
             }
         });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                deleteFilter(id);
+                return true;
+            }
+        });
+    }
+
+    private void deleteFilter(long filterId) {
+        final SmsFilterData filterData = SmsFilterDbLoader.loadAndDeleteFilter(mActivity, filterId);
+        if (filterData == null) {
+            Xlog.e(TAG, "Failed to delete filter: could not load data");
+            return;
+        }
+
+        Snackbar.make(mCoordinatorLayout, R.string.filter_deleted, Snackbar.LENGTH_LONG)
+            .setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SmsFilterDbLoader.writeFilter(mActivity, filterData);
+                }
+            })
+            .show();
     }
 }

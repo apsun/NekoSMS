@@ -2,18 +2,18 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:padding="0dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <include layout="@layout/toolbar"/>
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/activity_blockedsms_list_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <ListView
-            android:id="@android:id/list"
+        <com.crossbowffs.nekosms.app.ListRecyclerView
+            android:id="@+id/activity_blockedsms_list_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"/>
         <TextView
             android:id="@android:id/empty"
             android:layout_width="match_parent"
@@ -21,5 +21,5 @@
             android:gravity="center"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="@string/blocked_messages_empty_text"/>
-    </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>
