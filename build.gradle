@@ -4,23 +4,23 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:1.1.1"
+        classpath "com.android.tools.build:gradle:1.3.0"
     }
 }
 
 apply plugin: "com.android.application"
 
 dependencies {
-    compile "com.android.support:support-v4:22.2.1"
-    compile "com.android.support:appcompat-v7:22.2.1"
-    compile "com.android.support:recyclerview-v7:22.2.0"
-    compile "com.android.support:design:22.2.0"
+    compile "com.android.support:support-v4:23.0.0"
+    compile "com.android.support:appcompat-v7:23.0.0"
+    compile "com.android.support:recyclerview-v7:23.0.0"
+    compile "com.android.support:design:23.0.0"
     provided files("libs/XposedBridgeApi-20150213.jar")
 }
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
     defaultConfig {
         versionCode 1
