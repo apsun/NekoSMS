@@ -5,24 +5,18 @@ A pattern-based text message blocker for Android.
 ## Example configuration
 
 Block all messages that contain the word `spam`:
-> Pattern: `spam`
-
-> Field: `Body`
-
+> Pattern: `spam`  
+> Field: `Body`  
 > Mode: `Contains`
 
 Block all messages coming from numbers that start with `12345`:
-> Pattern: `12345`
-
-> Field: `Sender`
-
+> Pattern: `12345`  
+> Field: `Sender`  
 > Mode: `Starts with`
 
 Block all messages starting with `the` and ending with `game`:
-> Pattern: `^the.*game$`
-
-> Field: `Body`
-
+> Pattern: `^the.*game$`  
+> Field: `Body`  
 > Mode: `Regular expression`
 
 ## Requirements
