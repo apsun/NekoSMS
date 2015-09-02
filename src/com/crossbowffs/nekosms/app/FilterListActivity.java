@@ -61,8 +61,8 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
 
     private static final String TAG = FilterListActivity.class.getSimpleName();
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
-    private static final String BITBUCKET_URL = "https://bitbucket.org/crossbowffs/nekosms";
-    private static final String REPORT_BUG_URL = BITBUCKET_URL + "/issues/new";
+    private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
+    private static final String ISSUES_URL = GITHUB_URL + "/issues";
 
     private FilterListAdapter mAdapter;
     private FloatingActionButton mCreateButton;
@@ -237,7 +237,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
     }
 
     private void startReportBugActivity() {
-        Uri url = Uri.parse(REPORT_BUG_URL);
+        Uri url = Uri.parse(ISSUES_URL);
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
         startActivity(browserIntent);
     }
@@ -295,7 +295,7 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
 
     private void showAboutDialog() {
         Spanned html = Html.fromHtml(getString(R.string.format_about_message,
-            TWITTER_URL, BITBUCKET_URL, REPORT_BUG_URL));
+            TWITTER_URL, GITHUB_URL, ISSUES_URL));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
