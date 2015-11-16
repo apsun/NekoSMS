@@ -2,10 +2,11 @@ package com.crossbowffs.nekosms.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.BuildConfig;
 
 public final class XposedUtils {
     // This number should be incremented every time the module is modified
-    private static final int VERSION = 1;
+    private static final int VERSION = BuildConfig.VERSION_CODE;
 
     private static final String XPOSED_ACTION = "de.robv.android.xposed.installer.OPEN_SECTION";
     private static final String XPOSED_EXTRA_SECTION = "section";

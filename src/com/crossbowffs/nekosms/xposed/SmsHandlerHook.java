@@ -7,18 +7,24 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.data.InvalidFilterException;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterLoadCallback;
+import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
-import com.crossbowffs.nekosms.utils.XposedUtils;
-import de.robv.android.xposed.*;
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.util.ArrayList;
@@ -246,6 +252,22 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             param1Type, param2Type, param3Type, param4Type, param5Type, hook);
     }
 
+    private void hookDispatchIntent23(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+        String className = "com.android.internal.telephony.InboundSmsHandler";
+        String methodName = "dispatchIntent";
+        Class<?> param1Type = Intent.class;
+        Class<?> param2Type = String.class;
+        Class<?> param3Type = int.class;
+        Class<?> param4Type = Bundle.class;
+        Class<?> param5Type = BroadcastReceiver.class;
+        Class<?> param6Type = UserHandle.class;
+
+        Xlog.i(TAG, "Hooking dispatchIntent() for Android v23+");
+
+        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
+            param1Type, param2Type, param3Type, param4Type, param5Type, param6Type, hook);
+    }
+
     private void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) {
         XC_MethodHook constructorHook = new XC_MethodHook() {
             @Override
@@ -271,7 +293,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             }
         };
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hookConstructor(lpparam, constructorHook);
+            hookDispatchIntent23(lpparam, dispatchIntentHook);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             hookConstructor(lpparam, constructorHook);
             hookDispatchIntent21(lpparam, dispatchIntentHook);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -280,34 +305,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         } else {
             throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
         }
-    }
-
-    private void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = XposedUtils.class.getName();
-
-        Xlog.i(TAG, "Hooking Xposed module status checker");
-
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "isModuleEnabled",
-            new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    return true;
-                }
-            });
-
-        // This is the version as fetched when the *module* is loaded
-        // If the app is updated, this value will be changed within the
-        // app, but will not be changed here. Thus, we can use this to
-        // check whether the app and module versions are out of sync.
-        final int moduleVersion = XposedUtils.getModuleVersion();
-
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "getModuleVersion",
-            new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    return moduleVersion;
-                }
-            });
     }
 
     private static void printDeviceInfo() {
@@ -319,18 +316,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        String packageName = lpparam.packageName;
-
-        if (NEKOSMS_PACKAGE.equals(packageName)) {
-            try {
-                hookXposedUtils(lpparam);
-            } catch (Throwable e) {
-                Xlog.e(TAG, "Failed to hook Xposed module status checker", e);
-                throw e;
-            }
-        }
-
-        if ("com.android.phone".equals(packageName)) {
+        if ("com.android.phone".equals(lpparam.packageName)) {
             Xlog.i(TAG, "NekoSMS initializing...");
             printDeviceInfo();
             try {
