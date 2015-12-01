@@ -10,7 +10,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class XposedUtilsHook implements IXposedHookLoadPackage {
     private static final String TAG = XposedUtilsHook.class.getSimpleName();
-
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
 
     private static void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {

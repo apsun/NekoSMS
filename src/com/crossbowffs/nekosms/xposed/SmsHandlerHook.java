@@ -31,8 +31,37 @@ import java.util.ArrayList;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
-
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
+
+    private class ConstructorHook extends XC_MethodHook {
+        @Override
+        protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+            try {
+                afterConstructorHandler(param);
+            } catch (Throwable e) {
+                Xlog.e(TAG, "Error occurred in constructor hook", e);
+                throw e;
+            }
+        }
+    }
+
+    private class DispatchIntentHook extends XC_MethodHook {
+        private final int mReceiverIndex;
+
+        public DispatchIntentHook(int receiverIndex) {
+            mReceiverIndex = receiverIndex;
+        }
+
+        @Override
+        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+            try {
+                beforeDispatchIntentHandler(param, mReceiverIndex);
+            } catch (Throwable e) {
+                Xlog.e(TAG, "Error occurred in dispatchIntent() hook", e);
+                throw e;
+            }
+        }
+    }
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
@@ -180,7 +209,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         grantWriteSmsPermissions(context);
     }
 
-    private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param) {
+    private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param, int receiverIndex) {
         Intent intent = (Intent)param.args[0];
         String action = intent.getAction();
 
@@ -203,13 +232,13 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             Xlog.i(TAG, "  Result: Blocked");
             writeBlockedSms(context, message);
             param.setResult(null);
-            finishSmsBroadcast(smsHandler, param.args[3]);
+            finishSmsBroadcast(smsHandler, param.args[receiverIndex]);
         } else {
             Xlog.i(TAG, "  Result: Allowed");
         }
     }
 
-    private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+    private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         Class<?> param1Type = String.class;
         Class<?> param2Type = Context.class;
@@ -220,10 +249,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Hooking InboundSmsHandler constructor");
 
         XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
-            param1Type, param2Type, param3Type, param4Type, param5Type, hook);
+            param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
     }
 
-    private void hookDispatchIntent19(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+    private void hookDispatchIntent19(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         String methodName = "dispatchIntent";
         Class<?> param1Type = Intent.class;
@@ -234,10 +263,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Hooking dispatchIntent() for Android v19+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, hook);
+            param1Type, param2Type, param3Type, param4Type, new DispatchIntentHook(3));
     }
 
-    private void hookDispatchIntent21(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+    private void hookDispatchIntent21(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         String methodName = "dispatchIntent";
         Class<?> param1Type = Intent.class;
@@ -249,10 +278,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Hooking dispatchIntent() for Android v21+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, param5Type, hook);
+            param1Type, param2Type, param3Type, param4Type, param5Type, new DispatchIntentHook(3));
     }
 
-    private void hookDispatchIntent23(XC_LoadPackage.LoadPackageParam lpparam, XC_MethodHook hook) {
+    private void hookDispatchIntent23(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         String methodName = "dispatchIntent";
         Class<?> param1Type = Intent.class;
@@ -265,43 +294,19 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Hooking dispatchIntent() for Android v23+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, param5Type, param6Type, hook);
+            param1Type, param2Type, param3Type, param4Type, param5Type, param6Type, new DispatchIntentHook(4));
     }
 
     private void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) {
-        XC_MethodHook constructorHook = new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                try {
-                    afterConstructorHandler(param);
-                } catch (Throwable e) {
-                    Xlog.e(TAG, "Error occurred in constructor hook", e);
-                    throw e;
-                }
-            }
-        };
-
-        XC_MethodHook dispatchIntentHook = new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                try {
-                    beforeDispatchIntentHandler(param);
-                } catch (Throwable e) {
-                    Xlog.e(TAG, "Error occurred in dispatchIntent() hook", e);
-                    throw e;
-                }
-            }
-        };
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            hookConstructor(lpparam, constructorHook);
-            hookDispatchIntent23(lpparam, dispatchIntentHook);
+            hookConstructor(lpparam);
+            hookDispatchIntent23(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            hookConstructor(lpparam, constructorHook);
-            hookDispatchIntent21(lpparam, dispatchIntentHook);
+            hookConstructor(lpparam);
+            hookDispatchIntent21(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            hookConstructor(lpparam, constructorHook);
-            hookDispatchIntent19(lpparam, dispatchIntentHook);
+            hookConstructor(lpparam);
+            hookDispatchIntent19(lpparam);
         } else {
             throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
         }
