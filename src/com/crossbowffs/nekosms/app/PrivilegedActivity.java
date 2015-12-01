@@ -33,13 +33,7 @@ public class PrivilegedActivity extends AppCompatActivity {
     }
 
     public void runPrivilegedAction(String permission, int requestCode, PrivilegedActionCallback callback) {
-        int permissionStatus = ContextCompat.checkSelfPermission(this, permission);
-        if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-            mActionCallbacks.put(requestCode, callback);
-            ActivityCompat.requestPermissions(this, new String[] {permission}, requestCode);
-        } else {
-            callback.run(true);
-        }
+        runPrivilegedAction(new String[] {permission}, requestCode, callback);
     }
 
     @Override
