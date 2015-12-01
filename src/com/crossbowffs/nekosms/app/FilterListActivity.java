@@ -1,5 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
+import android.Manifest;
 import android.app.LoaderManager;
 import android.content.*;
 import android.content.res.Resources;
@@ -9,7 +10,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -34,7 +34,7 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-public class FilterListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FilterListActivity extends PrivilegedActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
         private static final int SHOW_THRESHOLD = 50;
         private static final int HIDE_THRESHOLD = 100;
@@ -175,16 +175,38 @@ public class FilterListActivity extends AppCompatActivity implements LoaderManag
             .setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if (which == 0) {
-                        importFromStorage();
-                    } else if (which == 1) {
-                        exportToStorage();
-                    }
+                    doImportExport(which);
                 }
             });
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void doImportExport(int which) {
+        if (which == 0) {
+            runPrivilegedAction(Manifest.permission.READ_EXTERNAL_STORAGE, 0, new PrivilegedActionCallback() {
+                @Override
+                public void run(boolean granted) {
+                    if (granted) {
+                        importFromStorage();
+                    } else {
+                        Toast.makeText(FilterListActivity.this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else if (which == 1) {
+            runPrivilegedAction(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1, new PrivilegedActionCallback() {
+                @Override
+                public void run(boolean granted) {
+                    if (granted) {
+                        exportToStorage();
+                    } else {
+                        Toast.makeText(FilterListActivity.this, R.string.need_storage_write_permission, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     private void importFromStorage() {

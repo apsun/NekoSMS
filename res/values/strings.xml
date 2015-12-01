@@ -28,6 +28,8 @@
         <item quantity="one">%d filter successfully exported</item>
         <item quantity="other">%d filters successfully exported</item>
     </plurals>
+    <string name="need_storage_write_permission">Storage write permissions are needed to export filters</string>
+    <string name="need_storage_read_permission">Storage read permissions are needed to import filters</string>
     <string name="filter_import_failed">Filter import failed</string>
     <string name="filter_export_failed">Filter export failed</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
