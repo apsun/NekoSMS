@@ -2,7 +2,7 @@ package com.crossbowffs.nekosms.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.BuildConfig;
+import com.crossbowffs.nekosms.BuildConfig;
 
 public final class XposedUtils {
     // This number should be incremented every time the module is modified
