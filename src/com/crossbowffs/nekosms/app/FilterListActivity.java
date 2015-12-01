@@ -175,7 +175,11 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
             .setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    doImportExport(which);
+                    if (which == 0) {
+                        importFromStorage();
+                    } else if (which == 1) {
+                        exportToStorage();
+                    }
                 }
             });
 
@@ -183,33 +187,33 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         dialog.show();
     }
 
-    private void doImportExport(int which) {
-        if (which == 0) {
-            runPrivilegedAction(Manifest.permission.READ_EXTERNAL_STORAGE, 0, new PrivilegedActionCallback() {
-                @Override
-                public void run(boolean granted) {
-                    if (granted) {
-                        importFromStorage();
-                    } else {
-                        Toast.makeText(FilterListActivity.this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
-                    }
+    private void importFromStorage() {
+        runPrivilegedAction(Manifest.permission.READ_EXTERNAL_STORAGE, 0, new PrivilegedActionCallback() {
+            @Override
+            public void run(boolean granted) {
+                if (granted) {
+                    privilegedImportFromStorage();
+                } else {
+                    Toast.makeText(FilterListActivity.this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
                 }
-            });
-        } else if (which == 1) {
-            runPrivilegedAction(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1, new PrivilegedActionCallback() {
-                @Override
-                public void run(boolean granted) {
-                    if (granted) {
-                        exportToStorage();
-                    } else {
-                        Toast.makeText(FilterListActivity.this, R.string.need_storage_write_permission, Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
+            }
+        });
     }
 
-    private void importFromStorage() {
+    private void exportToStorage() {
+        runPrivilegedAction(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1, new PrivilegedActionCallback() {
+            @Override
+            public void run(boolean granted) {
+                if (granted) {
+                    privilegedExportToStorage();
+                } else {
+                    Toast.makeText(FilterListActivity.this, R.string.need_storage_write_permission, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void privilegedImportFromStorage() {
         SmsFilterStorageLoader.FilterImportResult result;
         try {
             result = SmsFilterStorageLoader.importFromStorage(this);
@@ -236,7 +240,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void exportToStorage() {
+    private void privilegedExportToStorage() {
         SmsFilterStorageLoader.FilterExportResult result;
         try {
             result = SmsFilterStorageLoader.exportToStorage(this);
