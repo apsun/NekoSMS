@@ -29,7 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 
         // Empty permissions means that the request was cancelled
         // by the user, so the permissions were not granted
-        boolean requestCancelled = (grantResults.length > 0);
+        boolean requestCancelled = (grantResults.length == 0);
         onRequestPermissionsResult(requestCode, !requestCancelled);
     }
 

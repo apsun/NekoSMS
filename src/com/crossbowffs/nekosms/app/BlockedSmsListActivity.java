@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -17,7 +18,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
-public class BlockedSmsListActivity extends PrivilegedActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BlockedSmsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private BlockedSmsListAdapter mAdapter;
 
     @Override
