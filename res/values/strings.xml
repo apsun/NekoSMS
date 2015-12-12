@@ -34,8 +34,12 @@
     <string name="filter_export_failed">Filter export failed</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
-    <string name="module_not_enabled_title">Initialization failed</string>
-    <string name="module_not_enabled_message">Xposed module not enabled.</string>
+    <string name="enable_xposed_module_title">Enable Xposed module</string>
+    <string name="enable_xposed_module_message">
+        Android does not allow apps other than the default SMS app to intercept
+        SMS messages or write to the SMS inbox.\n\nTo bypass this restriction,
+        you must enable the Xposed module. Until you do so, this app will not work.
+    </string>
     <string name="module_outdated_title">Xposed module updated</string>
     <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
     <string name="xposed_not_installed">Xposed not installed</string>
@@ -66,8 +70,10 @@
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>
     <string name="blocked_messages_empty_text">No blocked messages! Have a nice day!</string>
+    <string name="must_enable_xposed_module">Xposed module must be enabled</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
+    <string name="message_restore_failed">Message could not be restored</string>
     <string name="format_message_details">
         <![CDATA[
             <b>Sender</b><br>

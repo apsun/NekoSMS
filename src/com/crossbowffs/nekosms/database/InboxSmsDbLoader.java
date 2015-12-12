@@ -30,7 +30,7 @@ public final class InboxSmsDbLoader {
         // An ID of zero when writing to the SMS inbox denotes failure
         if (id <= 0) {
             Xlog.e(TAG, "Writing to SMS inbox failed, does app have OP_WRITE_SMS permission?");
-            throw new IllegalArgumentException("Failed to write message to SMS inbox");
+            throw new DatabaseException("Failed to write message to SMS inbox");
         } else {
             return uri;
         }
@@ -40,8 +40,12 @@ public final class InboxSmsDbLoader {
         ContentResolver contentResolver = context.getContentResolver();
         int deletedRows = contentResolver.delete(messageUri, null, null);
         if (deletedRows == 0) {
-            Xlog.e(TAG, "Writing to SMS inbox failed, does app have OP_WRITE_SMS permission?");
-            throw new IllegalArgumentException("URI does not match any message in SMS inbox");
+            // This can occur under two situations:
+            // 1. The URI does not match any message in the SMS inbox (tried to delete a non-existent message)
+            // 2. The app does not have permission to write to the SMS inbox
+            // Note that this method is only called after writeMessage(), which means that
+            // if we get here, we can rule out situation (2), and ignore the error.
+            Xlog.e(TAG, "URI does not match any message in SMS inbox");
         }
     }
 }

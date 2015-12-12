@@ -1,6 +1,5 @@
 package com.crossbowffs.nekosms.xposed;
 
-import android.app.AppOpsManager;
 import android.content.*;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +19,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -162,7 +162,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void grantWriteSmsPermissions(Context context) {
-        AppOpsManager appOps = (AppOpsManager)context.getSystemService(Context.APP_OPS_SERVICE);
         PackageManager packageManager = context.getPackageManager();
         PackageInfo packageInfo;
         try {
@@ -174,19 +173,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         int uid = packageInfo.applicationInfo.uid;
 
         Xlog.i(TAG, "Checking if we have OP_WRITE_SMS permission");
-        int mode = (Integer)XposedHelpers.callMethod(appOps, "checkOp",
-            new Class<?>[] {int.class, int.class, String.class},
-            15, uid, NEKOSMS_PACKAGE);
-
-        if (mode == AppOpsManager.MODE_ALLOWED) {
+        if (AppOpsUtils.checkOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE)) {
             Xlog.i(TAG, "Already have OP_WRITE_SMS permission");
-            return;
+        } else {
+            Xlog.i(TAG, "Giving our package OP_WRITE_SMS permission");
+            AppOpsUtils.allowOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE);
         }
-
-        Xlog.i(TAG, "Giving our package OP_WRITE_SMS permission");
-        XposedHelpers.callMethod(appOps, "setMode",
-            new Class<?>[] {int.class, int.class, String.class, int.class},
-            15, uid, NEKOSMS_PACKAGE, AppOpsManager.MODE_ALLOWED);
     }
 
     private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
@@ -317,6 +309,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Phone model: %s", Build.MODEL);
         Xlog.i(TAG, "Android version: %s", Build.VERSION.RELEASE);
         Xlog.i(TAG, "Xposed bridge version: %d", XposedBridge.XPOSED_BRIDGE_VERSION);
+        Xlog.i(TAG, "NekoSMS version: %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
     @Override

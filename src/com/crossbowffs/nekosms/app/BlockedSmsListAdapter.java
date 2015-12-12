@@ -14,11 +14,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
+import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
+import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.utils.XposedUtils;
 
 /* package */ class BlockedSmsListAdapter extends RecyclerCursorAdapter<BlockedSmsListAdapter.BlockedSmsListItemHolder> {
     public static class BlockedSmsListItemHolder extends RecyclerView.ViewHolder {
@@ -113,14 +117,40 @@ import com.crossbowffs.nekosms.utils.Xlog;
         dialog.show();
     }
 
+    private void startXposedActivity(String section) {
+        if (!XposedUtils.startXposedActivity(mActivity, section)) {
+            Toast.makeText(mActivity, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void restoreSms(long smsId) {
+        if (!AppOpsUtils.noteOp(mActivity, AppOpsUtils.OP_WRITE_SMS)) {
+            Xlog.e(TAG, "Do not have permissions to write SMS");
+            Snackbar.make(mCoordinatorLayout, R.string.must_enable_xposed_module, Snackbar.LENGTH_LONG)
+                .setAction(R.string.enable, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startXposedActivity(XposedUtils.XPOSED_SECTION_MODULES);
+                    }
+                })
+                .show();
+            return;
+        }
+
         final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(mActivity, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
             return;
         }
 
-        final Uri inboxSmsUri = InboxSmsDbLoader.writeMessage(mActivity, messageData);
+        final Uri inboxSmsUri;
+        try {
+            inboxSmsUri = InboxSmsDbLoader.writeMessage(mActivity, messageData);
+        } catch (DatabaseException e) {
+            Toast.makeText(mActivity, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Snackbar.make(mCoordinatorLayout, R.string.message_restored, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {
                 @Override

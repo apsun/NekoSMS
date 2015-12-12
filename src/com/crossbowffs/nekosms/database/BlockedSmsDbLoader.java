@@ -99,7 +99,7 @@ public final class BlockedSmsDbLoader {
         Uri uri = contentResolver.insert(Blocked.CONTENT_URI, values);
         long id = ContentUris.parseId(uri);
         if (id < 0) {
-            throw new IllegalArgumentException("Failed to write message");
+            throw new DatabaseException("Failed to write message to blocked SMS database");
         } else {
             return uri;
         }

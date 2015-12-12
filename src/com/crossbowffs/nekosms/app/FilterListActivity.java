@@ -63,6 +63,9 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String ISSUES_URL = GITHUB_URL + "/issues";
+    private static final int IMPORT_FILTERS_REQUEST = 0;
+    private static final int EXPORT_FILTERS_REQUEST = 1;
+
 
     private FilterListAdapter mAdapter;
     private FloatingActionButton mCreateButton;
@@ -151,6 +154,23 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         mAdapter.changeCursor(null);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, boolean granted) {
+        if (requestCode == IMPORT_FILTERS_REQUEST) {
+            if (granted) {
+                importFromStorage();
+            } else {
+                Toast.makeText(this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == EXPORT_FILTERS_REQUEST) {
+            if (granted) {
+                exportToStorage();
+            } else {
+                Toast.makeText(this, R.string.need_storage_write_permission, Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
     private void showCreateButton() {
         mCreateButton.animate()
             .translationY(0)
@@ -176,9 +196,9 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
-                        importFromStorage();
+                        runPrivilegedAction(IMPORT_FILTERS_REQUEST, Manifest.permission.READ_EXTERNAL_STORAGE);
                     } else if (which == 1) {
-                        exportToStorage();
+                        runPrivilegedAction(EXPORT_FILTERS_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                     }
                 }
             });
@@ -188,32 +208,6 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
     }
 
     private void importFromStorage() {
-        runPrivilegedAction(Manifest.permission.READ_EXTERNAL_STORAGE, 0, new PrivilegedActionCallback() {
-            @Override
-            public void run(boolean granted) {
-                if (granted) {
-                    privilegedImportFromStorage();
-                } else {
-                    Toast.makeText(FilterListActivity.this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    private void exportToStorage() {
-        runPrivilegedAction(Manifest.permission.WRITE_EXTERNAL_STORAGE, 1, new PrivilegedActionCallback() {
-            @Override
-            public void run(boolean granted) {
-                if (granted) {
-                    privilegedExportToStorage();
-                } else {
-                    Toast.makeText(FilterListActivity.this, R.string.need_storage_write_permission, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
-    private void privilegedImportFromStorage() {
         SmsFilterStorageLoader.FilterImportResult result;
         try {
             result = SmsFilterStorageLoader.importFromStorage(this);
@@ -240,7 +234,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void privilegedExportToStorage() {
+    private void exportToStorage() {
         SmsFilterStorageLoader.FilterExportResult result;
         try {
             result = SmsFilterStorageLoader.exportToStorage(this);
@@ -269,18 +263,15 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
     }
 
     private void startXposedActivity(String section) {
-        try {
-            XposedUtils.startXposedActivity(this, section);
-        } catch (ActivityNotFoundException e) {
-            Xlog.e(TAG, "Could not start Xposed activity", e);
+        if (!XposedUtils.startXposedActivity(this, section)) {
             Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void showInitFailedDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(R.string.module_not_enabled_title)
-            .setMessage(R.string.module_not_enabled_message)
+            .setTitle(R.string.enable_xposed_module_title)
+            .setMessage(R.string.enable_xposed_module_message)
             .setIconAttribute(android.R.attr.alertDialogIcon)
             .setCancelable(false)
             .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {

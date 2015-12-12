@@ -23,8 +23,10 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        versionCode 4
-        versionName "0.3"
+        versionCode 5
+        versionName "0.4"
+        minSdkVersion 19
+        targetSdkVersion 23
     }
 
     sourceSets {
@@ -34,9 +36,5 @@ android {
             res.srcDirs = ["res"]
             assets.srcDirs = ["assets"]
         }
-    }
-
-    lintOptions {
-        abortOnError false
     }
 }
