@@ -279,7 +279,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
-            .setIconAttribute(android.R.attr.alertDialogIcon)
+            .setIcon(R.drawable.ic_warning_white_24dp)
             .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -302,7 +302,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)
-            .setIconAttribute(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_white_24dp)
             .setPositiveButton(R.string.reboot, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

@@ -208,7 +208,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.invalid_pattern_title)
             .setMessage(messageId)
-            .setIconAttribute(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_white_24dp)
             .setPositiveButton(R.string.ok, null)
             .setNegativeButton(R.string.discard, new DialogInterface.OnClickListener() {
                 @Override
