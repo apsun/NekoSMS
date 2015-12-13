@@ -86,7 +86,7 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
         });
     }
 
-    private void showMessageDetailsDialog(final SmsMessageData messageData) {
+    public void showMessageDetailsDialog(final SmsMessageData messageData) {
         final long smsId = messageData.getId();
         String sender = messageData.getSender();
         String body = messageData.getBody();
@@ -137,9 +137,10 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
             return;
         }
 
-        final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(mActivity, smsId);
+        final SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(mActivity, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
+            Toast.makeText(mActivity, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -147,9 +148,13 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
         try {
             inboxSmsUri = InboxSmsDbLoader.writeMessage(mActivity, messageData);
         } catch (DatabaseException e) {
+            Xlog.e(TAG, "Failed to restore message: could not write to SMS inbox");
             Toast.makeText(mActivity, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Only delete the message after we have successfully written it to the SMS inbox
+        BlockedSmsDbLoader.deleteMessage(mActivity, smsId);
 
         Snackbar.make(mCoordinatorLayout, R.string.message_restored, Snackbar.LENGTH_LONG)
             .setAction(R.string.undo, new View.OnClickListener() {

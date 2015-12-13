@@ -1,14 +1,54 @@
 package com.crossbowffs.nekosms.data;
 
 import android.content.ContentValues;
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
-public class SmsMessageData {
+public class SmsMessageData implements Parcelable {
+    public static final Creator<SmsMessageData> CREATOR = new Creator<SmsMessageData>() {
+        @Override
+        public SmsMessageData createFromParcel(Parcel in) {
+            return new SmsMessageData(in);
+        }
+
+        @Override
+        public SmsMessageData[] newArray(int size) {
+            return new SmsMessageData[size];
+        }
+    };
+
     private long mId;
     private String mSender;
     private String mBody;
     private long mTimeSent;
     private long mTimeReceived;
+
+    public SmsMessageData() {
+
+    }
+
+    private SmsMessageData(Parcel in) {
+        mId = in.readLong();
+        mSender = in.readString();
+        mBody = in.readString();
+        mTimeSent = in.readLong();
+        mTimeReceived = in.readLong();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mSender);
+        dest.writeString(mBody);
+        dest.writeLong(mTimeSent);
+        dest.writeLong(mTimeReceived);
+    }
 
     public ContentValues serialize() {
         ContentValues values = new ContentValues(4);

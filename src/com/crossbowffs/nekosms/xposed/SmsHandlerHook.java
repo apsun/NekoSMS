@@ -1,10 +1,12 @@
 package com.crossbowffs.nekosms.xposed;
 
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,19 +14,13 @@ import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.data.InvalidFilterException;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterLoadCallback;
-import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
-import de.robv.android.xposed.IXposedHookLoadPackage;
-import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.*;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.util.ArrayList;
@@ -111,10 +107,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return contentObserver;
     }
 
-    private Uri writeBlockedSms(Context context, SmsMessageData message) {
-        ContentResolver contentResolver = context.getContentResolver();
-        ContentValues values = message.serialize();
-        return contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
+    private void broadcastBlockedSms(Context context, SmsMessageData message) {
+        Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
+        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, message);
+        context.sendBroadcast(intent, BroadcastConsts.PERMISSION_RECEIVE_SMS);
     }
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
@@ -209,6 +205,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
+        // For some reason, caching the instance and calling reload() doesn't
+        // update the values, so we have to create a new instance every time
+        XSharedPreferences preferences = new XSharedPreferences(NEKOSMS_PACKAGE);
+        if (!preferences.getBoolean(PreferenceConsts.PREF_ENABLE, true)) {
+            Xlog.d(TAG, "SMS blocking disabled in app preferences");
+            return;
+        }
+
         Object smsHandler = param.thisObject;
         Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");
 
@@ -222,7 +226,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         if (shouldFilterMessage(context, sender, body)) {
             Xlog.i(TAG, "  Result: Blocked");
-            writeBlockedSms(context, message);
+            broadcastBlockedSms(context, message);
             param.setResult(null);
             finishSmsBroadcast(smsHandler, param.args[receiverIndex]);
         } else {

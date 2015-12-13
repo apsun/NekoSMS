@@ -4,11 +4,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import com.crossbowffs.nekosms.BuildConfig;
 
 public final class XposedUtils {
     // This number should be incremented every time the module is modified
-    private static final int VERSION = BuildConfig.VERSION_CODE;
+    private static final int VERSION = 6;
 
     private static final String XPOSED_PACKAGE = "de.robv.android.xposed.installer";
     private static final String XPOSED_ACTION = XPOSED_PACKAGE + ".OPEN_SECTION";

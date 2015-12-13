@@ -5,11 +5,15 @@
     <item
         android:id="@+id/menu_item_view_blocked_messages"
         android:title="@string/blocked_messages"
-        android:icon="@drawable/ic_inbox_white_24dp"
+        android:icon="@drawable/ic_mail_white_24dp"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_item_import_export_filters"
         android:title="@string/import_export"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/menu_item_settings"
+        android:title="@string/settings"
         app:showAsAction="never"/>
     <item
         android:id="@+id/menu_item_about"

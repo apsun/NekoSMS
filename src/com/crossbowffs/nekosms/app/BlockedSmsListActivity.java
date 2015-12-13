@@ -2,6 +2,7 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
@@ -13,7 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
@@ -39,6 +42,14 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         recyclerView.setAdapter(adapter);
         recyclerView.setEmptyView(findViewById(android.R.id.empty));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        showMessageDetailsDialog(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        showMessageDetailsDialog(intent);
     }
 
     @Override
@@ -93,12 +104,30 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         }
     }
 
+    private void showMessageDetailsDialog(Intent intent) {
+        Uri uri = intent.getData();
+        if (uri == null) {
+            return;
+        }
+
+        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(this, uri);
+        if (messageData != null) {
+            mAdapter.showMessageDetailsDialog(messageData);
+        } else {
+            // This can occur if the user deletes the message, then opens the notification
+            Toast.makeText(this, "Message could not be loaded", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void createTestSms() {
         SmsMessageData message = new SmsMessageData();
         message.setSender("1234567890");
-        message.setBody("This is a test message with loooooooooong content");
+        message.setBody("This is a test message with looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonger content");
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
-        BlockedSmsDbLoader.writeMessage(this, message);
+
+        Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
+        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, message);
+        sendBroadcast(intent, BroadcastConsts.PERMISSION_RECEIVE_SMS);
     }
 }

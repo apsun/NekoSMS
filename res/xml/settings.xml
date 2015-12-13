@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_nekosms">
+        <SwitchPreference
+            android:key="pref_enable"
+            android:title="@string/pref_enable"
+            android:summary="@string/pref_enable_summary"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_notifications">
+        <SwitchPreference
+            android:key="pref_notifications_enable"
+            android:title="@string/pref_notifications_enable"
+            android:summary="@string/pref_notifications_enable_summary"
+            android:defaultValue="false"/>
+        <CheckBoxPreference
+            android:key="pref_notifications_sound"
+            android:title="@string/pref_notifications_sound"
+            android:dependency="pref_notifications_enable"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:key="pref_notifications_vibrate"
+            android:title="@string/pref_notifications_vibrate"
+            android:dependency="pref_notifications_enable"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:key="pref_notifications_lights"
+            android:title="@string/pref_notifications_lights"
+            android:dependency="pref_notifications_enable"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+</PreferenceScreen>

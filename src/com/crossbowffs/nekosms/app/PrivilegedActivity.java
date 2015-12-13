@@ -5,7 +5,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 
-/* package */ class PrivilegedActivity extends AppCompatActivity {
+/* package */ abstract class PrivilegedActivity extends AppCompatActivity {
     public void runPrivilegedAction(int requestCode, String... permissions) {
         for (String permission : permissions) {
             int permissionStatus = ContextCompat.checkSelfPermission(this, permission);

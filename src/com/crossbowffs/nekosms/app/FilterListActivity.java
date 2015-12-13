@@ -66,7 +66,6 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
     private static final int IMPORT_FILTERS_REQUEST = 0;
     private static final int EXPORT_FILTERS_REQUEST = 1;
 
-
     private FilterListAdapter mAdapter;
     private FloatingActionButton mCreateButton;
 
@@ -122,6 +121,9 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
             return true;
         case R.id.menu_item_view_blocked_messages:
             startBlockedSmsListActivity();
+            return true;
+        case R.id.menu_item_settings:
+            startSettingsActivity();
             return true;
         case R.id.menu_item_about:
             showAboutDialog();
@@ -256,6 +258,11 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         startActivity(intent);
     }
 
+    private void startSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     private void startReportBugActivity() {
         Uri url = Uri.parse(ISSUES_URL);
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
@@ -273,7 +280,6 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
             .setIconAttribute(android.R.attr.alertDialogIcon)
-            .setCancelable(false)
             .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -296,8 +302,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)
-            .setIconAttribute(android.R.attr.alertDialogIcon)
-            .setCancelable(false)
+            .setIconAttribute(R.drawable.ic_warning_white_24dp)
             .setPositiveButton(R.string.reboot, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

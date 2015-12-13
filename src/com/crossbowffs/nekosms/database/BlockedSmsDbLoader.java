@@ -105,20 +105,26 @@ public final class BlockedSmsDbLoader {
         }
     }
 
-    public static void deleteMessage(Context context, long messageId) {
-        deleteMessage(context, convertIdToUri(messageId));
+    public static boolean deleteMessage(Context context, long messageId) {
+        return deleteMessage(context, convertIdToUri(messageId));
     }
 
-    public static void deleteMessage(Context context, Uri messageUri) {
+    public static boolean deleteMessage(Context context, Uri messageUri) {
         ContentResolver contentResolver = context.getContentResolver();
         int deletedRows = contentResolver.delete(messageUri, null, null);
         if (deletedRows == 0) {
             Xlog.w(TAG, "URI does not match any message: %s", messageUri);
+            return false;
+        } else {
+            return true;
         }
     }
 
     public static SmsMessageData loadAndDeleteMessage(Context context, long messageId) {
-        Uri messageUri = convertIdToUri(messageId);
+        return loadAndDeleteMessage(context, convertIdToUri(messageId));
+    }
+
+    public static SmsMessageData loadAndDeleteMessage(Context context, Uri messageUri) {
         SmsMessageData messageData = loadMessage(context, messageUri);
         deleteMessage(context, messageUri);
         return messageData;
