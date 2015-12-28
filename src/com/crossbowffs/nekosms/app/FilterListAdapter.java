@@ -40,7 +40,6 @@ import java.util.Map;
     }
 
     private static final String TAG = FilterListAdapter.class.getSimpleName();
-
     private final FilterListActivity mActivity;
     private final CoordinatorLayout mCoordinatorLayout;
     private final Map<SmsFilterField, String> mSmsFilterFieldMap;

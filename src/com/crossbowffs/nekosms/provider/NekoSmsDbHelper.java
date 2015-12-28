@@ -11,7 +11,6 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 
 /* package */ class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
-
     private static final String DATABASE_NAME = "nekosms.db";
     private static final int DATABASE_VERSION = BuildConfig.DATABASE_VERSION;
 

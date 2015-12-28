@@ -7,9 +7,7 @@ import android.content.pm.PackageManager;
 import com.crossbowffs.nekosms.BuildConfig;
 
 public final class XposedUtils {
-    // This number should be incremented every time the module is modified
     private static final int MODULE_VERSION = BuildConfig.MODULE_VERSION;
-
     private static final String XPOSED_PACKAGE = "de.robv.android.xposed.installer";
     private static final String XPOSED_ACTION = XPOSED_PACKAGE + ".OPEN_SECTION";
     private static final String XPOSED_EXTRA_SECTION = "section";

@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 /* package */ class RegexSmsFilter extends SmsFilter {
     private static final String TAG = RegexSmsFilter.class.getSimpleName();
-
     private final SmsFilterField mField;
     private final String mPattern;
     private final Matcher mMatcher;

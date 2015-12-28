@@ -122,6 +122,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
 
         String pattern = mPatternEditText.getText().toString();
+        // TODO: Display error message to user
         try {
             Pattern.compile(pattern);
         } catch (PatternSyntaxException e) {

@@ -14,9 +14,14 @@ import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.data.BroadcastConsts;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
+import com.crossbowffs.nekosms.preferences.BooleanPreference;
+import com.crossbowffs.nekosms.preferences.Preferences;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -26,9 +31,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 import java.util.ArrayList;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
-    private static final String TAG = SmsHandlerHook.class.getSimpleName();
-    private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
-
     private class ConstructorHook extends XC_MethodHook {
         @Override
         protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -58,6 +60,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             }
         }
     }
+
+    private static final String TAG = SmsHandlerHook.class.getSimpleName();
+    private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
@@ -114,25 +119,16 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
-        final ArrayList<SmsFilter> filters = new ArrayList<>(0);
-        SmsFilterDbLoader.loadAllFilters(context, new SmsFilterLoadCallback() {
-            @Override
-            public void onBegin(int count) {
-                filters.ensureCapacity(count);
+        CursorWrapper<SmsFilterData> filterCursor = SmsFilterDbLoader.loadAllFilters(context);
+        final ArrayList<SmsFilter> filters = new ArrayList<>(filterCursor.getCount());
+        try {
+            while (filterCursor.moveToNext()) {
+                SmsFilterData filterData = filterCursor.get();
+                filters.add(SmsFilter.create(filterData));
             }
-
-            @Override
-            public void onSuccess(SmsFilterData filterData) {
-                SmsFilter filter = SmsFilter.create(filterData);
-                filters.add(filter);
-            }
-
-            @Override
-            public void onError(InvalidFilterException e) {
-                Xlog.e(TAG, "Failed to load SMS filter", e);
-            }
-        });
-
+        } finally {
+            filterCursor.close();
+        }
         return filters;
     }
 
@@ -208,7 +204,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // For some reason, caching the instance and calling reload() doesn't
         // update the values, so we have to create a new instance every time
         XSharedPreferences preferences = new XSharedPreferences(NEKOSMS_PACKAGE);
-        if (!preferences.getBoolean(PreferenceConsts.PREF_ENABLE, true)) {
+        BooleanPreference enablePref = Preferences.PREF_ENABLE;
+        if (!preferences.getBoolean(enablePref.getKey(), enablePref.getDefaultValue())) {
             Xlog.d(TAG, "SMS blocking disabled in app preferences");
             return;
         }

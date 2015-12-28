@@ -2,8 +2,10 @@ package com.crossbowffs.nekosms.app;
 
 import android.Manifest;
 import android.app.LoaderManager;
-import android.content.*;
-import android.content.res.Resources;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,13 +28,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.backup.SmsFilterStorageLoader;
+import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
-import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class FilterListActivity extends PrivilegedActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
@@ -193,7 +191,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         String exportString = getString(R.string.export_to_storage);
         CharSequence[] items = {importString, exportString};
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(R.string.import_export_filters)
+            .setTitle(R.string.import_export)
             .setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -210,47 +208,41 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
     }
 
     private void importFromStorage() {
-        SmsFilterStorageLoader.FilterImportResult result;
-        try {
-            result = SmsFilterStorageLoader.importFromStorage(this);
-        } catch (FileNotFoundException e) {
-            Toast.makeText(this, R.string.no_filter_backup_found, Toast.LENGTH_SHORT).show();
-            return;
-        } catch (IOException e) {
-            Xlog.e(TAG, "Failed to import filters from storage", e);
-            Toast.makeText(this, R.string.filter_import_failed, Toast.LENGTH_SHORT).show();
-            return;
+        int result = BackupLoader.importFromStorage(this);
+        int messageId;
+        switch (result) {
+        case BackupLoader.IMPORT_SUCCESS:
+            messageId = R.string.import_success;
+            break;
+        case BackupLoader.IMPORT_NO_BACKUP:
+            messageId = R.string.import_no_backup;
+            break;
+        case BackupLoader.IMPORT_INVALID_BACKUP:
+            messageId = R.string.import_invalid_backup;
+            break;
+        case BackupLoader.IMPORT_READ_FAILED:
+            messageId = R.string.import_read_failed;
+            break;
+        default:
+            throw new AssertionError("Unknown backup import result code: " + result);
         }
-
-        int successCount = result.mSuccessCount;
-        int duplicateCount = result.mDuplicateCount;
-        int errorCount = result.mErrorCount;
-
-        Xlog.d(TAG, "Filter import completed: ");
-        Xlog.d(TAG, "  %d succeeded", successCount);
-        Xlog.d(TAG, "  %d duplicates", duplicateCount);
-        Xlog.d(TAG, "  %d failed", errorCount);
-
-        Resources resources = getResources();
-        String message = resources.getQuantityString(R.plurals.format_filters_imported, successCount, successCount);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
     }
 
     private void exportToStorage() {
-        SmsFilterStorageLoader.FilterExportResult result;
-        try {
-            result = SmsFilterStorageLoader.exportToStorage(this);
-        } catch (IOException e) {
-            Xlog.e(TAG, "Failed to export filters to storage", e);
-            Toast.makeText(this, R.string.filter_export_failed, Toast.LENGTH_SHORT).show();
-            return;
+        int result = BackupLoader.exportToStorage(this);
+        int messageId;
+        switch (result) {
+        case BackupLoader.EXPORT_SUCCESS:
+            messageId = R.string.export_success;
+            break;
+        case BackupLoader.EXPORT_WRITE_FAILED:
+            messageId = R.string.export_write_failed;
+            break;
+        default:
+            throw new AssertionError("Unknown backup export result code: " + result);
         }
-
-        int successCount = result.mSuccessCount;
-
-        Resources resources = getResources();
-        String message = resources.getQuantityString(R.plurals.format_filters_exported, successCount, successCount);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
     }
 
     private void startBlockedSmsListActivity() {

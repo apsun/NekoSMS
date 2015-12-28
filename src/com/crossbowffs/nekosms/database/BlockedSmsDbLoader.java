@@ -81,6 +81,7 @@ public final class BlockedSmsDbLoader {
 
         if (!cursor.moveToFirst()) {
             Xlog.e(TAG, "URI does not match any message: %s", messageUri);
+            cursor.close();
             return null;
         }
 

@@ -1,9 +1,6 @@
 package com.crossbowffs.nekosms.provider;
 
-import android.content.ContentProvider;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.UriMatcher;
+import android.content.*;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
@@ -80,6 +77,35 @@ public class NekoSmsProvider extends ContentProvider {
             getContext().getContentResolver().notifyChange(newUri, null);
         }
         return newUri;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] bulkValues) {
+        SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
+        int successCount = 0;
+        String table;
+        switch (sUriMatcher.match(uri)) {
+        case FILTERS_ITEMS_ID:
+            table = Filters.TABLE;
+            break;
+        case BLOCKED_ITEMS_ID:
+            table = Blocked.TABLE;
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid insert URI: " + uri);
+        }
+
+        ContentResolver contentResolver = getContext().getContentResolver();
+        for (ContentValues values : bulkValues) {
+            long row = db.insert(table, null, values);
+            if (row >= 0) {
+                Uri newUri = ContentUris.withAppendedId(uri, row);
+                contentResolver.notifyChange(newUri, null);
+                successCount++;
+            }
+        }
+
+        return successCount;
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.net.Uri;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.utils.Xlog;
 
+import java.util.List;
+
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
 public final class SmsFilterDbLoader {
@@ -25,7 +27,6 @@ public final class SmsFilterDbLoader {
     private static final int COL_MODE = 2;
     private static final int COL_PATTERN = 3;
     private static final int COL_CASE_SENSITIVE = 4;
-
     private static int[] sDefaultColumns;
 
     private SmsFilterDbLoader() { }
@@ -71,22 +72,20 @@ public final class SmsFilterDbLoader {
         return data;
     }
 
-    public static void loadAllFilters(Context context, SmsFilterLoadCallback callback) {
-        Uri filtersUri = Filters.CONTENT_URI;
+    public static CursorWrapper<SmsFilterData> loadAllFilters(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(filtersUri, DEFAULT_PROJECTION, null, null, null);
-        int[] columns = getDefaultColumns(cursor);
-        SmsFilterData data = new SmsFilterData();
-        callback.onBegin(cursor.getCount());
-        while (cursor.moveToNext()) {
-            try {
-                data = getFilterData(cursor, columns, data);
-            } catch (InvalidFilterException e) {
-                callback.onError(e);
+        Cursor cursor = contentResolver.query(Filters.CONTENT_URI, DEFAULT_PROJECTION, null, null, null);
+        return new CursorWrapper<SmsFilterData>(cursor, getDefaultColumns(cursor), new SmsFilterData()) {
+            @Override
+            protected void bindData(Cursor cursor, int[] columns, SmsFilterData data) {
+                getFilterData(cursor, columns, data);
             }
-            callback.onSuccess(data);
-        }
-        cursor.close();
+        };
+    }
+
+    public static void deleteAllFilters(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        contentResolver.delete(Filters.CONTENT_URI, null, null);
     }
 
     private static Uri convertIdToUri(long messageId) {
@@ -103,6 +102,7 @@ public final class SmsFilterDbLoader {
 
         if (!cursor.moveToFirst()) {
             Xlog.e(TAG, "URI does not match any filter: %s", filterUri);
+            cursor.close();
             return null;
         } else if (cursor.getCount() > 1) {
             Xlog.w(TAG, "URI matched more than one filter: %s", filterUri);
@@ -128,6 +128,16 @@ public final class SmsFilterDbLoader {
         ContentResolver contentResolver = context.getContentResolver();
         ContentValues values = filterData.serialize();
         return writeFilter(contentResolver, values);
+    }
+
+    public static boolean writeFilters(Context context, List<SmsFilterData> filters) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues[] contentValues = new ContentValues[filters.size()];
+        for (int i = 0; i < contentValues.length; i++) {
+            contentValues[i] = filters.get(i).serialize();
+        }
+        int insertCount = contentResolver.bulkInsert(Filters.CONTENT_URI, contentValues);
+        return insertCount == contentValues.length;
     }
 
     public static Uri updateFilter(Context context, Uri filterUri, SmsFilterData filterData, boolean insertIfError) {

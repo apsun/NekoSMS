@@ -29,6 +29,7 @@ android {
         targetSdkVersion 23
         buildConfigField("int", "MODULE_VERSION", "6")
         buildConfigField("int", "DATABASE_VERSION", "8")
+        buildConfigField("int", "BACKUP_VERSION", "1")
     }
 
     sourceSets {

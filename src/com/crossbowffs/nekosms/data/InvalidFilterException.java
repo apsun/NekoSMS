@@ -1,6 +1,6 @@
 package com.crossbowffs.nekosms.data;
 
-public class InvalidFilterException extends IllegalStateException {
+public class InvalidFilterException extends RuntimeException {
     public InvalidFilterException() {
         super();
     }

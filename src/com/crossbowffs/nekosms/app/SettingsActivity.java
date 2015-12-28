@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.PreferenceConsts;
+import com.crossbowffs.nekosms.preferences.Preferences;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -20,7 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
             getPreferenceManager().setSharedPreferencesMode(MODE_WORLD_READABLE);
             addPreferencesFromResource(R.xml.settings);
             if (!XposedUtils.isModuleEnabled()) {
-                Preference enablePreference = findPreference(PreferenceConsts.PREF_ENABLE);
+                Preference enablePreference = findPreference(Preferences.PREF_ENABLE.getKey());
                 enablePreference.setEnabled(false);
                 enablePreference.setSummary(R.string.pref_enable_summary_alt);
             }

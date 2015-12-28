@@ -19,24 +19,20 @@
     <string name="restore">Restore</string>
     <string name="undo">Undo</string>
 
-    <!-- Filter list -->
+    <!-- Import/export -->
     <string name="import_export">Import/export</string>
-    <string name="import_export_filters">Import/export filters</string>
     <string name="import_from_storage">Import from storage</string>
     <string name="export_to_storage">Export to storage</string>
-    <string name="no_filter_backup_found">No filter backup found</string>
-    <plurals name="format_filters_imported">
-        <item quantity="one">%d new filter successfully imported</item>
-        <item quantity="other">%d new filters successfully imported</item>
-    </plurals>
-    <plurals name="format_filters_exported">
-        <item quantity="one">%d filter successfully exported</item>
-        <item quantity="other">%d filters successfully exported</item>
-    </plurals>
-    <string name="need_storage_write_permission">Storage write permissions are needed to export filters</string>
-    <string name="need_storage_read_permission">Storage read permissions are needed to import filters</string>
-    <string name="filter_import_failed">Filter import failed</string>
-    <string name="filter_export_failed">Filter export failed</string>
+    <string name="import_success">Import successful</string>
+    <string name="import_no_backup">No backup file found</string>
+    <string name="import_invalid_backup">Invalid backup file</string>
+    <string name="import_read_failed">Could not read backup file</string>
+    <string name="export_success">Export successful</string>
+    <string name="export_write_failed">Could not write backup file</string>
+    <string name="need_storage_write_permission">Storage write permissions required</string>
+    <string name="need_storage_read_permission">Storage read permissions required</string>
+
+    <!-- Filter list -->
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="filter_deleted">Filter deleted</string>
     <string name="enable_xposed_module_title">Enable Xposed module</string>

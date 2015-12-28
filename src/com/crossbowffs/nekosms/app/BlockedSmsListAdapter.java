@@ -41,7 +41,6 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
     }
 
     private static final String TAG = BlockedSmsListAdapter.class.getSimpleName();
-
     private final BlockedSmsListActivity mActivity;
     private final CoordinatorLayout mCoordinatorLayout;
     private final String mMessageDetailsFormatString;

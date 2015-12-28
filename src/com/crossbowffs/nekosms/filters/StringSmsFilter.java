@@ -7,7 +7,6 @@ import com.crossbowffs.nekosms.utils.Xlog;
 
 /* package */ class StringSmsFilter extends SmsFilter {
     private static final String TAG = StringSmsFilter.class.getSimpleName();
-
     private final SmsFilterField mField;
     private final SmsFilterMode mMode;
     private final String mPattern;
