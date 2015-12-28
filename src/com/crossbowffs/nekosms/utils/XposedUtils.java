@@ -4,10 +4,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import com.crossbowffs.nekosms.BuildConfig;
 
 public final class XposedUtils {
     // This number should be incremented every time the module is modified
-    private static final int VERSION = 6;
+    private static final int MODULE_VERSION = BuildConfig.MODULE_VERSION;
 
     private static final String XPOSED_PACKAGE = "de.robv.android.xposed.installer";
     private static final String XPOSED_ACTION = XPOSED_PACKAGE + ".OPEN_SECTION";
@@ -19,8 +20,7 @@ public final class XposedUtils {
 
     public static boolean isModuleEnabled() {
         // This method is hooked by the module to return true.
-        // Use non-constexpr to prevent optimization and
-        // suppress constant return value warnings.
+        // Use non-constexpr to suppress constant return value warnings.
         return Boolean.parseBoolean("false");
     }
 
@@ -28,14 +28,14 @@ public final class XposedUtils {
         // This method is *NOT* hooked by the module; it must
         // be compared to the value of getModuleVersion()
         // to check whether the app and module are out of sync.
-        return VERSION;
+        return MODULE_VERSION;
     }
 
     public static int getModuleVersion() {
         // This method is hooked by the module to return the
-        // value of XposedUtils.VERSION, as seen from the
+        // value of XposedUtils.MODULE_VERSION, as seen from the
         // module side.
-        return VERSION;
+        return MODULE_VERSION;
     }
 
     public static boolean isXposedInstalled(Context context) {

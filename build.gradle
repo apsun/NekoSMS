@@ -27,6 +27,8 @@ android {
         versionName "0.5"
         minSdkVersion 19
         targetSdkVersion 23
+        buildConfigField("int", "MODULE_VERSION", "6")
+        buildConfigField("int", "DATABASE_VERSION", "8")
     }
 
     sourceSets {
@@ -35,6 +37,18 @@ android {
             java.srcDirs = ["src"]
             res.srcDirs = ["res"]
             assets.srcDirs = ["assets"]
+        }
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField("int", "LOG_LEVEL", "2")
+        }
+
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            buildConfigField("int", "LOG_LEVEL", "4")
         }
     }
 }

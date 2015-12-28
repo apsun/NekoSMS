@@ -3,6 +3,7 @@ package com.crossbowffs.nekosms.provider;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
@@ -12,7 +13,7 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "nekosms.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = BuildConfig.DATABASE_VERSION;
 
     private static final String CREATE_FILTERS_TABLE =
         "CREATE TABLE " + Filters.TABLE + "(" +

@@ -3,9 +3,10 @@ package com.crossbowffs.nekosms.provider;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import com.crossbowffs.nekosms.BuildConfig;
 
 public final class NekoSmsContract {
-    public static final String AUTHORITY = "com.crossbowffs.nekosms.provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     public static class Blocked implements BaseColumns {
