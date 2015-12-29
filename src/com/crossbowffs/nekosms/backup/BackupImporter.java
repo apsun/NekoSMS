@@ -23,7 +23,6 @@ import java.util.ArrayList;
         } catch (UnsupportedEncodingException e) {
             throw new AssertionError(e);
         }
-
         mJsonReader = new JsonReader(streamReader);
     }
 

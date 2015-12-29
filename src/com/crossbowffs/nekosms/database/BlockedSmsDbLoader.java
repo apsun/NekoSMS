@@ -25,7 +25,6 @@ public final class BlockedSmsDbLoader {
     private static final int COL_BODY = 2;
     private static final int COL_TIME_SENT = 3;
     private static final int COL_TIME_RECEIVED = 4;
-
     private static int[] sDefaultColumns;
 
     private BlockedSmsDbLoader() { }

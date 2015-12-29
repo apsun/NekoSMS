@@ -1,6 +1,5 @@
 package com.crossbowffs.nekosms.app;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -19,8 +18,8 @@ import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -44,10 +43,6 @@ public class FilterEditorActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        Uri filterUri = intent.getData();
-
-        mFilterUri = filterUri;
         mPatternEditText = (EditText)findViewById(R.id.activity_filter_editor_pattern_edittext);
         mFieldSpinner = (Spinner)findViewById(R.id.activity_filter_editor_field_spinner);
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
@@ -63,10 +58,13 @@ public class FilterEditorActivity extends AppCompatActivity {
         modeAdapter.setStringMap(FilterEnumMaps.getModeMap(this));
         mModeSpinner.setAdapter(modeAdapter);
 
+        Intent intent = getIntent();
+        Uri filterUri = intent.getData();
         SmsFilterData filter = null;
         if (filterUri != null) {
             filter = SmsFilterDbLoader.loadFilter(this, filterUri);
         }
+        mFilterUri = filterUri;
         mFilter = filter;
 
         if (filter != null) {
@@ -115,21 +113,26 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
     }
 
-    private int getInvalidPatternStringId() {
+    private String validatePattern() {
         SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
         if (mode != SmsFilterMode.REGEX) {
-            return 0;
+            return null;
         }
 
         String pattern = mPatternEditText.getText().toString();
-        // TODO: Display error message to user
         try {
+            // We don't need the actual compiled pattern, this
+            // is just to make sure the syntax is valid
             Pattern.compile(pattern);
         } catch (PatternSyntaxException e) {
-            return R.string.invalid_pattern_regex;
+            String description = e.getDescription();
+            if (description == null) {
+                description = getString(R.string.invalid_pattern_reason_unknown);
+            }
+            return getString(R.string.invalid_pattern_message, description);
         }
 
-        return 0;
+        return null;
     }
 
     private boolean shouldSaveFilter() {
@@ -159,9 +162,9 @@ public class FilterEditorActivity extends AppCompatActivity {
             return;
         }
 
-        int invalidPatternStringId = getInvalidPatternStringId();
-        if (invalidPatternStringId != 0) {
-            showInvalidPatternDialog(invalidPatternStringId);
+        String errorMessage = validatePattern();
+        if (errorMessage != null) {
+            showInvalidPatternDialog(errorMessage);
             return;
         }
 
@@ -205,18 +208,12 @@ public class FilterEditorActivity extends AppCompatActivity {
         return mFilterUri = SmsFilterDbLoader.updateFilter(this, mFilterUri, filterData, true);
     }
 
-    private void showInvalidPatternDialog(int messageId) {
+    private void showInvalidPatternDialog(String errorMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.invalid_pattern_title)
-            .setMessage(messageId)
+            .setMessage(errorMessage)
             .setIcon(R.drawable.ic_warning_white_24dp)
-            .setPositiveButton(R.string.ok, null)
-            .setNegativeButton(R.string.discard, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    discardAndFinish();
-                }
-            });
+            .setPositiveButton(R.string.ok, null);
 
         AlertDialog dialog = builder.create();
         dialog.show();

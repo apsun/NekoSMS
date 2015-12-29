@@ -65,7 +65,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         // already been notified about a message.
         Notification notification = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_textsms_white_24dp)
-            .setContentTitle(context.getString(R.string.fmt_notification_sender, messageData.getSender()))
+            .setContentTitle(context.getString(R.string.notification_sender, messageData.getSender()))
             .setContentText(messageData.getBody())
             .setStyle(new NotificationCompat.BigTextStyle().bigText(messageData.getBody()))
             .setContentIntent(viewPendingIntent)

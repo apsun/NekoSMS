@@ -23,11 +23,11 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        versionCode 7
-        versionName "0.6"
+        versionCode 8
+        versionName "0.6.1"
         minSdkVersion 19
         targetSdkVersion 23
-        buildConfigField("int", "MODULE_VERSION", "6")
+        buildConfigField("int", "MODULE_VERSION", "7")
         buildConfigField("int", "DATABASE_VERSION", "8")
         buildConfigField("int", "BACKUP_VERSION", "1")
     }

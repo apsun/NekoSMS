@@ -66,7 +66,8 @@
     <string name="filter_saved">Filter saved</string>
     <string name="filter_already_exists">Filter already exists</string>
     <string name="invalid_pattern_title">Invalid pattern</string>
-    <string name="invalid_pattern_regex">The pattern you have entered is not a legal regular expression!</string>
+    <string name="invalid_pattern_message">The pattern you have entered is not a legal regular expression!\n\nReason: %s</string>
+    <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>
@@ -109,6 +110,8 @@
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">Block those annoying SMS messages!</string>
     <string name="pref_enable_summary_alt">You must enable the Xposed module first!</string>
+    <string name="pref_debug_mode">Debug mode</string>
+    <string name="pref_debug_mode_summary">Enables the \'create test message\' button</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_enable">Enable notifications</string>
     <string name="pref_notifications_enable_summary">When a message is blocked, display a notification</string>
@@ -116,6 +119,13 @@
     <string name="pref_notifications_vibrate">Vibration</string>
     <string name="pref_notifications_lights">Lights</string>
 
+    <!-- Debug stuff (to be removed) -->
+    <string name="create_test_message">Create test message</string>
+    <string name="test_message_sender">1234567890</string>
+    <string name="test_message_body">
+        This is a test message with looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonger content
+    </string>
+
     <!-- Notifications -->
-    <string name="fmt_notification_sender">Blocked: %s</string>
+    <string name="notification_sender">Blocked: %s</string>
 </resources>

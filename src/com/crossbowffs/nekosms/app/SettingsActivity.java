@@ -20,7 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
             getPreferenceManager().setSharedPreferencesMode(MODE_WORLD_READABLE);
             addPreferencesFromResource(R.xml.settings);
             if (!XposedUtils.isModuleEnabled()) {
-                Preference enablePreference = findPreference(Preferences.PREF_ENABLE.getKey());
+                Preference enablePreference = findPreference(Preferences.KEY_ENABLE);
                 enablePreference.setEnabled(false);
                 enablePreference.setSummary(R.string.pref_enable_summary_alt);
             }

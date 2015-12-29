@@ -6,12 +6,14 @@ import android.preference.PreferenceManager;
 
 public class Preferences {
     public static final String KEY_ENABLE = "pref_enable";
+    public static final String KEY_DEBUG_MODE = "pref_debug_mode";
     public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";
     public static final String KEY_NOTIFICATIONS_SOUND = "pref_notifications_sound";
     public static final String KEY_NOTIFICATIONS_VIBRATE = "pref_notifications_vibrate";
     public static final String KEY_NOTIFICATIONS_LIGHTS = "pref_notifications_lights";
 
     public static final BooleanPreference PREF_ENABLE = new BooleanPreference(KEY_ENABLE, true);
+    public static final BooleanPreference PREF_DEBUG_MODE = new BooleanPreference(KEY_DEBUG_MODE, false);
     public static final BooleanPreference PREF_NOTIFICATIONS_ENABLE = new BooleanPreference(KEY_NOTIFICATIONS_ENABLE, false);
     public static final BooleanPreference PREF_NOTIFICATIONS_SOUND = new BooleanPreference(KEY_NOTIFICATIONS_SOUND, true);
     public static final BooleanPreference PREF_NOTIFICATIONS_VIBRATE = new BooleanPreference(KEY_NOTIFICATIONS_VIBRATE, true);

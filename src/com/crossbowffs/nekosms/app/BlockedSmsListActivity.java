@@ -19,6 +19,7 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
+import com.crossbowffs.nekosms.preferences.Preferences;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 public class BlockedSmsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -55,7 +56,10 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.options_blockedsms_list, menu);
+        Preferences preferences = Preferences.fromContext(this);
+        if (preferences.get(Preferences.PREF_DEBUG_MODE)) {
+            inflater.inflate(R.menu.options_blockedsms_list, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -115,14 +119,14 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             mAdapter.showMessageDetailsDialog(messageData);
         } else {
             // This can occur if the user deletes the message, then opens the notification
-            Toast.makeText(this, "Message could not be loaded", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
         }
     }
 
     private void createTestSms() {
         SmsMessageData message = new SmsMessageData();
-        message.setSender("1234567890");
-        message.setBody("This is a test message with looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonger content");
+        message.setSender(getString(R.string.test_message_sender));
+        message.setBody(getString(R.string.test_message_body));
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
 

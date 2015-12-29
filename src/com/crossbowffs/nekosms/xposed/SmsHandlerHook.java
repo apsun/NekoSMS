@@ -119,17 +119,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
-        CursorWrapper<SmsFilterData> filterCursor = SmsFilterDbLoader.loadAllFilters(context);
-        final ArrayList<SmsFilter> filters = new ArrayList<>(filterCursor.getCount());
-        try {
+        try (CursorWrapper<SmsFilterData> filterCursor = SmsFilterDbLoader.loadAllFilters(context)) {
+            ArrayList<SmsFilter> filters = new ArrayList<>(filterCursor.getCount());
             while (filterCursor.moveToNext()) {
                 SmsFilterData filterData = filterCursor.get();
                 filters.add(SmsFilter.create(filterData));
             }
-        } finally {
-            filterCursor.close();
+            return filters;
         }
-        return filters;
     }
 
     private boolean shouldFilterMessage(Context context, String sender, String body) {

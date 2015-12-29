@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menu_item_create_test"
-        android:title="Create test"
+        android:title="@string/create_test_message"
         android:icon="@drawable/ic_create_white_24dp"
         app:showAsAction="ifRoom"/>
 </menu>
