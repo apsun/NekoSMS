@@ -6,3 +6,5 @@
     boolean isModuleEnabled();
     int getModuleVersion();
 }
+
+-keep class * implements de.robv.android.xposed.IXposedMod

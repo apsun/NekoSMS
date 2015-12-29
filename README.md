@@ -45,9 +45,9 @@ first word that popped into my head. Hence, NekoSMS.
 
 ### Why does this app require root/Xposed?
 
-[Starting from Android 4.4](http://android-developers.blogspot.in/2013/10/getting-your-sms-apps-ready-for-kitkat.html), 
-only the default SMS app has the ability to intercept SMS messages. In order to 
-bypass this restriction, code must be modified at the OS level, which requires root.
+[Starting from Android 4.4, only the default SMS app has the ability to intercept SMS messages]
+(http://android-developers.blogspot.in/2013/10/getting-your-sms-apps-ready-for-kitkat.html).
+In order to bypass this restriction, code must be modified at the OS level, which requires root.
 
 ### Does NekoSMS work with (insert SMS app here)?
 
