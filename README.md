@@ -23,7 +23,7 @@ Block all messages starting with `the` and ending with `game`:
 
 - A rooted phone running Android 4.4 KitKat or newer
 - [Xposed framework](http://forum.xda-developers.com/xposed/xposed-installer-versions-changelog-t2714053)
-  ([Lollipop version](http://forum.xda-developers.com/showthread.php?t=3034811))
+  ([Lollipop/Marshmallow version](http://forum.xda-developers.com/showthread.php?t=3034811))
 
 ## Note
 
