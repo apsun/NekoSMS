@@ -66,6 +66,9 @@ import java.util.ArrayList;
             case Preferences.KEY_ENABLE:
                 editor.put(Preferences.PREF_ENABLE, mJsonReader.nextBoolean());
                 break;
+            case Preferences.KEY_DEBUG_MODE:
+                editor.put(Preferences.PREF_DEBUG_MODE, mJsonReader.nextBoolean());
+                break;
             case Preferences.KEY_NOTIFICATIONS_ENABLE:
                 editor.put(Preferences.PREF_NOTIFICATIONS_ENABLE, mJsonReader.nextBoolean());
                 break;

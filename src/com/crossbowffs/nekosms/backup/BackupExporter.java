@@ -43,6 +43,7 @@ import java.io.*;
         Preferences preferences = Preferences.fromContext(context);
         mJsonWriter.name(KEY_SETTINGS).beginObject();
         writePreference(preferences, Preferences.PREF_ENABLE);
+        writePreference(preferences, Preferences.PREF_DEBUG_MODE);
         writePreference(preferences, Preferences.PREF_NOTIFICATIONS_ENABLE);
         writePreference(preferences, Preferences.PREF_NOTIFICATIONS_SOUND);
         writePreference(preferences, Preferences.PREF_NOTIFICATIONS_VIBRATE);
