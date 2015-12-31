@@ -58,11 +58,13 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
     }
 
     private static final String TAG = FilterListActivity.class.getSimpleName();
+    private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
+    private static final String XPOSED_FORUM_URL = "http://forum.xda-developers.com/xposed";
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String ISSUES_URL = GITHUB_URL + "/issues";
-    private static final int IMPORT_FILTERS_REQUEST = 0;
-    private static final int EXPORT_FILTERS_REQUEST = 1;
+    private static final int IMPORT_BACKUP_REQUEST = 0;
+    private static final int EXPORT_BACKUP_REQUEST = 1;
 
     private FilterListAdapter mAdapter;
     private FloatingActionButton mCreateButton;
@@ -98,7 +100,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         recyclerView.addOnScrollListener(new ScrollListener());
 
         if (!XposedUtils.isModuleEnabled()) {
-            showInitFailedDialog();
+            showEnableModuleDialog();
         } else if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
             showModuleOutdatedDialog();
         }
@@ -156,13 +158,13 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
 
     @Override
     public void onRequestPermissionsResult(int requestCode, boolean granted) {
-        if (requestCode == IMPORT_FILTERS_REQUEST) {
+        if (requestCode == IMPORT_BACKUP_REQUEST) {
             if (granted) {
                 importFromStorage();
             } else {
                 Toast.makeText(this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
             }
-        } else if (requestCode == EXPORT_FILTERS_REQUEST) {
+        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
             if (granted) {
                 exportToStorage();
             } else {
@@ -196,9 +198,9 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
-                        runPrivilegedAction(IMPORT_FILTERS_REQUEST, Manifest.permission.READ_EXTERNAL_STORAGE);
+                        runPrivilegedAction(IMPORT_BACKUP_REQUEST, Manifest.permission.READ_EXTERNAL_STORAGE);
                     } else if (which == 1) {
-                        runPrivilegedAction(EXPORT_FILTERS_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        runPrivilegedAction(EXPORT_BACKUP_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
                     }
                 }
             });
@@ -255,19 +257,19 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         startActivity(intent);
     }
 
-    private void startReportBugActivity() {
-        Uri url = Uri.parse(ISSUES_URL);
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, url);
-        startActivity(browserIntent);
+    private void startBrowserActivity(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
     }
 
     private void startXposedActivity(String section) {
         if (!XposedUtils.startXposedActivity(this, section)) {
             Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
+            startBrowserActivity(XPOSED_FORUM_URL);
         }
     }
 
-    private void showInitFailedDialog() {
+    private void showEnableModuleDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
@@ -281,7 +283,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
             .setNeutralButton(R.string.report_bug, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    startReportBugActivity();
+                    startBrowserActivity(ISSUES_URL);
                 }
             })
             .setNegativeButton(R.string.ignore, null);
@@ -312,7 +314,7 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
             TWITTER_URL, GITHUB_URL, ISSUES_URL));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.app_name) + " " + BuildConfig.VERSION_NAME)
+            .setTitle(getString(R.string.app_name) + " " + VERSION_NAME)
             .setMessage(html)
             .setPositiveButton(R.string.ok, null);
 
