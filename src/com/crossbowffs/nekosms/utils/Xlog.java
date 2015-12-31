@@ -48,24 +48,4 @@ public final class Xlog {
     public static void e(String tag, String message, Object... args) {
         log(Log.ERROR, tag, message, args);
     }
-
-    public static void v(String message, Object... args) {
-        v(APPLICATION_TAG, message, args);
-    }
-
-    public static void d(String message, Object... args) {
-        d(APPLICATION_TAG, message, args);
-    }
-
-    public static void i(String message, Object... args) {
-        i(APPLICATION_TAG, message, args);
-    }
-
-    public static void w(String message, Object... args) {
-        w(APPLICATION_TAG, message, args);
-    }
-
-    public static void e(String message, Object... args) {
-        e(APPLICATION_TAG, message, args);
-    }
 }
