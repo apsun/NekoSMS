@@ -18,7 +18,7 @@ public class SmsMessageData implements Parcelable {
         }
     };
 
-    private long mId;
+    private long mId = -1;
     private String mSender;
     private String mBody;
     private long mTimeSent;
@@ -51,7 +51,10 @@ public class SmsMessageData implements Parcelable {
     }
 
     public ContentValues serialize() {
-        ContentValues values = new ContentValues(4);
+        ContentValues values = new ContentValues(5);
+        if (mId >= 0) {
+            values.put(NekoSmsContract.Blocked._ID, mId);
+        }
         values.put(NekoSmsContract.Blocked.SENDER, getSender());
         values.put(NekoSmsContract.Blocked.BODY, getBody());
         values.put(NekoSmsContract.Blocked.TIME_SENT, getTimeSent());

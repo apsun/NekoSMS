@@ -101,7 +101,11 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         Uri messageUri = intent.getData();
         NotificationManager notificationManager = getNotificationManager(context);
         notificationManager.cancel(getNotificationId(messageUri));
-        BlockedSmsDbLoader.deleteMessage(context, messageUri);
+        boolean deleted = BlockedSmsDbLoader.deleteMessage(context, messageUri);
+        if (!deleted) {
+            Xlog.e(TAG, "Failed to delete message: could not load data");
+            Toast.makeText(context, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void onRestoreSms(Context context, Intent intent) {

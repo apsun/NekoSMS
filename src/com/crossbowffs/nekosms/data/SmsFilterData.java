@@ -7,14 +7,17 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class SmsFilterData {
-    private long mId;
+    private long mId = -1;
     private SmsFilterField mField;
     private SmsFilterMode mMode;
     private String mPattern;
     private boolean mCaseSensitive;
 
     public ContentValues serialize() {
-        ContentValues values = new ContentValues(4);
+        ContentValues values = new ContentValues(5);
+        if (mId >= 0) {
+            values.put(NekoSmsContract.Filters._ID, mId);
+        }
         values.put(NekoSmsContract.Filters.FIELD, getField().name());
         values.put(NekoSmsContract.Filters.MODE, getMode().name());
         values.put(NekoSmsContract.Filters.PATTERN, getPattern());
