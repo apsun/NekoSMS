@@ -25,6 +25,7 @@ local.properties
 
 # Gradle
 .gradle/
+gradle/
 gradlew
 gradlew.bat
 
