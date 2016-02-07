@@ -75,6 +75,9 @@ public final class SmsFilterDbLoader {
     public static CursorWrapper<SmsFilterData> loadAllFilters(Context context) {
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(Filters.CONTENT_URI, DEFAULT_PROJECTION, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
         return new CursorWrapper<SmsFilterData>(cursor, getDefaultColumns(cursor), new SmsFilterData()) {
             @Override
             protected void bindData(Cursor cursor, int[] columns, SmsFilterData data) {

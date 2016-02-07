@@ -8,10 +8,12 @@ import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.preferences.BooleanPreference;
 import com.crossbowffs.nekosms.preferences.Preferences;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.io.*;
 
 /* package */ class BackupExporter implements JsonConstants, Closeable {
+    private static final String TAG = BackupExporter.class.getSimpleName();
     private static final int BACKUP_VERSION = BuildConfig.BACKUP_VERSION;
     private final JsonWriter mJsonWriter;
 
@@ -73,6 +75,11 @@ import java.io.*;
 
     private void writeFilters(Context context) throws IOException {
         try (CursorWrapper<SmsFilterData> filterCursor = SmsFilterDbLoader.loadAllFilters(context)) {
+            if (filterCursor == null) {
+                Xlog.e(TAG, "Failed to load SMS filters (loadAllFilters returned null)");
+                return;
+            }
+
             mJsonWriter.name(KEY_FILTERS).beginArray();
             while (filterCursor.moveToNext()) {
                 writeFilter(filterCursor.get());

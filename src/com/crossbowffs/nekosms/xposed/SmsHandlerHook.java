@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsFilterData;
@@ -121,23 +122,40 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
         try (CursorWrapper<SmsFilterData> filterCursor = SmsFilterDbLoader.loadAllFilters(context)) {
+            if (filterCursor == null) {
+                // Can occur if NekoSMS has been uninstalled
+                Xlog.e(TAG, "Failed to load SMS filters (loadAllFilters returned null)");
+                return null;
+            }
+
             ArrayList<SmsFilter> filters = new ArrayList<>(filterCursor.getCount());
             while (filterCursor.moveToNext()) {
                 SmsFilterData filterData = filterCursor.get();
                 filters.add(SmsFilter.create(filterData));
             }
             return filters;
+        } catch (Exception e) {
+            Xlog.e(TAG, "Failed to load SMS filters", e);
+            return null;
         }
     }
 
     private boolean shouldFilterMessage(Context context, String sender, String body) {
         ArrayList<SmsFilter> filters;
         synchronized (mFiltersLock) {
-            if (mSmsFilters == null) {
-                Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
-                mSmsFilters = loadSmsFilters(context);
-            }
             filters = mSmsFilters;
+            if (filters == null) {
+                Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
+                filters = loadSmsFilters(context);
+            }
+            mSmsFilters = filters;
+        }
+
+        if (filters == null) {
+            // This might occur if NekoSMS has been uninstalled (removing the DB),
+            // but the user has not rebooted their device yet. We should not filter
+            // any messages in this state.
+            return false;
         }
 
         for (SmsFilter filter : filters) {
@@ -154,7 +172,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             packageInfo = packageManager.getPackageInfo(NEKOSMS_PACKAGE, 0);
         } catch (PackageManager.NameNotFoundException e) {
-            throw new AssertionError(e);
+            // This might occur if NekoSMS has been uninstalled.
+            // In this case, don't do anything - we can't do anything
+            // with the permissions anyways.
+            Log.w(TAG, "NekoSMS package not found", e);
+            return;
         }
 
         int uid = packageInfo.applicationInfo.uid;
