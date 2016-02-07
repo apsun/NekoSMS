@@ -63,7 +63,7 @@ import java.util.ArrayList;
 
     private void readVersion() throws IOException {
         int version = mJsonReader.nextInt();
-        Xlog.i(TAG, "Importing settings from backup v%d", version);
+        Xlog.i(TAG, "Importing data from backup version %d", version);
     }
 
     private void readSettings(Context context) throws IOException {
@@ -88,6 +88,9 @@ import java.util.ArrayList;
                 editor.put(Preferences.PREF_NOTIFICATIONS_SOUND, mJsonReader.nextBoolean());
                 break;
             case Preferences.KEY_NOTIFICATIONS_VIBRATE:
+                editor.put(Preferences.PREF_NOTIFICATIONS_VIBRATE, mJsonReader.nextBoolean());
+                break;
+            case Preferences.KEY_NOTIFICATIONS_LIGHTS:
                 editor.put(Preferences.PREF_NOTIFICATIONS_LIGHTS, mJsonReader.nextBoolean());
                 break;
             default:
