@@ -1,12 +1,10 @@
 package com.crossbowffs.nekosms.xposed;
 
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
+import android.content.*;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,6 +66,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
+    private BroadcastReceiver mBroadcastReceiver;
     private ArrayList<SmsFilter> mSmsFilters;
 
     private static SmsMessageData createMessageData(SmsMessage[] messageParts) {
@@ -96,6 +95,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
+    private void resetFilters() {
+        synchronized (mFiltersLock) {
+            mSmsFilters = null;
+        }
+    }
+
     private ContentObserver registerContentObserver(Context context) {
         Xlog.i(TAG, "Registering SMS filter content observer");
 
@@ -103,15 +108,58 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             @Override
             public void onChange(boolean selfChange) {
                 Xlog.d(TAG, "SMS filter database updated, marking cache as dirty");
-                synchronized (mFiltersLock) {
-                    mSmsFilters = null;
-                }
+                resetFilters();
             }
         };
 
         ContentResolver contentResolver = context.getContentResolver();
         contentResolver.registerContentObserver(NekoSmsContract.Filters.CONTENT_URI, true, contentObserver);
         return contentObserver;
+    }
+
+    private BroadcastReceiver registerBroadcastReceiver(Context context) {
+        // It is necessary to listen for these events because uninstalling
+        // an app or clearing its data does not notify registered ContentObservers.
+        // If the filter cache is not cleared, messages may be unintentionally blocked.
+        // A user might be able to get around this by manually modifying the
+        // database file itself, but at that point, it's not worth trying to handle.
+        // The only other alternative would be to reload the entire filter list every
+        // time a SMS is received, which does not scale well to a large number of filters.
+        Xlog.i(TAG, "Registering NekoSMS package state receiver");
+
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (!Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
+                    !Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
+                    return;
+                }
+
+                Uri data = intent.getData();
+                if (data != null) {
+                    String packageName = data.getSchemeSpecificPart();
+                    if (!NEKOSMS_PACKAGE.equals(packageName)) {
+                        return;
+                    }
+                }
+
+                if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
+                    Xlog.i(TAG, "NekoSMS uninstalled, resetting filters");
+                    resetFilters();
+                } else if (Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
+                    Xlog.i(TAG, "NekoSMS data cleared, resetting filters");
+                    resetFilters();
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addAction(Intent.ACTION_PACKAGE_DATA_CLEARED);
+        filter.addDataScheme("package");
+        context.registerReceiver(receiver, filter);
+        return receiver;
     }
 
     private void broadcastBlockedSms(Context context, SmsMessageData message) {
@@ -206,6 +254,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Context context = (Context)param.args[1];
         if (mContentObserver == null) {
             mContentObserver = registerContentObserver(context);
+        }
+        if (mBroadcastReceiver == null) {
+            mBroadcastReceiver = registerBroadcastReceiver(context);
         }
         grantWriteSmsPermissions(context);
     }
