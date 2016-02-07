@@ -131,13 +131,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private boolean shouldFilterMessage(Context context, String sender, String body) {
         ArrayList<SmsFilter> filters;
-
         synchronized (mFiltersLock) {
             if (mSmsFilters == null) {
                 Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
                 mSmsFilters = loadSmsFilters(context);
             }
-
             filters = mSmsFilters;
         }
 
@@ -146,7 +144,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 return true;
             }
         }
-
         return false;
     }
 

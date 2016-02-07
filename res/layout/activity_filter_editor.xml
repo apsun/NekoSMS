@@ -14,6 +14,7 @@
             android:id="@+id/activity_filter_editor_pattern_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:hint="@string/filter_pattern"/>
         <LinearLayout
             android:orientation="horizontal"
@@ -46,11 +47,11 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <CheckBox
-            android:id="@+id/activity_filter_editor_ignorecase_checkbox"
+            android:id="@+id/activity_filter_editor_case_sensitive_checkbox"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="@string/filter_ignore_case"
+            android:text="@string/filter_case_sensitive"
             android:clickable="true"/>
     </LinearLayout>
 </LinearLayout>

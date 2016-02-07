@@ -3,9 +3,22 @@ package com.crossbowffs.nekosms.app;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.ContextMenu;
 import android.view.View;
 
 public class ListRecyclerView extends RecyclerView {
+    public static class RecyclerContextMenuInfo implements ContextMenu.ContextMenuInfo {
+        public final View mTargetView;
+        public final int mPosition;
+        public final long mId;
+
+        public RecyclerContextMenuInfo(View targetView, int position, long id) {
+            mTargetView = targetView;
+            mPosition = position;
+            mId = id;
+        }
+    }
+
     private final AdapterDataObserver mAdapterObserver = new AdapterDataObserver() {
         @Override
         public void onChanged() {
@@ -13,6 +26,7 @@ public class ListRecyclerView extends RecyclerView {
         }
     };
 
+    private RecyclerContextMenuInfo mContextMenuInfo;
     private View mEmptyView;
 
     public ListRecyclerView(Context context) {
@@ -28,6 +42,22 @@ public class ListRecyclerView extends RecyclerView {
     public ListRecyclerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         addListDividers(context);
+    }
+
+    @Override
+    protected ContextMenu.ContextMenuInfo getContextMenuInfo() {
+        return mContextMenuInfo;
+    }
+
+    @Override
+    public boolean showContextMenuForChild(View originalView) {
+        int position = getChildAdapterPosition(originalView);
+        if (position >= 0) {
+            long id = getAdapter().getItemId(position);
+            mContextMenuInfo = new RecyclerContextMenuInfo(originalView, position, id);
+            return super.showContextMenuForChild(originalView);
+        }
+        return false;
     }
 
     @Override

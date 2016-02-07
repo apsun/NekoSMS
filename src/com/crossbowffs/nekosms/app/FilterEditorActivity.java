@@ -28,7 +28,7 @@ public class FilterEditorActivity extends AppCompatActivity {
     private EditText mPatternEditText;
     private Spinner mFieldSpinner;
     private Spinner mModeSpinner;
-    private CheckBox mIgnoreCaseCheckBox;
+    private CheckBox mCaseSensitiveCheckbox;
     private Uri mFilterUri;
     private SmsFilterData mFilter;
 
@@ -46,7 +46,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         mPatternEditText = (EditText)findViewById(R.id.activity_filter_editor_pattern_edittext);
         mFieldSpinner = (Spinner)findViewById(R.id.activity_filter_editor_field_spinner);
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
-        mIgnoreCaseCheckBox = (CheckBox)findViewById(R.id.activity_filter_editor_ignorecase_checkbox);
+        mCaseSensitiveCheckbox = (CheckBox)findViewById(R.id.activity_filter_editor_case_sensitive_checkbox);
 
         EnumAdapter<SmsFilterField> fieldAdapter = new EnumAdapter<>(this,
             android.R.layout.simple_spinner_dropdown_item, SmsFilterField.class);
@@ -71,11 +71,11 @@ public class FilterEditorActivity extends AppCompatActivity {
             mFieldSpinner.setSelection(fieldAdapter.getPosition(filter.getField()));
             mModeSpinner.setSelection(modeAdapter.getPosition(filter.getMode()));
             mPatternEditText.setText(filter.getPattern());
-            mIgnoreCaseCheckBox.setChecked(!filter.isCaseSensitive());
+            mCaseSensitiveCheckbox.setChecked(filter.isCaseSensitive());
         } else {
             mFieldSpinner.setSelection(fieldAdapter.getPosition(SmsFilterField.BODY));
             mModeSpinner.setSelection(modeAdapter.getPosition(SmsFilterMode.CONTAINS));
-            mIgnoreCaseCheckBox.setChecked(true);
+            mCaseSensitiveCheckbox.setChecked(false);
         }
     }
 
@@ -148,7 +148,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
         SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
         SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
-        boolean caseSensitive = !mIgnoreCaseCheckBox.isChecked();
+        boolean caseSensitive = mCaseSensitiveCheckbox.isChecked();
 
         return !(mFilter.getPattern().equals(pattern) &&
                  mFilter.getField() == field &&
@@ -190,7 +190,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
         SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
         String pattern = mPatternEditText.getText().toString();
-        boolean caseSensitive = !mIgnoreCaseCheckBox.isChecked();
+        boolean caseSensitive = mCaseSensitiveCheckbox.isChecked();
 
         SmsFilterData data = mFilter;
         if (data == null) {

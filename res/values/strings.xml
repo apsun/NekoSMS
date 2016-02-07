@@ -34,7 +34,17 @@
 
     <!-- Filter list -->
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
+    <string name="format_filter_config">%1$s %2$s %3$s</string>
+    <string name="filter_config_field_sender">Sender</string>
+    <string name="filter_config_field_body">Body</string>
+    <string name="filter_config_mode_regex">matches regex</string>
+    <string name="filter_config_mode_contains">contains</string>
+    <string name="filter_config_mode_prefix">starts with</string>
+    <string name="filter_config_mode_suffix">ends with</string>
+    <string name="filter_config_mode_equals">equals</string>
+    <string name="filter_config_case_sensitive">(case sensitive)</string>
     <string name="filter_deleted">Filter deleted</string>
+    <string name="filter_actions">Filter actions</string>
     <string name="enable_xposed_module_title">Enable Xposed module</string>
     <string name="enable_xposed_module_message">
         Android does not allow apps other than the default SMS app to intercept
@@ -45,10 +55,6 @@
     <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
     <string name="xposed_not_installed">Xposed not installed</string>
     <string name="report_bug">Report bug</string>
-    <string name="format_filter_pattern">Pattern: %s</string>
-    <string name="format_filter_field">Field: %s</string>
-    <string name="format_filter_mode">Mode: %s</string>
-    <string name="format_filter_case_sensitive">Case sensitive: %s</string>
     <string name="format_about_message">
         <![CDATA[
             Pattern-based text message blocking for Android.<br><br>
@@ -94,7 +100,7 @@
     <string name="filter_pattern">Pattern</string>
     <string name="filter_field">Field</string>
     <string name="filter_mode">Mode</string>
-    <string name="filter_ignore_case">Ignore case</string>
+    <string name="filter_case_sensitive">Case sensitive</string>
     <string name="filter_mode_regex">Regular expression</string>
     <string name="filter_mode_wildcard">Wildcard</string>
     <string name="filter_mode_contains">Contains</string>
