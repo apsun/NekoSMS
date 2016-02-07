@@ -181,17 +181,11 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
 
     @Override
     public void onRequestPermissionsResult(int requestCode, boolean granted) {
-        if (requestCode == IMPORT_BACKUP_REQUEST) {
+        if (requestCode == IMPORT_BACKUP_REQUEST || requestCode == EXPORT_BACKUP_REQUEST) {
             if (granted) {
-                importFromStorage();
+                showImportExportOptionsDialog(requestCode);
             } else {
-                Toast.makeText(this, R.string.need_storage_read_permission, Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
-            if (granted) {
-                exportToStorage();
-            } else {
-                Toast.makeText(this, R.string.need_storage_write_permission, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.need_storage_permission, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -232,8 +226,49 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         dialog.show();
     }
 
-    private void importFromStorage() {
-        int result = BackupLoader.importFromStorage(this);
+    private void showImportExportOptionsDialog(final int requestCode) {
+        String filtersString = getString(R.string.backup_option_filters);
+        String settingsString = getString(R.string.backup_option_settings);
+        CharSequence[] items = {filtersString, settingsString};
+        final boolean[] checked = {true, true};
+        int titleId;
+        int positiveTextId;
+        if (requestCode == IMPORT_BACKUP_REQUEST) {
+            titleId = R.string.backup_options_dialog_title_import;
+            positiveTextId = R.string.backup_button_import;
+        } else {
+            titleId = R.string.backup_options_dialog_title_export;
+            positiveTextId = R.string.backup_button_export;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(titleId)
+            .setMultiChoiceItems(items, checked, new DialogInterface.OnMultiChoiceClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                    checked[which] = isChecked;
+                }
+            })
+            .setPositiveButton(positiveTextId, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    int options = 0;
+                    if (checked[0]) options |= BackupLoader.OPTION_INCLUDE_FILTERS;
+                    if (checked[1]) options |= BackupLoader.OPTION_INCLUDE_SETTINGS;
+                    if (requestCode == IMPORT_BACKUP_REQUEST) {
+                        importFromStorage(options);
+                    } else if (requestCode == EXPORT_BACKUP_REQUEST) {
+                        exportToStorage(options);
+                    }
+                }
+            })
+            .setNegativeButton(R.string.cancel, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void importFromStorage(int options) {
+        int result = BackupLoader.importFromStorage(this, options);
         int messageId;
         switch (result) {
         case BackupLoader.IMPORT_SUCCESS:
@@ -254,8 +289,8 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
     }
 
-    private void exportToStorage() {
-        int result = BackupLoader.exportToStorage(this);
+    private void exportToStorage(int options) {
+        int result = BackupLoader.exportToStorage(this, options);
         int messageId;
         switch (result) {
         case BackupLoader.EXPORT_SUCCESS:

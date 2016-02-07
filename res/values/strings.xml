@@ -18,6 +18,7 @@
     <string name="close">Close</string>
     <string name="restore">Restore</string>
     <string name="undo">Undo</string>
+    <string name="cancel">Cancel</string>
 
     <!-- Import/export -->
     <string name="import_export">Import/export</string>
@@ -29,8 +30,13 @@
     <string name="import_read_failed">Could not read backup file</string>
     <string name="export_success">Export successful</string>
     <string name="export_write_failed">Could not write backup file</string>
-    <string name="need_storage_write_permission">Storage write permissions required</string>
-    <string name="need_storage_read_permission">Storage read permissions required</string>
+    <string name="need_storage_permission">Storage permissions required</string>
+    <string name="backup_option_filters">Filters</string>
+    <string name="backup_option_settings">Settings</string>
+    <string name="backup_options_dialog_title_import">Select items to import</string>
+    <string name="backup_options_dialog_title_export">Select items to export</string>
+    <string name="backup_button_import">Import</string>
+    <string name="backup_button_export">Export</string>
 
     <!-- Filter list -->
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>

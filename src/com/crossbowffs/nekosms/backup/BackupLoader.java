@@ -22,13 +22,16 @@ public final class BackupLoader {
     public static final int EXPORT_SUCCESS = 200;
     public static final int EXPORT_WRITE_FAILED = 201;
 
+    public static final int OPTION_INCLUDE_FILTERS = 1 << 0;
+    public static final int OPTION_INCLUDE_SETTINGS = 1 << 1;
+
     private BackupLoader() { }
 
-    public static int importFromStorage(Context context) {
+    public static int importFromStorage(Context context, int options) {
         File sdCard = Environment.getExternalStorageDirectory();
         File file = new File(new File(sdCard, BACKUP_DIRECTORY), BACKUP_FILE_NAME);
         try (BackupImporter importer = new BackupImporter(file)) {
-            importer.read(context);
+            importer.read(context, options);
         } catch (FileNotFoundException e) {
             Xlog.e(TAG, "Import failed: no backup file found", e);
             return IMPORT_NO_BACKUP;
@@ -46,7 +49,7 @@ public final class BackupLoader {
         return IMPORT_SUCCESS;
     }
 
-    public static int exportToStorage(Context context) {
+    public static int exportToStorage(Context context, int options) {
         File sdCard = Environment.getExternalStorageDirectory();
         File exportDir = new File(sdCard, BACKUP_DIRECTORY);
         // The return value is useless, since it combines the "directory
@@ -57,10 +60,7 @@ public final class BackupLoader {
         exportDir.mkdirs();
         File file = new File(exportDir, BACKUP_FILE_NAME);
         try (BackupExporter exporter = new BackupExporter(file)) {
-            exporter.begin();
-            exporter.writePreferences(context);
-            exporter.writeFilters(context);
-            exporter.end();
+            exporter.write(context, options);
         } catch (IOException e) {
             Xlog.e(TAG, "Export failed: could not write backup file", e);
             return EXPORT_WRITE_FAILED;

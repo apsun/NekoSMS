@@ -63,6 +63,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private static final String TAG = SmsHandlerHook.class.getSimpleName();
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
+    private static final int SMS_CHARACTER_LIMIT = 160;
 
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
@@ -86,7 +87,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         if (messageParts.length == 1) {
             return messageParts[0].getDisplayMessageBody();
         } else {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(SMS_CHARACTER_LIMIT * messageParts.length);
             for (SmsMessage messagePart : messageParts) {
                 sb.append(messagePart.getDisplayMessageBody());
             }

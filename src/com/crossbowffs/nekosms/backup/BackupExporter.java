@@ -30,7 +30,18 @@ import java.io.*;
         this(new FileOutputStream(file));
     }
 
-    public void begin() throws IOException {
+    public void write(Context context, int options) throws IOException {
+        begin();
+        if ((options & BackupLoader.OPTION_INCLUDE_SETTINGS) != 0) {
+            writePreferences(context);
+        }
+        if ((options & BackupLoader.OPTION_INCLUDE_FILTERS) != 0) {
+            writeFilters(context);
+        }
+        end();
+    }
+
+    private void begin() throws IOException {
         mJsonWriter.beginObject();
         mJsonWriter.name(KEY_VERSION).value(BACKUP_VERSION);
     }
@@ -39,7 +50,7 @@ import java.io.*;
         mJsonWriter.name(pref.getKey()).value(preferences.get(pref));
     }
 
-    public void writePreferences(Context context) throws IOException {
+    private void writePreferences(Context context) throws IOException {
         Preferences preferences = Preferences.fromContext(context);
         mJsonWriter.name(KEY_SETTINGS).beginObject();
         writePreference(preferences, Preferences.PREF_ENABLE);
@@ -60,7 +71,7 @@ import java.io.*;
         mJsonWriter.endObject();
     }
 
-    public void writeFilters(Context context) throws IOException {
+    private void writeFilters(Context context) throws IOException {
         try (CursorWrapper<SmsFilterData> filterCursor = SmsFilterDbLoader.loadAllFilters(context)) {
             mJsonWriter.name(KEY_FILTERS).beginArray();
             while (filterCursor.moveToNext()) {
@@ -70,7 +81,7 @@ import java.io.*;
         }
     }
 
-    public void end() throws IOException {
+    private void end() throws IOException {
         mJsonWriter.endObject();
     }
 

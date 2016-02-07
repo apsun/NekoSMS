@@ -30,7 +30,7 @@ import java.util.ArrayList;
         this(new FileInputStream(file));
     }
 
-    public void read(Context context) throws IOException {
+    public void read(Context context, int options) throws IOException {
         mJsonReader.beginObject();
         while (mJsonReader.hasNext()) {
             String name = mJsonReader.nextName();
@@ -39,10 +39,22 @@ import java.util.ArrayList;
                 readVersion();
                 break;
             case KEY_SETTINGS:
-                readSettings(context);
+                if ((options & BackupLoader.OPTION_INCLUDE_SETTINGS) != 0) {
+                    readSettings(context);
+                } else {
+                    mJsonReader.skipValue();
+                }
                 break;
             case KEY_FILTERS:
-                readFilters(context);
+                if ((options & BackupLoader.OPTION_INCLUDE_FILTERS) != 0) {
+                    readFilters(context);
+                } else {
+                    mJsonReader.skipValue();
+                }
+                break;
+            default:
+                Xlog.w(TAG, "Unknown backup JSON key: " + name);
+                mJsonReader.skipValue();
                 break;
             }
         }
