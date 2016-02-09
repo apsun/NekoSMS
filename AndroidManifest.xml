@@ -16,7 +16,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/ic_launcher"
-        android:allowBackup="true">
+        android:allowBackup="true"
+        android:fullBackupContent="true">
         <activity
             android:name=".app.FilterListActivity"
             android:launchMode="singleTop"

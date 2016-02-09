@@ -21,10 +21,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="48dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
                 android:text="@string/filter_field"/>
             <Spinner
                 android:id="@+id/activity_filter_editor_field_spinner"
@@ -36,10 +37,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_width="48dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
                 android:text="@string/filter_mode"/>
             <Spinner
                 android:id="@+id/activity_filter_editor_mode_spinner"

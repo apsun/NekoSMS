@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NekoSMS</string>
+    <string name="receive_sms_permission_label">接收已拦截信息</string>
+    <string name="receive_sms_permission_description">
+        允许该应用接收被NekoSMS拦截的信息。这是个内部权限，用于防止其他应用读取您的信息。
+    </string>
+
+    <!-- General -->
+    <string name="ok">确定</string>
+    <string name="delete">删除</string>
+    <string name="edit">编辑</string>
+    <string name="enable">启用</string>
+    <string name="reboot">重启</string>
+    <string name="about">关于</string>
+    <string name="ignore">忽略</string>
+    <string name="close">关闭</string>
+    <string name="restore">恢复</string>
+    <string name="undo">撤消</string>
+    <string name="cancel">取消</string>
+
+    <!-- Import/export -->
+    <string name="import_export">导入/导出</string>
+    <string name="import_from_storage">从储存导入</string>
+    <string name="export_to_storage">导出到储存</string>
+    <string name="import_success">导入成功</string>
+    <string name="import_no_backup">未找到备份文件</string>
+    <string name="import_invalid_backup">备份文件已损坏</string>
+    <string name="import_read_failed">无法读取备份文件</string>
+    <string name="export_success">导出成功</string>
+    <string name="export_write_failed">无法写入备份文件</string>
+    <string name="need_storage_permission">此功能需要储存续写权限</string>
+    <string name="backup_option_filters">过滤规则</string>
+    <string name="backup_option_settings">设置</string>
+    <string name="backup_options_dialog_title_import">导入选项</string>
+    <string name="backup_options_dialog_title_export">导出选项</string>
+    <string name="backup_button_import">导入</string>
+    <string name="backup_button_export">导出</string>
+
+    <!-- Filter list -->
+    <string name="filter_list_empty_text">快来创建几个过滤规则吧！喵~</string>
+    <string name="format_filter_config">%1$s%2$s%3$s</string>
+    <string name="filter_config_field_sender">发送者</string>
+    <string name="filter_config_field_body">内容</string>
+    <string name="filter_config_mode_regex">匹配正则表达式</string>
+    <string name="filter_config_mode_contains">包含</string>
+    <string name="filter_config_mode_prefix">以…开头</string>
+    <string name="filter_config_mode_suffix">以…结尾</string>
+    <string name="filter_config_mode_equals">等于</string>
+    <string name="filter_config_case_sensitive">（区分大小写）</string>
+    <string name="filter_deleted">过滤规则已删除</string>
+    <string name="filter_actions">过滤规则操作</string>
+    <string name="enable_xposed_module_title">请启用Xposed模块</string>
+    <string name="enable_xposed_module_message">
+        由于Android不允许非默认的短信应用拦截信息或写入信息收件箱，
+        您先必须启用此应用自带的Xposed模块。否则，此应用将无法工作。
+    </string>
+    <string name="module_outdated_title">Xposed模块已更新</string>
+    <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
+    <string name="xposed_not_installed">未安装Xposed</string>
+    <string name="report_bug">报告BUG</string>
+    <string name="format_about_message">
+        <![CDATA[
+            基于表达式的Android短信拦截器<br><br>
+            开发者：<a href="%1$s">Andrew Sun</a><br><br>
+            项目首页：<a href="%2$s">GitHub</a><br><br>
+            找到了BUG？<a href="%3$s">请在这里报告</a>
+        ]]>
+    </string>
+
+    <!-- Filter editor -->
+    <string name="filter_editor">编辑过滤规则</string>
+    <string name="save_filter">保存过滤规则</string>
+    <string name="discard_changes">舍弃更改</string>
+    <string name="filter_saved">过滤规则已保存</string>
+    <string name="filter_already_exists">过滤规则已存在</string>
+    <string name="invalid_pattern_title">表达式不合法</string>
+    <string name="invalid_pattern_message">您输入的表达式不是合法的正则表达式！\n\n原因：%s</string>
+    <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
+
+    <!-- Blocked messages -->
+    <string name="blocked_messages">已拦截信息</string>
+    <string name="blocked_messages_empty_text">没有已拦截的信息！祝你今天愉快！</string>
+    <string name="must_enable_xposed_module">需要启用Xposed模块</string>
+    <string name="message_deleted">信息已删除</string>
+    <string name="message_restored">信息已恢复到收件箱</string>
+    <string name="message_restore_failed">信息无法恢复</string>
+    <string name="load_blocked_message_failed">无法加载信息</string>
+    <string name="format_message_details">
+        <![CDATA[
+            <b>发送者</b><br>
+            %1$s<br><br>
+
+            <b>发送时间</b><br>
+            %2$s<br><br>
+
+            <b>信息内容</b><br>
+            %3$s
+        ]]>
+    </string>
+
+    <!-- Filter properties -->
+    <string name="filter_pattern">表达式</string>
+    <string name="filter_field">匹配字段</string>
+    <string name="filter_mode">匹配方法</string>
+    <string name="filter_case_sensitive">区分大小写</string>
+    <string name="filter_mode_regex">正则表达式</string>
+    <string name="filter_mode_wildcard">通配符</string>
+    <string name="filter_mode_contains">包含</string>
+    <string name="filter_mode_prefix">以…开头</string>
+    <string name="filter_mode_suffix">以…结尾</string>
+    <string name="filter_mode_equals">等于</string>
+    <string name="filter_field_sender">发送者</string>
+    <string name="filter_field_body">内容</string>
+
+    <!-- Preferences -->
+    <string name="settings">设置</string>
+    <string name="pref_nekosms">NekoSMS</string>
+    <string name="pref_enable">启用NekoSMS</string>
+    <string name="pref_enable_summary">拦截那些恼人的垃圾信息！</string>
+    <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
+    <string name="pref_debug_mode">调试模式</string>
+    <string name="pref_debug_mode_summary">显示「创建测试信息」选项</string>
+    <string name="pref_notifications">通知</string>
+    <string name="pref_notifications_enable">启用通知</string>
+    <string name="pref_notifications_enable_summary">信息被拦截时显示通知</string>
+    <string name="pref_notifications_sound">声音</string>
+    <string name="pref_notifications_vibrate">震动</string>
+    <string name="pref_notifications_lights">灯光</string>
+
+    <!-- Debug stuff (to be removed) -->
+    <string name="create_test_message">创建测试信息</string>
+    <string name="test_message_sender">1234567890</string>
+    <string name="test_message_body">
+        这是一条很长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试信息
+    </string>
+
+    <!-- Notifications -->
+    <string name="notification_sender">已拦截: %s</string>
+</resources>

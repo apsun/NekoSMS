@@ -63,7 +63,7 @@
     <string name="report_bug">Report bug</string>
     <string name="format_about_message">
         <![CDATA[
-            Pattern-based text message blocking for Android.<br><br>
+            A pattern-based text message blocker for Android.<br><br>
             Made with &lt;3 by <a href="%1$s">Andrew Sun</a><br><br>
             Visit the project on <a href="%2$s">GitHub</a><br><br>
             Found a bug? <a href="%3$s">Report it here!</a>
@@ -73,7 +73,6 @@
     <!-- Filter editor -->
     <string name="filter_editor">Filter editor</string>
     <string name="save_filter">Save filter</string>
-    <string name="discard">Discard</string>
     <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter saved</string>
     <string name="filter_already_exists">Filter already exists</string>
