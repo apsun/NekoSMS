@@ -137,11 +137,13 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 }
 
                 Uri data = intent.getData();
-                if (data != null) {
-                    String packageName = data.getSchemeSpecificPart();
-                    if (!NEKOSMS_PACKAGE.equals(packageName)) {
-                        return;
-                    }
+                if (data == null) {
+                    return;
+                }
+
+                String packageName = data.getSchemeSpecificPart();
+                if (!NEKOSMS_PACKAGE.equals(packageName)) {
+                    return;
                 }
 
                 if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
