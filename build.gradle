@@ -33,6 +33,7 @@ android {
         versionName "0.8.0"
         minSdkVersion 19
         targetSdkVersion 23
+        resConfigs "en", "zh-rCN"
         buildConfigField("int", "MODULE_VERSION", "7")
         buildConfigField("int", "DATABASE_VERSION", "8")
         buildConfigField("int", "BACKUP_VERSION", "1")
@@ -41,9 +42,9 @@ android {
     sourceSets {
         main {
             manifest.srcFile "AndroidManifest.xml"
-            java.srcDirs = ["src"]
-            res.srcDirs = ["res"]
-            assets.srcDirs = ["assets"]
+            java.srcDir "src"
+            res.srcDir "res"
+            assets.srcDir "assets"
         }
     }
 
@@ -54,6 +55,7 @@ android {
 
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             buildConfigField("int", "LOG_LEVEL", "4")
         }

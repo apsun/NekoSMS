@@ -48,6 +48,12 @@ first word that popped into my head. Hence, NekoSMS.
 (http://android-developers.blogspot.in/2013/10/getting-your-sms-apps-ready-for-kitkat.html).
 In order to bypass this restriction, code must be modified at the OS level.
 
+### What are the permissions used for?
+
+- `android.permission.{READ, WRITE}_SMS` for obvious reasons
+- `android.permission.{READ, WRITE}_EXTERNAL_STORAGE` for importing/exporting backups
+- `android.permission.VIBRATE` for notifications
+
 ### Does NekoSMS work with (insert SMS app here)?
 
 As long as your ROM supports it, yes. There is no app-specific SMS blocking
