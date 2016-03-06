@@ -3,8 +3,12 @@ package com.crossbowffs.nekosms.app;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcelable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
@@ -14,7 +18,6 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
 import com.crossbowffs.nekosms.preferences.Preferences;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
@@ -29,12 +32,6 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         // Basically, since we can't store persistent state in a broadcast receiver,
         // we will use the row ID of the SMS message as the ID of the notification.
         return (int)(ContentUris.parseId(messageUri) % Integer.MAX_VALUE);
-    }
-
-    private Uri writeMessageToDatabase(Context context, SmsMessageData messageData) {
-        ContentResolver contentResolver = context.getContentResolver();
-        ContentValues values = messageData.serialize();
-        return contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
     }
 
     private void displayNotification(Context context, SmsMessageData messageData, Uri uri) {
@@ -92,9 +89,20 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void onReceiveSms(Context context, Intent intent) {
-        SmsMessageData messageData = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-        Uri uri = writeMessageToDatabase(context, messageData);
-        displayNotification(context, messageData, uri);
+        Parcelable extra = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+        if (!(extra instanceof Uri)) {
+            // TODO: Remove this code. It's to prevent crashes when upgrading
+            // from module v7 -> v8 without rebooting the device.
+            Xlog.e(TAG, "Extra not instance of URI, ignoring");
+            return;
+        }
+        Uri messageUri = (Uri)extra;
+        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, (Uri)extra);
+        if (messageData == null) {
+            Xlog.e(TAG, "Failed to load message");
+            return;
+        }
+        displayNotification(context, messageData, messageUri);
     }
 
     private void onDeleteSms(Context context, Intent intent) {

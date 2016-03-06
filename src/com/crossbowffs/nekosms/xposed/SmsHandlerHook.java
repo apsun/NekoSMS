@@ -164,9 +164,15 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return receiver;
     }
 
-    private void broadcastBlockedSms(Context context, SmsMessageData message) {
+    private Uri writeBlockedSms(Context context, SmsMessageData message) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues values = message.serialize();
+        return contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
+    }
+
+    private void broadcastBlockedSms(Context context, Uri messageUri) {
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
-        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, message);
+        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
         context.sendBroadcast(intent, BroadcastConsts.PERMISSION_RECEIVE_SMS);
     }
 
@@ -293,7 +299,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         if (shouldFilterMessage(context, sender, body)) {
             Xlog.i(TAG, "  Result: Blocked");
-            broadcastBlockedSms(context, message);
+            Uri messageUri = writeBlockedSms(context, message);
+            broadcastBlockedSms(context, messageUri);
             param.setResult(null);
             finishSmsBroadcast(smsHandler, param.args[receiverIndex]);
         } else {

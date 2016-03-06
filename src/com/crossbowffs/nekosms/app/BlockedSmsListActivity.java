@@ -130,8 +130,9 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
 
+        Uri uri = BlockedSmsDbLoader.writeMessage(this, message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
-        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, message);
+        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, uri);
         sendBroadcast(intent, BroadcastConsts.PERMISSION_RECEIVE_SMS);
     }
 }

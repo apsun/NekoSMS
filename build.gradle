@@ -11,10 +11,10 @@ buildscript {
 apply plugin: "com.android.application"
 
 dependencies {
-    compile "com.android.support:support-v4:23.1.1"
-    compile "com.android.support:appcompat-v7:23.1.1"
-    compile "com.android.support:recyclerview-v7:23.1.1"
-    compile "com.android.support:design:23.1.1"
+    compile "com.android.support:support-v4:23.2.0"
+    compile "com.android.support:appcompat-v7:23.2.0"
+    compile "com.android.support:recyclerview-v7:23.2.0"
+    compile "com.android.support:design:23.2.0"
     provided files("libs/XposedBridgeApi-20150213.jar")
 }
 
@@ -34,7 +34,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"
-        buildConfigField("int", "MODULE_VERSION", "7")
+        buildConfigField("int", "MODULE_VERSION", "8")
         buildConfigField("int", "DATABASE_VERSION", "8")
         buildConfigField("int", "BACKUP_VERSION", "1")
     }
