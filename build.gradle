@@ -29,8 +29,8 @@ android {
     }
 
     defaultConfig {
-        versionCode 12
-        versionName "0.8.0"
+        versionCode 13
+        versionName "0.8.1"
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"

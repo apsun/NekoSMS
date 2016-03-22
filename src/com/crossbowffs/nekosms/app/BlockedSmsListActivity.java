@@ -2,12 +2,14 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -58,6 +60,8 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         MenuInflater inflater = getMenuInflater();
         Preferences preferences = Preferences.fromContext(this);
         if (preferences.get(Preferences.PREF_DEBUG_MODE)) {
+            inflater.inflate(R.menu.options_blockedsms_list_debug, menu);
+        } else {
             inflater.inflate(R.menu.options_blockedsms_list, menu);
         }
         return super.onCreateOptionsMenu(menu);
@@ -71,6 +75,9 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
             return true;
         case R.id.menu_item_create_test:
             createTestSms();
+            return true;
+        case R.id.menu_item_clear_blocked:
+            showConfirmClearDialog();
             return true;
         default:
             return super.onOptionsItemSelected(item);
@@ -106,6 +113,27 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         } else {
             finish();
         }
+    }
+
+    private void clearAllMessages() {
+        BlockedSmsDbLoader.deleteAllMessages(this);
+        Toast.makeText(this, R.string.cleared_blocked_messages, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showConfirmClearDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(R.string.confirm_clear_messages_title)
+            .setMessage(R.string.confirm_clear_messages_message)
+            .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    clearAllMessages();
+                }
+            })
+            .setNegativeButton(R.string.cancel, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void showMessageDetailsDialog(Intent intent) {

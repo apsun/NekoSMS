@@ -84,6 +84,10 @@
     <string name="blocked_messages">Blocked messages</string>
     <string name="blocked_messages_empty_text">No blocked messages! Have a nice day!</string>
     <string name="must_enable_xposed_module">Xposed module must be enabled</string>
+    <string name="clear_blocked_messages">Clear blocked messages</string>
+    <string name="confirm_clear_messages_title">Delete all messages?</string>
+    <string name="confirm_clear_messages_message">Your messages will be gone forever (a very long time)!</string>
+    <string name="cleared_blocked_messages">Deleted all blocked messages</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
     <string name="message_restore_failed">Message could not be restored</string>

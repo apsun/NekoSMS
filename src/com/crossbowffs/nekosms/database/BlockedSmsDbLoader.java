@@ -105,6 +105,11 @@ public final class BlockedSmsDbLoader {
         }
     }
 
+    public static void deleteAllMessages(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        contentResolver.delete(Blocked.CONTENT_URI, null, null);
+    }
+
     public static boolean deleteMessage(Context context, long messageId) {
         return deleteMessage(context, convertIdToUri(messageId));
     }
