@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
-import android.util.Log;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsFilterData;
@@ -231,7 +230,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             // This might occur if NekoSMS has been uninstalled.
             // In this case, don't do anything - we can't do anything
             // with the permissions anyways.
-            Log.w(TAG, "NekoSMS package not found", e);
+            Xlog.w(TAG, "NekoSMS package not found", e);
             return;
         }
 

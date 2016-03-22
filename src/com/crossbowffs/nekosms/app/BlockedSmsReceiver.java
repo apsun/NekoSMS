@@ -61,7 +61,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         // for blocked SMS messages; there's no way to know if the user has
         // already been notified about a message.
         Notification notification = new NotificationCompat.Builder(context)
-            .setSmallIcon(R.drawable.ic_textsms_white_24dp)
+            .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
             .setContentTitle(context.getString(R.string.notification_sender, messageData.getSender()))
             .setContentText(messageData.getBody())
             .setStyle(new NotificationCompat.BigTextStyle().bigText(messageData.getBody()))
