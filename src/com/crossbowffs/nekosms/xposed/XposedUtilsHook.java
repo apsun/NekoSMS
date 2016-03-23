@@ -18,26 +18,16 @@ public class XposedUtilsHook implements IXposedHookLoadPackage {
         Xlog.i(TAG, "Hooking Xposed module status checker");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "isModuleEnabled",
-            new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    return true;
-                }
-            });
+            XC_MethodReplacement.returnConstant(true));
 
         // This is the version as fetched when the *module* is loaded
         // If the app is updated, this value will be changed within the
         // app, but will not be changed here. Thus, we can use this to
         // check whether the app and module versions are out of sync.
-        final int moduleVersion = XposedUtils.getModuleVersion();
+        int moduleVersion = XposedUtils.getModuleVersion();
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "getModuleVersion",
-            new XC_MethodReplacement() {
-                @Override
-                protected Object replaceHookedMethod(MethodHookParam param) throws Throwable {
-                    return moduleVersion;
-                }
-            });
+            XC_MethodReplacement.returnConstant(moduleVersion));
     }
 
     @Override
