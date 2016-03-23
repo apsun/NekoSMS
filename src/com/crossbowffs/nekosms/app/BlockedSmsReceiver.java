@@ -8,7 +8,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
@@ -89,15 +88,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void onReceiveSms(Context context, Intent intent) {
-        Parcelable extra = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-        if (!(extra instanceof Uri)) {
-            // TODO: Remove this code. It's to prevent crashes when upgrading
-            // from module v7 -> v8 without rebooting the device.
-            Xlog.e(TAG, "Extra not instance of URI, ignoring");
-            return;
-        }
-        Uri messageUri = (Uri)extra;
-        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, (Uri)extra);
+        Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, messageUri);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to load message");
             return;

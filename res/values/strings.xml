@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">NekoSMS</string>
-    <string name="receive_sms_permission_label">receive blocked SMS messages</string>
-    <string name="receive_sms_permission_description">
-        Allows the app to receive SMS messages blocked by NekoSMS. This is an
-        internal permission used to prevent other apps from reading these messages.
-    </string>
 
     <!-- General -->
     <string name="ok">OK</string>

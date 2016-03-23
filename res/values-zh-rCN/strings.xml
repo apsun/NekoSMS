@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">NekoSMS</string>
-    <string name="receive_sms_permission_label">接收已拦截信息</string>
-    <string name="receive_sms_permission_description">
-        允许该应用接收被NekoSMS拦截的信息。这是个内部权限，用于防止其他应用读取您的信息。
-    </string>
 
     <!-- General -->
     <string name="ok">确定</string>

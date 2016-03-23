@@ -161,6 +161,6 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
         Uri uri = BlockedSmsDbLoader.writeMessage(this, message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, uri);
-        sendBroadcast(intent, BroadcastConsts.PERMISSION_RECEIVE_SMS);
+        sendBroadcast(intent);
     }
 }

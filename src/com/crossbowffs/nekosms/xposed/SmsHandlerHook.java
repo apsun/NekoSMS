@@ -15,6 +15,7 @@ import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
@@ -163,16 +164,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return receiver;
     }
 
-    private Uri writeBlockedSms(Context context, SmsMessageData message) {
-        ContentResolver contentResolver = context.getContentResolver();
-        ContentValues values = message.serialize();
-        return contentResolver.insert(NekoSmsContract.Blocked.CONTENT_URI, values);
-    }
-
     private void broadcastBlockedSms(Context context, Uri messageUri) {
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
-        context.sendBroadcast(intent, BroadcastConsts.PERMISSION_RECEIVE_SMS);
+        context.sendBroadcast(intent);
     }
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
@@ -298,7 +293,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         if (shouldFilterMessage(context, sender, body)) {
             Xlog.i(TAG, "  Result: Blocked");
-            Uri messageUri = writeBlockedSms(context, message);
+            Uri messageUri = BlockedSmsDbLoader.writeMessage(context, message);
             broadcastBlockedSms(context, messageUri);
             param.setResult(null);
             finishSmsBroadcast(smsHandler, param.args[receiverIndex]);

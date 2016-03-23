@@ -22,15 +22,9 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
-    lintOptions {
-        // Workaround for localized permission description bug in Android Lint
-        // https://code.google.com/p/android/issues/detail?id=194705
-        abortOnError false
-    }
-
     defaultConfig {
-        versionCode 13
-        versionName "0.8.1"
+        versionCode 14
+        versionName "0.8.2"
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"
