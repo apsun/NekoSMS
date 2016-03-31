@@ -27,11 +27,14 @@ public final class InboxSmsDbLoader {
         Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, values);
         long id = ContentUris.parseId(uri);
 
-        // An ID of 0 when writing to the SMS inbox means we don't have the
-        // OP_WRITE_SMS permission. see ContentProvider#rejectInsert(Uri, ContentValues)
+        // An ID of 0 when writing to the SMS inbox could mean we don't have the
+        // OP_WRITE_SMS permission. See ContentProvider#rejectInsert(Uri, ContentValues).
+        // Another explanation would be that this is actually the first message written.
+        // Because we check for permissions before calling this method, we can assume
+        // it's the latter case.
         if (id == 0) {
-            Xlog.e(TAG, "Writing to SMS inbox failed (don't have OP_WRITE_SMS permission)");
-            throw new DatabaseException("Failed to write message to SMS inbox (no OP_WRITE_SMS permission)");
+            Xlog.w(TAG, "Writing to SMS inbox returned row 0");
+            return uri;
         } else if (id < 0) {
             Xlog.e(TAG, "Writing to SMS inbox failed (unknown reason)");
             throw new DatabaseException("Failed to write message to SMS inbox");
