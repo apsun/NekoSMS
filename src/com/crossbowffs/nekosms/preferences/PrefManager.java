@@ -11,11 +11,12 @@ public class PrefManager {
     public static final String KEY_NOTIFICATIONS_RINGTONE = "pref_notifications_ringtone";
     public static final String KEY_NOTIFICATIONS_VIBRATE = "pref_notifications_vibrate";
     public static final String KEY_NOTIFICATIONS_LIGHTS = "pref_notifications_lights";
+    private static final String DEFAULT_RINGTONE_URI = "content://settings/system/notification_sound";
 
     public static final PrefItem<Boolean> PREF_ENABLE = new PrefItem<>(KEY_ENABLE, true);
     public static final PrefItem<Boolean> PREF_DEBUG_MODE = new PrefItem<>(KEY_DEBUG_MODE, false);
     public static final PrefItem<Boolean> PREF_NOTIFICATIONS_ENABLE = new PrefItem<>(KEY_NOTIFICATIONS_ENABLE, false);
-    public static final PrefItem<String> PREF_NOTIFICATIONS_RINGTONE = new PrefItem<>(KEY_NOTIFICATIONS_RINGTONE, "");
+    public static final PrefItem<String> PREF_NOTIFICATIONS_RINGTONE = new PrefItem<>(KEY_NOTIFICATIONS_RINGTONE, DEFAULT_RINGTONE_URI);
     public static final PrefItem<Boolean> PREF_NOTIFICATIONS_VIBRATE = new PrefItem<>(KEY_NOTIFICATIONS_VIBRATE, true);
     public static final PrefItem<Boolean> PREF_NOTIFICATIONS_LIGHTS = new PrefItem<>(KEY_NOTIFICATIONS_LIGHTS, true);
 
