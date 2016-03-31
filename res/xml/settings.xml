@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_nekosms">
+    <PreferenceCategory android:title="@string/pref_general">
         <SwitchPreference
             android:key="pref_enable"
             android:title="@string/pref_enable"
@@ -18,11 +18,12 @@
             android:title="@string/pref_notifications_enable"
             android:summary="@string/pref_notifications_enable_summary"
             android:defaultValue="false"/>
-        <CheckBoxPreference
-            android:key="pref_notifications_sound"
-            android:title="@string/pref_notifications_sound"
+        <RingtonePreference
+            android:key="pref_notifications_ringtone"
+            android:title="@string/pref_notifications_ringtone"
             android:dependency="pref_notifications_enable"
-            android:defaultValue="true"/>
+            android:defaultValue="content://settings/system/notification_sound"
+            android:ringtoneType="notification"/>
         <CheckBoxPreference
             android:key="pref_notifications_vibrate"
             android:title="@string/pref_notifications_vibrate"

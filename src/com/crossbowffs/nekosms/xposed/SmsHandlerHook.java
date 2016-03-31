@@ -19,8 +19,8 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
-import com.crossbowffs.nekosms.preferences.BooleanPreference;
-import com.crossbowffs.nekosms.preferences.Preferences;
+import com.crossbowffs.nekosms.preferences.PrefItem;
+import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -274,7 +274,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // For some reason, caching the instance and calling reload() doesn't
         // update the values, so we have to create a new instance every time
         XSharedPreferences preferences = new XSharedPreferences(NEKOSMS_PACKAGE);
-        BooleanPreference enablePref = Preferences.PREF_ENABLE;
+        PrefItem<Boolean> enablePref = PrefManager.PREF_ENABLE;
         if (!preferences.getBoolean(enablePref.getKey(), enablePref.getDefaultValue())) {
             Xlog.d(TAG, "SMS blocking disabled in app preferences");
             return;

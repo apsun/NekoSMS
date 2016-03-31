@@ -21,7 +21,7 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
-import com.crossbowffs.nekosms.preferences.Preferences;
+import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 
 public class BlockedSmsListActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -58,8 +58,8 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        Preferences preferences = Preferences.fromContext(this);
-        if (preferences.get(Preferences.PREF_DEBUG_MODE)) {
+        PrefManager preferences = PrefManager.fromContext(this);
+        if (preferences.getBoolean(PrefManager.PREF_DEBUG_MODE)) {
             inflater.inflate(R.menu.options_blockedsms_list_debug, menu);
         } else {
             inflater.inflate(R.menu.options_blockedsms_list, menu);

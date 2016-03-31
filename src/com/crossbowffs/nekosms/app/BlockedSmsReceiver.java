@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
@@ -16,7 +17,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
-import com.crossbowffs.nekosms.preferences.Preferences;
+import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
@@ -34,8 +35,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void displayNotification(Context context, SmsMessageData messageData, Uri uri) {
-        Preferences preferences = Preferences.fromContext(context);
-        if (!preferences.get(Preferences.PREF_NOTIFICATIONS_ENABLE)) {
+        PrefManager preferences = PrefManager.fromContext(context);
+        if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
             return;
         }
 
@@ -72,15 +73,16 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setAutoCancel(true)
             .build();
 
-        if (preferences.get(Preferences.PREF_NOTIFICATIONS_SOUND)) {
-            notification.defaults |= Notification.DEFAULT_SOUND;
+        String ringtone = preferences.getString(PrefManager.PREF_NOTIFICATIONS_RINGTONE);
+        if (!TextUtils.isEmpty(ringtone)) {
+            notification.sound = Uri.parse(ringtone);
         }
 
-        if (preferences.get(Preferences.PREF_NOTIFICATIONS_VIBRATE)) {
+        if (preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_VIBRATE)) {
             notification.defaults |= Notification.DEFAULT_VIBRATE;
         }
 
-        if (preferences.get(Preferences.PREF_NOTIFICATIONS_LIGHTS)) {
+        if (preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_LIGHTS)) {
             notification.defaults |= Notification.DEFAULT_LIGHTS;
         }
 

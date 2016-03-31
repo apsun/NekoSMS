@@ -115,7 +115,7 @@
 
     <!-- Preferences -->
     <string name="settings">设置</string>
-    <string name="pref_nekosms">NekoSMS</string>
+    <string name="pref_general">通用</string>
     <string name="pref_enable">启用NekoSMS</string>
     <string name="pref_enable_summary">拦截那些恼人的垃圾信息！</string>
     <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
@@ -124,7 +124,8 @@
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_enable">启用通知</string>
     <string name="pref_notifications_enable_summary">信息被拦截时显示通知</string>
-    <string name="pref_notifications_sound">声音</string>
+    <string name="pref_notifications_ringtone">铃声</string>
+    <string name="pref_notifications_ringtone_none">无</string>
     <string name="pref_notifications_vibrate">震动</string>
     <string name="pref_notifications_lights">灯光</string>
 

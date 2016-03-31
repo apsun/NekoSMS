@@ -6,8 +6,8 @@ import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
-import com.crossbowffs.nekosms.preferences.BooleanPreference;
-import com.crossbowffs.nekosms.preferences.Preferences;
+import com.crossbowffs.nekosms.preferences.PrefItem;
+import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.io.*;
@@ -48,19 +48,23 @@ import java.io.*;
         mJsonWriter.name(KEY_VERSION).value(BACKUP_VERSION);
     }
 
-    private void writePreference(Preferences preferences, BooleanPreference pref) throws IOException {
-        mJsonWriter.name(pref.getKey()).value(preferences.get(pref));
+    private void writeBooleanPreference(PrefManager preferences, PrefItem<Boolean> pref) throws IOException {
+        mJsonWriter.name(pref.getKey()).value(preferences.getBoolean(pref));
+    }
+
+    private void writeStringPreference(PrefManager preferences, PrefItem<String> pref) throws IOException {
+        mJsonWriter.name(pref.getKey()).value(preferences.getString(pref));
     }
 
     private void writePreferences(Context context) throws IOException {
-        Preferences preferences = Preferences.fromContext(context);
+        PrefManager preferences = PrefManager.fromContext(context);
         mJsonWriter.name(KEY_SETTINGS).beginObject();
-        writePreference(preferences, Preferences.PREF_ENABLE);
-        writePreference(preferences, Preferences.PREF_DEBUG_MODE);
-        writePreference(preferences, Preferences.PREF_NOTIFICATIONS_ENABLE);
-        writePreference(preferences, Preferences.PREF_NOTIFICATIONS_SOUND);
-        writePreference(preferences, Preferences.PREF_NOTIFICATIONS_VIBRATE);
-        writePreference(preferences, Preferences.PREF_NOTIFICATIONS_LIGHTS);
+        writeBooleanPreference(preferences, PrefManager.PREF_ENABLE);
+        writeBooleanPreference(preferences, PrefManager.PREF_DEBUG_MODE);
+        writeBooleanPreference(preferences, PrefManager.PREF_NOTIFICATIONS_ENABLE);
+        writeStringPreference(preferences, PrefManager.PREF_NOTIFICATIONS_RINGTONE);
+        writeBooleanPreference(preferences, PrefManager.PREF_NOTIFICATIONS_VIBRATE);
+        writeBooleanPreference(preferences, PrefManager.PREF_NOTIFICATIONS_LIGHTS);
         mJsonWriter.endObject();
     }
 
