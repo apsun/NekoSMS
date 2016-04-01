@@ -18,6 +18,7 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
 import com.crossbowffs.nekosms.preferences.PrefManager;
+import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
@@ -114,6 +115,12 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         Uri messageUri = intent.getData();
         NotificationManager notificationManager = getNotificationManager(context);
         notificationManager.cancel(getNotificationId(messageUri));
+
+        if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
+            Xlog.e(TAG, "Do not have permissions to write SMS");
+            Toast.makeText(context, R.string.must_enable_xposed_module, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         SmsMessageData messageToRestore = BlockedSmsDbLoader.loadMessage(context, intent.getData());
         if (messageToRestore == null) {
