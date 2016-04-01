@@ -23,8 +23,10 @@
     <string name="import_no_backup">未找到备份文件</string>
     <string name="import_invalid_backup">备份文件已损坏</string>
     <string name="import_read_failed">无法读取备份文件</string>
+    <string name="import_cannot_read_storage">无法读取储存</string>
     <string name="export_success">导出成功</string>
     <string name="export_write_failed">无法写入备份文件</string>
+    <string name="export_cannot_write_storage">无法写入储存</string>
     <string name="need_storage_permission">此功能需要储存续写权限</string>
     <string name="backup_option_filters">过滤规则</string>
     <string name="backup_option_settings">设置</string>

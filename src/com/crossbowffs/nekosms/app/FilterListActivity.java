@@ -291,6 +291,9 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
                 case BackupLoader.IMPORT_READ_FAILED:
                     messageId = R.string.import_read_failed;
                     break;
+                case BackupLoader.IMPORT_CANNOT_READ_STORAGE:
+                    messageId = R.string.import_cannot_read_storage;
+                    break;
                 default:
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
@@ -316,6 +319,9 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
                     break;
                 case BackupLoader.EXPORT_WRITE_FAILED:
                     messageId = R.string.export_write_failed;
+                    break;
+                case BackupLoader.EXPORT_CANNOT_WRITE_STORAGE:
+                    messageId = R.string.export_cannot_write_storage;
                     break;
                 default:
                     throw new AssertionError("Unknown backup export result code: " + result);

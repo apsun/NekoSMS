@@ -18,9 +18,11 @@ public final class BackupLoader {
     public static final int IMPORT_NO_BACKUP = 101;
     public static final int IMPORT_INVALID_BACKUP = 102;
     public static final int IMPORT_READ_FAILED = 103;
+    public static final int IMPORT_CANNOT_READ_STORAGE = 104;
 
     public static final int EXPORT_SUCCESS = 200;
     public static final int EXPORT_WRITE_FAILED = 201;
+    public static final int EXPORT_CANNOT_WRITE_STORAGE = 202;
 
     public static final int OPTION_INCLUDE_FILTERS = 1 << 0;
     public static final int OPTION_INCLUDE_SETTINGS = 1 << 1;
@@ -28,6 +30,15 @@ public final class BackupLoader {
     private BackupLoader() { }
 
     public static int importFromStorage(Context context, int options) {
+        switch (Environment.getExternalStorageState()) {
+        case Environment.MEDIA_MOUNTED:
+        case Environment.MEDIA_MOUNTED_READ_ONLY:
+            break;
+        default:
+            Xlog.e(TAG, "Import failed: cannot read from external storage");
+            return IMPORT_CANNOT_READ_STORAGE;
+        }
+
         File sdCard = Environment.getExternalStorageDirectory();
         File file = new File(new File(sdCard, BACKUP_DIRECTORY), BACKUP_FILE_NAME);
         try (BackupImporter importer = new BackupImporter(file)) {
@@ -50,6 +61,11 @@ public final class BackupLoader {
     }
 
     public static int exportToStorage(Context context, int options) {
+        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            Xlog.e(TAG, "Export failed: cannot write to external storage");
+            return EXPORT_CANNOT_WRITE_STORAGE;
+        }
+
         File sdCard = Environment.getExternalStorageDirectory();
         File exportDir = new File(sdCard, BACKUP_DIRECTORY);
         // The return value is useless, since it combines the "directory
