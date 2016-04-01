@@ -122,6 +122,7 @@ public class BlockedSmsListActivity extends AppCompatActivity implements LoaderM
 
     private void showConfirmClearDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.confirm_clear_messages_title)
             .setMessage(R.string.confirm_clear_messages_message)
             .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
