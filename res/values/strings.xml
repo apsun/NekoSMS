@@ -32,6 +32,8 @@
     <string name="backup_options_dialog_title_export">Select items to export</string>
     <string name="backup_button_import">Import</string>
     <string name="backup_button_export">Export</string>
+    <string name="progress_importing">Importing data from storage…</string>
+    <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter list -->
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>

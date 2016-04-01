@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.*;
 import android.database.Cursor;
@@ -9,7 +10,6 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -267,42 +267,62 @@ public class FilterListActivity extends PrivilegedActivity implements LoaderMana
         dialog.show();
     }
 
-    private void importFromStorage(int options) {
-        int result = BackupLoader.importFromStorage(this, options);
-        int messageId;
-        switch (result) {
-        case BackupLoader.IMPORT_SUCCESS:
-            messageId = R.string.import_success;
-            break;
-        case BackupLoader.IMPORT_NO_BACKUP:
-            messageId = R.string.import_no_backup;
-            break;
-        case BackupLoader.IMPORT_INVALID_BACKUP:
-            messageId = R.string.import_invalid_backup;
-            break;
-        case BackupLoader.IMPORT_READ_FAILED:
-            messageId = R.string.import_read_failed;
-            break;
-        default:
-            throw new AssertionError("Unknown backup import result code: " + result);
-        }
-        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
+    private void importFromStorage(final int options) {
+        new DialogAsyncTask<Void, Void, Integer>(this, R.string.progress_importing) {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                return BackupLoader.importFromStorage(FilterListActivity.this, options);
+            }
+
+            @Override
+            protected void onPostExecute(Integer result) {
+                super.onPostExecute(result);
+                int messageId;
+                switch (result) {
+                case BackupLoader.IMPORT_SUCCESS:
+                    messageId = R.string.import_success;
+                    break;
+                case BackupLoader.IMPORT_NO_BACKUP:
+                    messageId = R.string.import_no_backup;
+                    break;
+                case BackupLoader.IMPORT_INVALID_BACKUP:
+                    messageId = R.string.import_invalid_backup;
+                    break;
+                case BackupLoader.IMPORT_READ_FAILED:
+                    messageId = R.string.import_read_failed;
+                    break;
+                default:
+                    throw new AssertionError("Unknown backup import result code: " + result);
+                }
+                Toast.makeText(FilterListActivity.this, messageId, Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
     }
 
-    private void exportToStorage(int options) {
-        int result = BackupLoader.exportToStorage(this, options);
-        int messageId;
-        switch (result) {
-        case BackupLoader.EXPORT_SUCCESS:
-            messageId = R.string.export_success;
-            break;
-        case BackupLoader.EXPORT_WRITE_FAILED:
-            messageId = R.string.export_write_failed;
-            break;
-        default:
-            throw new AssertionError("Unknown backup export result code: " + result);
-        }
-        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
+    private void exportToStorage(final int options) {
+        new DialogAsyncTask<Void, Void, Integer>(this, R.string.progress_exporting) {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                return BackupLoader.exportToStorage(FilterListActivity.this, options);
+            }
+
+            @Override
+            protected void onPostExecute(Integer result) {
+                super.onPostExecute(result);
+                int messageId;
+                switch (result) {
+                case BackupLoader.EXPORT_SUCCESS:
+                    messageId = R.string.export_success;
+                    break;
+                case BackupLoader.EXPORT_WRITE_FAILED:
+                    messageId = R.string.export_write_failed;
+                    break;
+                default:
+                    throw new AssertionError("Unknown backup export result code: " + result);
+                }
+                Toast.makeText(FilterListActivity.this, messageId, Toast.LENGTH_SHORT).show();
+            }
+        }.execute();
     }
 
     private void deleteFilter(long filterId) {

@@ -32,6 +32,8 @@
     <string name="backup_options_dialog_title_export">导出选项</string>
     <string name="backup_button_import">导入</string>
     <string name="backup_button_export">导出</string>
+    <string name="progress_importing">正在导入数据…</string>
+    <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter list -->
     <string name="filter_list_empty_text">快来创建几个过滤规则吧！喵~</string>
