@@ -24,11 +24,16 @@ Block all messages starting with `the` and ending with `game`:
 - A rooted phone running Android 4.4 KitKat or newer
 - [Xposed framework](http://forum.xda-developers.com/xposed)
 
-## Note
+## Notes
 
 NekoSMS was designed for devices running stock Android. If your ROM has made
 significant changes to the way Android internally handles SMS messages, this
 app might not work.
+
+Additionally, when matching against the sender field, you must use the
+*unformatted* sender number. In most SMS apps, this info can be obtained by
+viewing the extended message info. If the value begins with a `+`, you must
+include the `+` in your filter pattern.
 
 ## License
 
