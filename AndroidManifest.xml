@@ -58,6 +58,6 @@
             android:value="Pattern-based text message blocking for Android 4.4+"/>
         <meta-data
             android:name="xposedminversion"
-            android:value="2"/>
+            android:value="53"/>
     </application>
 </manifest>
