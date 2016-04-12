@@ -15,4 +15,9 @@
         android:icon="@drawable/ic_settings_white_24dp"
         android:checkable="true"
         android:title="@string/settings"/>
+    <item
+        android:id="@+id/main_drawer_about"
+        android:icon="@drawable/ic_help_white_24dp"
+        android:checkable="false"
+        android:title="@string/about"/>
 </menu>

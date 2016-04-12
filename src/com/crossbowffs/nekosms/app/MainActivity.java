@@ -21,16 +21,18 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.TextView;
 import android.widget.Toast;
+import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.utils.XposedUtils;
-
-import static com.crossbowffs.nekosms.app.AboutConsts.ISSUES_URL;
-import static com.crossbowffs.nekosms.app.AboutConsts.XPOSED_FORUM_URL;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String ACTION_OPEN_SECTION = "action_open_section";
@@ -38,6 +40,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String EXTRA_SECTION_FILTER_LIST = "filter_list";
     public static final String EXTRA_SECTION_BLOCKED_SMS_LIST = "blocked_sms_list";
     public static final String EXTRA_SECTION_SETTINGS = "settings";
+
+    private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
+    private static final String XPOSED_FORUM_URL = "http://forum.xda-developers.com/xposed";
+    private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
+    private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
+    private static final String ISSUES_URL = GITHUB_URL + "/issues";
 
     private CoordinatorLayout mCoordinatorLayout;
     private DrawerLayout mDrawerLayout;
@@ -111,7 +119,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setFragment(fragment);
         mNavigationView.setCheckedItem(navId);
-        mDrawerLayout.closeDrawer(mNavigationView);
         mCurrentSection = key;
     }
 
@@ -286,8 +293,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
+    private void showAboutDialog() {
+        Spanned html = Html.fromHtml(getString(R.string.format_about_message,
+            TWITTER_URL, GITHUB_URL, ISSUES_URL));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)
+            .setMessage(html)
+            .setPositiveButton(R.string.ok, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        TextView textView = (TextView)dialog.findViewById(android.R.id.message);
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        mDrawerLayout.closeDrawer(mNavigationView);
         switch (item.getItemId()) {
         case R.id.main_drawer_filter_list:
             setSectionFragment(EXTRA_SECTION_FILTER_LIST);
@@ -297,6 +321,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         case R.id.main_drawer_settings:
             setSectionFragment(EXTRA_SECTION_SETTINGS);
+            return true;
+        case R.id.main_drawer_about:
+            showAboutDialog();
             return true;
         default:
             return false;

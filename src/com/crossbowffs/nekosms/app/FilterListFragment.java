@@ -10,20 +10,13 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.view.*;
-import android.widget.TextView;
-import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.Xlog;
-
-import static com.crossbowffs.nekosms.app.AboutConsts.*;
 
 public class FilterListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
@@ -51,7 +44,6 @@ public class FilterListFragment extends BaseFragment implements LoaderManager.Lo
     }
 
     private static final String TAG = FilterListFragment.class.getSimpleName();
-    private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
 
@@ -131,8 +123,6 @@ public class FilterListFragment extends BaseFragment implements LoaderManager.Lo
         case R.id.menu_item_import_export_filters:
             showImportExportDialog();
             return true;
-            //showAboutDialog();
-            //return true;
         default:
             return super.onOptionsItemSelected(item);
         }
@@ -312,21 +302,5 @@ public class FilterListFragment extends BaseFragment implements LoaderManager.Lo
         Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.Filters.CONTENT_URI, id);
         intent.setData(filterUri);
         startActivity(intent);
-    }
-
-    private void showAboutDialog() {
-        Spanned html = Html.fromHtml(getString(R.string.format_about_message,
-            TWITTER_URL, GITHUB_URL, ISSUES_URL));
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
-            .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)
-            .setMessage(html)
-            .setPositiveButton(R.string.ok, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        TextView textView = (TextView)dialog.findViewById(android.R.id.message);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }
