@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
@@ -51,18 +52,20 @@ import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
         holder.mFilterData = filterData;
 
         final long id = filterData.getId();
+        SmsFilterAction action = filterData.getAction();
         SmsFilterField field = filterData.getField();
         SmsFilterMode mode = filterData.getMode();
         String pattern = filterData.getPattern();
         boolean caseSensitive = filterData.isCaseSensitive();
 
+        String actionString = mFragment.getString(getFilterActionStringId(action));
         String fieldString = mFragment.getString(getFilterFieldStringId(field));
         String modeString = mFragment.getString(getFilterModeStringId(mode));
         String caseSensitiveString = "";
         if (caseSensitive) {
             caseSensitiveString = mFragment.getString(R.string.filter_config_case_sensitive);
         }
-        String configString = mFragment.getString(R.string.format_filter_config, fieldString, modeString, caseSensitiveString);
+        String configString = mFragment.getString(R.string.format_filter_config, actionString, fieldString, modeString, caseSensitiveString);
         holder.mConfigTextView.setText(configString);
         holder.mPatternTextView.setText(pattern);
 
@@ -72,6 +75,17 @@ import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
                 mFragment.startFilterEditorActivity(id);
             }
         });
+    }
+
+    private int getFilterActionStringId(SmsFilterAction action) {
+        switch (action) {
+        case ALLOW:
+            return R.string.filter_config_action_allow;
+        case BLOCK:
+            return R.string.filter_config_action_block;
+        default:
+            return 0;
+        }
     }
 
     private int getFilterFieldStringId(SmsFilterField field) {

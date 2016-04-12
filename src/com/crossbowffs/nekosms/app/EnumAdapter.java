@@ -19,10 +19,14 @@ import java.util.Map;
     private Map<T, String> mStringMap;
 
     public EnumAdapter(Context context, int layout, Class<T> cls) {
+        this(context, layout, cls.getEnumConstants());
+    }
+
+    public EnumAdapter(Context context, int layout, T[] items) {
         mContext = context;
         mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayout = layout;
-        mItems = Arrays.asList(cls.getEnumConstants());
+        mItems = Arrays.asList(items);
     }
 
     public void setStringMap(Map<T, String> map) {

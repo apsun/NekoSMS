@@ -44,9 +44,11 @@
     <!-- Filter list -->
     <string name="filter_list">Filter list</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
-    <string name="format_filter_config">%1$s %2$s %3$s</string>
-    <string name="filter_config_field_sender">Sender</string>
-    <string name="filter_config_field_body">Body</string>
+    <string name="format_filter_config">%1$s %2$s %3$s %4$s</string>
+    <string name="filter_config_action_allow">Allow if</string>
+    <string name="filter_config_action_block">Block if</string>
+    <string name="filter_config_field_sender">sender</string>
+    <string name="filter_config_field_body">body</string>
     <string name="filter_config_mode_regex">matches regex</string>
     <string name="filter_config_mode_wildcard">matches wildcard</string>
     <string name="filter_config_mode_contains">contains</string>
@@ -112,9 +114,12 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">Pattern</string>
+    <string name="filter_action">Action</string>
     <string name="filter_field">Field</string>
     <string name="filter_mode">Mode</string>
     <string name="filter_case_sensitive">Case sensitive</string>
+    <string name="filter_action_allow">Allow</string>
+    <string name="filter_action_block">Block</string>
     <string name="filter_mode_regex">Regular expression</string>
     <string name="filter_mode_wildcard">Wildcard</string>
     <string name="filter_mode_contains">Contains</string>

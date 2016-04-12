@@ -219,8 +219,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        setIntent(intent);
         if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            setIntent(intent);
             setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
         } else {
             BaseFragment fragment = getContentFragment();

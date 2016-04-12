@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
@@ -29,6 +30,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class FilterEditorActivity extends AppCompatActivity {
     private EditText mPatternEditText;
+    private Spinner mActionSpinner;
     private Spinner mFieldSpinner;
     private Spinner mModeSpinner;
     private CheckBox mCaseSensitiveCheckbox;
@@ -47,11 +49,18 @@ public class FilterEditorActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mPatternEditText = (EditText)findViewById(R.id.activity_filter_editor_pattern_edittext);
+        mActionSpinner = (Spinner)findViewById(R.id.activity_filter_editor_action_spinner);
         mFieldSpinner = (Spinner)findViewById(R.id.activity_filter_editor_field_spinner);
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
         mCaseSensitiveCheckbox = (CheckBox)findViewById(R.id.activity_filter_editor_case_sensitive_checkbox);
 
         int dropdownLayout = android.R.layout.simple_spinner_dropdown_item;
+        EnumAdapter<SmsFilterAction> actionAdapter = new EnumAdapter<>(this, dropdownLayout, new SmsFilterAction[] {
+            SmsFilterAction.ALLOW, SmsFilterAction.BLOCK
+        });
+        actionAdapter.setStringMap(getActionMap());
+        mActionSpinner.setAdapter(actionAdapter);
+
         EnumAdapter<SmsFilterField> fieldAdapter = new EnumAdapter<>(this, dropdownLayout, SmsFilterField.class);
         fieldAdapter.setStringMap(getFieldMap());
         mFieldSpinner.setAdapter(fieldAdapter);
@@ -70,11 +79,13 @@ public class FilterEditorActivity extends AppCompatActivity {
         mFilter = filter;
 
         if (filter != null) {
+            mActionSpinner.setSelection(actionAdapter.getPosition(filter.getAction()));
             mFieldSpinner.setSelection(fieldAdapter.getPosition(filter.getField()));
             mModeSpinner.setSelection(modeAdapter.getPosition(filter.getMode()));
             mPatternEditText.setText(filter.getPattern());
             mCaseSensitiveCheckbox.setChecked(filter.isCaseSensitive());
         } else {
+            mActionSpinner.setSelection(actionAdapter.getPosition(SmsFilterAction.BLOCK));
             mFieldSpinner.setSelection(fieldAdapter.getPosition(SmsFilterField.BODY));
             mModeSpinner.setSelection(modeAdapter.getPosition(SmsFilterMode.CONTAINS));
             mCaseSensitiveCheckbox.setChecked(false);
@@ -148,11 +159,13 @@ public class FilterEditorActivity extends AppCompatActivity {
             return true;
         }
 
+        SmsFilterAction action = (SmsFilterAction)mActionSpinner.getSelectedItem();
         SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
         SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
         boolean caseSensitive = mCaseSensitiveCheckbox.isChecked();
 
-        return !(mFilter.getPattern().equals(pattern) &&
+        return !(mFilter.getAction() == action &&
+                 mFilter.getPattern().equals(pattern) &&
                  mFilter.getField() == field &&
                  mFilter.getMode() == mode &&
                  mFilter.isCaseSensitive() == caseSensitive);
@@ -189,6 +202,7 @@ public class FilterEditorActivity extends AppCompatActivity {
     }
 
     private SmsFilterData createFilterData() {
+        SmsFilterAction action = (SmsFilterAction)mActionSpinner.getSelectedItem();
         SmsFilterField field = (SmsFilterField)mFieldSpinner.getSelectedItem();
         SmsFilterMode mode = (SmsFilterMode)mModeSpinner.getSelectedItem();
         String pattern = mPatternEditText.getText().toString();
@@ -198,6 +212,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         if (data == null) {
             data = mFilter = new SmsFilterData();
         }
+        data.setAction(action);
         data.setField(field);
         data.setMode(mode);
         data.setPattern(pattern);
@@ -221,19 +236,24 @@ public class FilterEditorActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    public Map<SmsFilterAction, String> getActionMap() {
+        Resources resources = getResources();
+        Map<SmsFilterAction, String> fieldMap = new HashMap<>(2);
+        fieldMap.put(SmsFilterAction.ALLOW, resources.getString(R.string.filter_action_allow));
+        fieldMap.put(SmsFilterAction.BLOCK, resources.getString(R.string.filter_action_block));
+        return fieldMap;
+    }
+
     public Map<SmsFilterField, String> getFieldMap() {
         Resources resources = getResources();
-
         Map<SmsFilterField, String> fieldMap = new HashMap<>(2);
         fieldMap.put(SmsFilterField.SENDER, resources.getString(R.string.filter_field_sender));
         fieldMap.put(SmsFilterField.BODY, resources.getString(R.string.filter_field_body));
-
         return fieldMap;
     }
 
     public Map<SmsFilterMode, String> getModeMap() {
         Resources resources = getResources();
-
         Map<SmsFilterMode, String> modeMap = new HashMap<>(6);
         modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
         modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
@@ -241,7 +261,6 @@ public class FilterEditorActivity extends AppCompatActivity {
         modeMap.put(SmsFilterMode.PREFIX, resources.getString(R.string.filter_mode_prefix));
         modeMap.put(SmsFilterMode.SUFFIX, resources.getString(R.string.filter_mode_suffix));
         modeMap.put(SmsFilterMode.EQUALS, resources.getString(R.string.filter_mode_equals));
-
         return modeMap;
     }
 }
