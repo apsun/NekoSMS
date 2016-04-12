@@ -19,6 +19,15 @@ public final class NekoSmsContract {
         public static final String BODY               = "body";
         public static final String TIME_SENT          = "time_sent";
         public static final String TIME_RECEIVED      = "time_received";
+        public static final String READ               = "read";
+        public static final String[] ALL              = {
+            _ID,
+            SENDER,
+            BODY,
+            TIME_SENT,
+            TIME_RECEIVED,
+            READ
+        };
     }
 
     public static class Filters implements BaseColumns {
@@ -27,9 +36,18 @@ public final class NekoSmsContract {
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.crossbowffs.filter";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.crossbowffs.filter";
 
+        public static final String ACTION             = "action";
         public static final String FIELD              = "field";
         public static final String MODE               = "mode";
         public static final String PATTERN            = "pattern";
         public static final String CASE_SENSITIVE     = "case_sensitive";
+        public static final String[] ALL              = {
+            _ID,
+            ACTION,
+            FIELD,
+            MODE,
+            PATTERN,
+            CASE_SENSITIVE
+        };
     }
 }

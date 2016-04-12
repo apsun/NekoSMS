@@ -15,6 +15,10 @@
     <string name="undo">撤消</string>
     <string name="cancel">取消</string>
 
+    <!-- Navigation drawer -->
+    <string name="open_drawer">扩展导航抽屉</string>
+    <string name="close_drawer">隐藏导航抽屉</string>
+
     <!-- Import/export -->
     <string name="import_export">导入/导出</string>
     <string name="import_from_storage">从储存导入</string>
@@ -38,11 +42,13 @@
     <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter list -->
+    <string name="filter_list">过滤规则</string>
     <string name="filter_list_empty_text">快来创建几个过滤规则吧！喵~</string>
     <string name="format_filter_config">%1$s%2$s%3$s</string>
     <string name="filter_config_field_sender">发送者</string>
     <string name="filter_config_field_body">内容</string>
     <string name="filter_config_mode_regex">匹配正则表达式</string>
+    <string name="filter_config_mode_wildcard">匹配通配符</string>
     <string name="filter_config_mode_contains">包含</string>
     <string name="filter_config_mode_prefix">以…开头</string>
     <string name="filter_config_mode_suffix">以…结尾</string>

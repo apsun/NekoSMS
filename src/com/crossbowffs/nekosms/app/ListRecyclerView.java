@@ -1,18 +1,52 @@
 package com.crossbowffs.nekosms.app;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.View;
 
 public class ListRecyclerView extends RecyclerView {
-    public static class RecyclerContextMenuInfo implements ContextMenu.ContextMenuInfo {
+    private static class ListDividerDecoration extends ItemDecoration {
+        private final Drawable mDivider;
+
+        public ListDividerDecoration(Context context) {
+            TypedArray attributes = context.obtainStyledAttributes(new int[] {android.R.attr.listDivider});
+            mDivider = attributes.getDrawable(0);
+            attributes.recycle();
+        }
+
+        @Override
+        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+            int left = parent.getPaddingLeft();
+            int right = parent.getWidth() - parent.getPaddingRight();
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)child.getLayoutParams();
+                int top = child.getBottom() + params.bottomMargin;
+                int bottom = top + mDivider.getIntrinsicHeight();
+                mDivider.setBounds(left, top, right, bottom);
+                mDivider.draw(c);
+            }
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
+        }
+    }
+
+    public static class ContextMenuInfo implements ContextMenu.ContextMenuInfo {
         public final View mTargetView;
         public final int mPosition;
         public final long mId;
 
-        public RecyclerContextMenuInfo(View targetView, int position, long id) {
+        public ContextMenuInfo(View targetView, int position, long id) {
             mTargetView = targetView;
             mPosition = position;
             mId = id;
@@ -26,7 +60,7 @@ public class ListRecyclerView extends RecyclerView {
         }
     };
 
-    private RecyclerContextMenuInfo mContextMenuInfo;
+    private ContextMenuInfo mContextMenuInfo;
     private View mEmptyView;
 
     public ListRecyclerView(Context context) {
@@ -54,7 +88,7 @@ public class ListRecyclerView extends RecyclerView {
         int position = getChildAdapterPosition(originalView);
         if (position >= 0) {
             long id = getAdapter().getItemId(position);
-            mContextMenuInfo = new RecyclerContextMenuInfo(originalView, position, id);
+            mContextMenuInfo = new ContextMenuInfo(originalView, position, id);
             return super.showContextMenuForChild(originalView);
         }
         return false;

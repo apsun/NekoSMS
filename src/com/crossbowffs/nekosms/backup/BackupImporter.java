@@ -2,6 +2,7 @@ package com.crossbowffs.nekosms.backup;
 
 import android.content.Context;
 import android.util.JsonReader;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
@@ -119,6 +120,7 @@ import java.util.ArrayList;
 
     private SmsFilterData readFilter() throws IOException {
         SmsFilterData filterData = new SmsFilterData();
+        String actionString = null;
         String fieldString = null;
         String modeString = null;
         String pattern = null;
@@ -128,6 +130,9 @@ import java.util.ArrayList;
         while (mJsonReader.hasNext()) {
             String name = mJsonReader.nextName();
             switch (name) {
+            case KEY_FILTER_ACTION:
+                actionString = mJsonReader.nextString();
+                break;
             case KEY_FILTER_FIELD:
                 fieldString = mJsonReader.nextString();
                 break;
@@ -148,8 +153,11 @@ import java.util.ArrayList;
         }
         mJsonReader.endObject();
 
+        SmsFilterAction action = SmsFilterAction.parse(actionString);
         SmsFilterField field = SmsFilterField.parse(fieldString);
         SmsFilterMode mode = SmsFilterMode.parse(modeString);
+        if (action != null) // For compatibility
+            filterData.setAction(action);
         filterData.setField(field);
         filterData.setMode(mode);
         filterData.setPattern(pattern);

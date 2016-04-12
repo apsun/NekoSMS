@@ -27,27 +27,27 @@ import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
     }
 
     private static final String TAG = FilterListAdapter.class.getSimpleName();
-    private final FilterListActivity mActivity;
-    private int[] mColumns;
+    private final FilterListFragment mFragment;
 
-    public FilterListAdapter(FilterListActivity activity) {
-        mActivity = activity;
+    public FilterListAdapter(FilterListFragment fragment) {
+        mFragment = fragment;
     }
 
     @Override
     public FilterListItemHolder onCreateViewHolder(ViewGroup group, int i) {
-        LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
+        LayoutInflater layoutInflater = LayoutInflater.from(mFragment.getContext());
         View view = layoutInflater.inflate(R.layout.listitem_filter_list, group, false);
         return new FilterListItemHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(FilterListItemHolder holder, Cursor cursor) {
-        if (mColumns == null) {
-            mColumns = SmsFilterDbLoader.getColumns(cursor);
-        }
+    protected int[] onBindColumns(Cursor cursor) {
+        return SmsFilterDbLoader.getColumns(cursor);
+    }
 
-        SmsFilterData filterData = SmsFilterDbLoader.getFilterData(cursor, mColumns, holder.mFilterData);
+    @Override
+    public void onBindViewHolder(FilterListItemHolder holder, Cursor cursor) {
+        SmsFilterData filterData = SmsFilterDbLoader.getFilterData(cursor, getColumns(), holder.mFilterData);
         holder.mFilterData = filterData;
 
         final long id = filterData.getId();
@@ -56,20 +56,20 @@ import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
         String pattern = filterData.getPattern();
         boolean caseSensitive = filterData.isCaseSensitive();
 
-        String fieldString = mActivity.getString(getFilterFieldStringId(field));
-        String modeString = mActivity.getString(getFilterModeStringId(mode));
+        String fieldString = mFragment.getString(getFilterFieldStringId(field));
+        String modeString = mFragment.getString(getFilterModeStringId(mode));
         String caseSensitiveString = "";
         if (caseSensitive) {
-            caseSensitiveString = mActivity.getString(R.string.filter_config_case_sensitive);
+            caseSensitiveString = mFragment.getString(R.string.filter_config_case_sensitive);
         }
-        String configString = mActivity.getString(R.string.format_filter_config, fieldString, modeString, caseSensitiveString);
+        String configString = mFragment.getString(R.string.format_filter_config, fieldString, modeString, caseSensitiveString);
         holder.mConfigTextView.setText(configString);
         holder.mPatternTextView.setText(pattern);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mActivity.startFilterEditorActivity(id);
+                mFragment.startFilterEditorActivity(id);
             }
         });
     }
@@ -89,6 +89,8 @@ import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
         switch (mode) {
         case REGEX:
             return R.string.filter_config_mode_regex;
+        case WILDCARD:
+            return R.string.filter_config_mode_wildcard;
         case CONTAINS:
             return R.string.filter_config_mode_contains;
         case PREFIX:

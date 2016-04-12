@@ -5,6 +5,7 @@ package com.crossbowffs.nekosms.backup;
     String KEY_VERSION = "version";
     String KEY_SETTINGS = "settings";
     String KEY_FILTERS = "filters";
+    String KEY_FILTER_ACTION = "action";
     String KEY_FILTER_FIELD = "field";
     String KEY_FILTER_MODE = "mode";
     String KEY_FILTER_PATTERN = "pattern";

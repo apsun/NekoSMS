@@ -15,6 +15,10 @@
     <string name="undo">Undo</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Navigation drawer -->
+    <string name="open_drawer">Open navigation drawer</string>
+    <string name="close_drawer">Close navigation drawer</string>
+
     <!-- Import/export -->
     <string name="import_export">Import/export</string>
     <string name="import_from_storage">Import from storage</string>
@@ -38,11 +42,13 @@
     <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter list -->
+    <string name="filter_list">Filter list</string>
     <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="format_filter_config">%1$s %2$s %3$s</string>
     <string name="filter_config_field_sender">Sender</string>
     <string name="filter_config_field_body">Body</string>
     <string name="filter_config_mode_regex">matches regex</string>
+    <string name="filter_config_mode_wildcard">matches wildcard</string>
     <string name="filter_config_mode_contains">contains</string>
     <string name="filter_config_mode_prefix">starts with</string>
     <string name="filter_config_mode_suffix">ends with</string>

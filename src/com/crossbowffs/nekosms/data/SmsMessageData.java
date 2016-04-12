@@ -23,6 +23,7 @@ public class SmsMessageData implements Parcelable {
     private String mBody;
     private long mTimeSent;
     private long mTimeReceived;
+    private boolean mRead = true; // For compatibility
 
     public SmsMessageData() {
 
@@ -34,6 +35,7 @@ public class SmsMessageData implements Parcelable {
         mBody = in.readString();
         mTimeSent = in.readLong();
         mTimeReceived = in.readLong();
+        mRead = in.readByte() != 0;
     }
 
     @Override
@@ -48,10 +50,11 @@ public class SmsMessageData implements Parcelable {
         dest.writeString(mBody);
         dest.writeLong(mTimeSent);
         dest.writeLong(mTimeReceived);
+        dest.writeByte(mRead ? (byte)1 : (byte)0);
     }
 
     public ContentValues serialize() {
-        ContentValues values = new ContentValues(5);
+        ContentValues values = new ContentValues(6);
         if (mId >= 0) {
             values.put(NekoSmsContract.Blocked._ID, mId);
         }
@@ -59,6 +62,7 @@ public class SmsMessageData implements Parcelable {
         values.put(NekoSmsContract.Blocked.BODY, getBody());
         values.put(NekoSmsContract.Blocked.TIME_SENT, getTimeSent());
         values.put(NekoSmsContract.Blocked.TIME_RECEIVED, getTimeReceived());
+        values.put(NekoSmsContract.Blocked.READ, isRead());
         return values;
     }
 
@@ -82,6 +86,10 @@ public class SmsMessageData implements Parcelable {
         mTimeReceived = timeReceived;
     }
 
+    public void setRead(boolean read) {
+        mRead = read;
+    }
+
     public long getId() {
         return mId;
     }
@@ -100,5 +108,9 @@ public class SmsMessageData implements Parcelable {
 
     public long getTimeReceived() {
         return mTimeReceived;
+    }
+
+    public boolean isRead() {
+        return mRead;
     }
 }

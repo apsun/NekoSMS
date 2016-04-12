@@ -8,16 +8,18 @@ import java.util.regex.PatternSyntaxException;
 
 public class SmsFilterData {
     private long mId = -1;
+    private SmsFilterAction mAction = SmsFilterAction.BLOCK; // For compatibility
     private SmsFilterField mField;
     private SmsFilterMode mMode;
     private String mPattern;
     private boolean mCaseSensitive;
 
     public ContentValues serialize() {
-        ContentValues values = new ContentValues(5);
+        ContentValues values = new ContentValues(6);
         if (mId >= 0) {
             values.put(NekoSmsContract.Filters._ID, mId);
         }
+        values.put(NekoSmsContract.Filters.ACTION, getAction().name());
         values.put(NekoSmsContract.Filters.FIELD, getField().name());
         values.put(NekoSmsContract.Filters.MODE, getMode().name());
         values.put(NekoSmsContract.Filters.PATTERN, getPattern());
@@ -27,6 +29,10 @@ public class SmsFilterData {
 
     public void setId(long id) {
         mId = id;
+    }
+
+    public void setAction(SmsFilterAction action) {
+        mAction = action;
     }
 
     public void setField(SmsFilterField field) {
@@ -49,6 +55,10 @@ public class SmsFilterData {
         return mId;
     }
 
+    public SmsFilterAction getAction() {
+        return mAction;
+    }
+
     public SmsFilterField getField() {
         return mField;
     }
@@ -66,14 +76,9 @@ public class SmsFilterData {
     }
 
     public void validate() {
-        if (mField == null) {
-            throw new InvalidFilterException("Missing filter field");
-        }
-
-        if (mMode == null) {
-            throw new InvalidFilterException("Missing filter mode");
-        }
-
+        if (mAction == null) throw new InvalidFilterException("Missing filter action");
+        if (mField == null) throw new InvalidFilterException("Missing filter field");
+        if (mMode == null) throw new InvalidFilterException("Missing filter mode");
         if (mPattern == null || mPattern.isEmpty()) {
             throw new InvalidFilterException("Missing filter pattern");
         }

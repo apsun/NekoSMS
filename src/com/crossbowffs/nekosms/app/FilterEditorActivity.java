@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -48,14 +51,13 @@ public class FilterEditorActivity extends AppCompatActivity {
         mModeSpinner = (Spinner)findViewById(R.id.activity_filter_editor_mode_spinner);
         mCaseSensitiveCheckbox = (CheckBox)findViewById(R.id.activity_filter_editor_case_sensitive_checkbox);
 
-        EnumAdapter<SmsFilterField> fieldAdapter = new EnumAdapter<>(this,
-            android.R.layout.simple_spinner_dropdown_item, SmsFilterField.class);
-        fieldAdapter.setStringMap(FilterEnumMaps.getFieldMap(this));
+        int dropdownLayout = android.R.layout.simple_spinner_dropdown_item;
+        EnumAdapter<SmsFilterField> fieldAdapter = new EnumAdapter<>(this, dropdownLayout, SmsFilterField.class);
+        fieldAdapter.setStringMap(getFieldMap());
         mFieldSpinner.setAdapter(fieldAdapter);
 
-        EnumAdapter<SmsFilterMode> modeAdapter = new EnumAdapter<>(this,
-            android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
-        modeAdapter.setStringMap(FilterEnumMaps.getModeMap(this));
+        EnumAdapter<SmsFilterMode> modeAdapter = new EnumAdapter<>(this, dropdownLayout, SmsFilterMode.class);
+        modeAdapter.setStringMap(getModeMap());
         mModeSpinner.setAdapter(modeAdapter);
 
         Intent intent = getIntent();
@@ -217,5 +219,29 @@ public class FilterEditorActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    public Map<SmsFilterField, String> getFieldMap() {
+        Resources resources = getResources();
+
+        Map<SmsFilterField, String> fieldMap = new HashMap<>(2);
+        fieldMap.put(SmsFilterField.SENDER, resources.getString(R.string.filter_field_sender));
+        fieldMap.put(SmsFilterField.BODY, resources.getString(R.string.filter_field_body));
+
+        return fieldMap;
+    }
+
+    public Map<SmsFilterMode, String> getModeMap() {
+        Resources resources = getResources();
+
+        Map<SmsFilterMode, String> modeMap = new HashMap<>(6);
+        modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
+        modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
+        modeMap.put(SmsFilterMode.CONTAINS, resources.getString(R.string.filter_mode_contains));
+        modeMap.put(SmsFilterMode.PREFIX, resources.getString(R.string.filter_mode_prefix));
+        modeMap.put(SmsFilterMode.SUFFIX, resources.getString(R.string.filter_mode_suffix));
+        modeMap.put(SmsFilterMode.EQUALS, resources.getString(R.string.filter_mode_equals));
+
+        return modeMap;
     }
 }

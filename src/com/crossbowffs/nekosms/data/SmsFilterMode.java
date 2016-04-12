@@ -2,7 +2,7 @@ package com.crossbowffs.nekosms.data;
 
 public enum SmsFilterMode {
     REGEX,
-    // WILDCARD,
+    WILDCARD,
     CONTAINS,
     PREFIX,
     SUFFIX,
@@ -14,7 +14,7 @@ public enum SmsFilterMode {
         }
 
         try {
-            return SmsFilterMode.valueOf(modeString);
+            return SmsFilterMode.valueOf(modeString.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidFilterException("Invalid filter mode value: " + modeString, e);
         }

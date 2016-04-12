@@ -15,75 +15,60 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
 public final class SmsFilterDbLoader {
     private static final String TAG = SmsFilterDbLoader.class.getSimpleName();
-    private static final String[] DEFAULT_PROJECTION = {
-        Filters._ID,
-        Filters.FIELD,
-        Filters.MODE,
-        Filters.PATTERN,
-        Filters.CASE_SENSITIVE,
-    };
     private static final int COL_ID = 0;
-    private static final int COL_FIELD = 1;
-    private static final int COL_MODE = 2;
-    private static final int COL_PATTERN = 3;
-    private static final int COL_CASE_SENSITIVE = 4;
-    private static int[] sDefaultColumns;
+    private static final int COL_ACTION = 1;
+    private static final int COL_FIELD = 2;
+    private static final int COL_MODE = 3;
+    private static final int COL_PATTERN = 4;
+    private static final int COL_CASE_SENSITIVE = 5;
 
     private SmsFilterDbLoader() { }
 
     public static int[] getColumns(Cursor cursor) {
-        int[] columns = new int[5];
-        columns[COL_ID] = cursor.getColumnIndexOrThrow(Filters._ID);
-        columns[COL_FIELD] = cursor.getColumnIndexOrThrow(Filters.FIELD);
-        columns[COL_MODE] = cursor.getColumnIndexOrThrow(Filters.MODE);
-        columns[COL_PATTERN] = cursor.getColumnIndexOrThrow(Filters.PATTERN);
-        columns[COL_CASE_SENSITIVE] = cursor.getColumnIndexOrThrow(Filters.CASE_SENSITIVE);
+        int[] columns = new int[6];
+        columns[COL_ID] = cursor.getColumnIndex(Filters._ID);
+        columns[COL_ACTION] = cursor.getColumnIndex(Filters.ACTION);
+        columns[COL_FIELD] = cursor.getColumnIndex(Filters.FIELD);
+        columns[COL_MODE] = cursor.getColumnIndex(Filters.MODE);
+        columns[COL_PATTERN] = cursor.getColumnIndex(Filters.PATTERN);
+        columns[COL_CASE_SENSITIVE] = cursor.getColumnIndex(Filters.CASE_SENSITIVE);
         return columns;
     }
 
-    private static int[] getDefaultColumns(Cursor cursor) {
-        if (sDefaultColumns != null) {
-            return sDefaultColumns;
-        }
-
-        sDefaultColumns = getColumns(cursor);
-        return sDefaultColumns;
-    }
-
     public static SmsFilterData getFilterData(Cursor cursor, int[] columns, SmsFilterData data) {
-        long id = cursor.getLong(columns[COL_ID]);
-        String fieldString = cursor.getString(columns[COL_FIELD]);
-        String modeString = cursor.getString(columns[COL_MODE]);
-        String pattern = cursor.getString(columns[COL_PATTERN]);
-        boolean caseSensitive = cursor.getInt(columns[COL_CASE_SENSITIVE]) != 0;
-
-        SmsFilterField field = SmsFilterField.parse(fieldString);
-        SmsFilterMode mode = SmsFilterMode.parse(modeString);
-
-        if (data == null) {
+        if (data == null)
             data = new SmsFilterData();
-        }
-        data.setId(id);
-        data.setField(field);
-        data.setMode(mode);
-        data.setPattern(pattern);
-        data.setCaseSensitive(caseSensitive);
-        data.validate();
+        if (columns[COL_ID] >= 0)
+            data.setId(cursor.getLong(columns[COL_ID]));
+        if (columns[COL_ACTION] >= 0)
+            data.setAction(SmsFilterAction.parse(cursor.getString(columns[COL_ACTION])));
+        if (columns[COL_FIELD] >= 0)
+            data.setField(SmsFilterField.parse(cursor.getString(columns[COL_FIELD])));
+        if (columns[COL_MODE] >= 0)
+            data.setMode(SmsFilterMode.parse(cursor.getString(columns[COL_MODE])));
+        if (columns[COL_PATTERN] >= 0)
+            data.setPattern(cursor.getString(columns[COL_PATTERN]));
+        if (columns[COL_CASE_SENSITIVE] >= 0)
+            data.setCaseSensitive(cursor.getInt(columns[COL_CASE_SENSITIVE]) != 0);
         return data;
     }
 
-    public static CursorWrapper<SmsFilterData> loadAllFilters(Context context) {
-        ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(Filters.CONTENT_URI, DEFAULT_PROJECTION, null, null, null);
+    public static CursorWrapper<SmsFilterData> loadAllFilters(Cursor cursor) {
         if (cursor == null) {
             return null;
         }
-        return new CursorWrapper<SmsFilterData>(cursor, getDefaultColumns(cursor), new SmsFilterData()) {
+        return new CursorWrapper<SmsFilterData>(cursor, getColumns(cursor), new SmsFilterData()) {
             @Override
             protected void bindData(Cursor cursor, int[] columns, SmsFilterData data) {
                 getFilterData(cursor, columns, data);
             }
         };
+    }
+
+    public static CursorWrapper<SmsFilterData> loadAllFilters(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(Filters.CONTENT_URI, Filters.ALL, null, null, null);
+        return loadAllFilters(cursor);
     }
 
     public static void deleteAllFilters(Context context) {
@@ -101,7 +86,7 @@ public final class SmsFilterDbLoader {
 
     public static SmsFilterData loadFilter(Context context, Uri filterUri) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(filterUri, DEFAULT_PROJECTION, null, null, null);
+        Cursor cursor = contentResolver.query(filterUri, Filters.ALL, null, null, null);
 
         if (!cursor.moveToFirst()) {
             Xlog.e(TAG, "URI does not match any filter: %s", filterUri);
@@ -111,7 +96,7 @@ public final class SmsFilterDbLoader {
             Xlog.w(TAG, "URI matched more than one filter: %s", filterUri);
         }
 
-        SmsFilterData data = getFilterData(cursor, getDefaultColumns(cursor), null);
+        SmsFilterData data = getFilterData(cursor, getColumns(cursor), null);
         cursor.close();
         return data;
     }

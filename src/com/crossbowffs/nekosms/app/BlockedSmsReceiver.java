@@ -43,7 +43,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
         NotificationManager notificationManager = getNotificationManager(context);
 
-        Intent viewIntent = new Intent(context, BlockedSmsListActivity.class);
+        Intent viewIntent = new Intent(context, MainActivity.class);
+        viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_SMS_LIST);
         viewIntent.setData(uri);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
 

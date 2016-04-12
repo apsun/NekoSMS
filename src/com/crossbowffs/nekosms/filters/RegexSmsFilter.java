@@ -1,37 +1,30 @@
 package com.crossbowffs.nekosms.filters;
 
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /* package */ class RegexSmsFilter extends SmsFilter {
-    private static final String TAG = RegexSmsFilter.class.getSimpleName();
-    private final SmsFilterField mField;
-    private final String mPattern;
     private final Matcher mMatcher;
-    private final boolean mCaseSensitive;
 
     public RegexSmsFilter(SmsFilterData data) {
-        mField = data.getField();
-        mPattern = data.getPattern();
-        mCaseSensitive = data.isCaseSensitive();
+        super(data);
+        String regexPattern = getPattern();
+        if (getMode() == SmsFilterMode.WILDCARD) {
+            regexPattern = wildcardToRegex(regexPattern);
+        }
         int regexFlags = Pattern.UNICODE_CASE;
-        if (!mCaseSensitive) {
+        if (!isCaseSensitive()) {
             regexFlags |= Pattern.CASE_INSENSITIVE;
         }
-        mMatcher = Pattern.compile(mPattern, regexFlags).matcher("");
+        mMatcher = Pattern.compile(regexPattern, regexFlags).matcher("");
     }
 
     @Override
-    public boolean matches(String sender, String body) {
-        Xlog.v(TAG, "Checking regex filter");
-        Xlog.v(TAG, "  Field: %s", mField.name().toLowerCase());
-        Xlog.v(TAG, "  Pattern: %s", mPattern);
-        Xlog.v(TAG, "  Case sensitive: %s", mCaseSensitive);
-        switch (mField) {
+    public boolean matchImpl(String sender, String body) {
+        switch (getField()) {
         case SENDER:
             mMatcher.reset(sender);
             break;
@@ -41,8 +34,27 @@ import java.util.regex.Pattern;
         }
 
         boolean matches = mMatcher.find();
-        Xlog.v(TAG, "  Matches: %s", matches);
         mMatcher.reset("");
         return matches;
+    }
+
+    private static String wildcardToRegex(String wildcardString) {
+        StringBuilder sb = new StringBuilder(wildcardString.length() + 16);
+        sb.append('^');
+        for (int i = 0; i < wildcardString.length(); ++i) {
+            char c = wildcardString.charAt(i);
+            if (c == '*') {
+                sb.append(".*");
+            } else if (c == '?') {
+                sb.append('.');
+            } else if ("\\[]{}()+?^$|".indexOf(c) >= 0) {
+                sb.append('\\');
+                sb.append(c);
+            } else {
+                sb.append(c);
+            }
+        }
+        sb.append('$');
+        return sb.toString();
     }
 }

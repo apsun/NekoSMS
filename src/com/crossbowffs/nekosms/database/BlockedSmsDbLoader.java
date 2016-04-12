@@ -13,57 +13,60 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 
 public final class BlockedSmsDbLoader {
     private static final String TAG = BlockedSmsDbLoader.class.getSimpleName();
-    private static final String[] DEFAULT_PROJECTION = {
-        Blocked._ID,
-        Blocked.SENDER,
-        Blocked.BODY,
-        Blocked.TIME_SENT,
-        Blocked.TIME_RECEIVED,
-    };
     private static final int COL_ID = 0;
     private static final int COL_SENDER = 1;
     private static final int COL_BODY = 2;
     private static final int COL_TIME_SENT = 3;
     private static final int COL_TIME_RECEIVED = 4;
-    private static int[] sDefaultColumns;
+    private static final int COL_READ = 5;
 
     private BlockedSmsDbLoader() { }
 
     public static int[] getColumns(Cursor cursor) {
-        int[] columns = new int[5];
-        columns[COL_ID] = cursor.getColumnIndexOrThrow(Blocked._ID);
-        columns[COL_SENDER] = cursor.getColumnIndexOrThrow(Blocked.SENDER);
-        columns[COL_BODY] = cursor.getColumnIndexOrThrow(Blocked.BODY);
-        columns[COL_TIME_SENT] = cursor.getColumnIndexOrThrow(Blocked.TIME_SENT);
-        columns[COL_TIME_RECEIVED] = cursor.getColumnIndexOrThrow(Blocked.TIME_RECEIVED);
+        int[] columns = new int[6];
+        columns[COL_ID] = cursor.getColumnIndex(Blocked._ID);
+        columns[COL_SENDER] = cursor.getColumnIndex(Blocked.SENDER);
+        columns[COL_BODY] = cursor.getColumnIndex(Blocked.BODY);
+        columns[COL_TIME_SENT] = cursor.getColumnIndex(Blocked.TIME_SENT);
+        columns[COL_TIME_RECEIVED] = cursor.getColumnIndex(Blocked.TIME_RECEIVED);
+        columns[COL_READ] = cursor.getColumnIndex(Blocked.READ);
         return columns;
     }
 
-    private static int[] getDefaultColumns(Cursor cursor) {
-        if (sDefaultColumns != null) {
-            return sDefaultColumns;
-        }
-
-        sDefaultColumns = getColumns(cursor);
-        return sDefaultColumns;
+    public static SmsMessageData getMessageData(Cursor cursor, int[] columns, SmsMessageData data) {
+        if (data == null)
+            data = new SmsMessageData();
+        if (columns[COL_ID] >= 0)
+            data.setId(cursor.getLong(columns[COL_ID]));
+        if (columns[COL_SENDER] >= 0)
+            data.setSender(cursor.getString(columns[COL_SENDER]));
+        if (columns[COL_BODY] >= 0)
+            data.setBody(cursor.getString(columns[COL_BODY]));
+        if (columns[COL_TIME_SENT] >= 0)
+            data.setTimeSent(cursor.getLong(columns[COL_TIME_SENT]));
+        if (columns[COL_TIME_RECEIVED] >= 0)
+            data.setTimeReceived(cursor.getLong(columns[COL_TIME_RECEIVED]));
+        if (columns[COL_READ] >= 0)
+            data.setRead(cursor.getInt(columns[COL_READ]) != 0);
+        return data;
     }
 
-    public static SmsMessageData getMessageData(Cursor cursor, int[] columns, SmsMessageData data) {
-        long id = cursor.getLong(columns[COL_ID]);
-        String sender = cursor.getString(columns[COL_SENDER]);
-        String body = cursor.getString(columns[COL_BODY]);
-        long timeSent = cursor.getLong(columns[COL_TIME_SENT]);
-        long timeReceived = cursor.getLong(columns[COL_TIME_RECEIVED]);
-
-        if (data == null) {
-            data = new SmsMessageData();
+    public static CursorWrapper<SmsMessageData> loadAllMessages(Cursor cursor) {
+        if (cursor == null) {
+            return null;
         }
-        data.setId(id);
-        data.setSender(sender);
-        data.setBody(body);
-        data.setTimeSent(timeSent);
-        data.setTimeReceived(timeReceived);
-        return data;
+        return new CursorWrapper<SmsMessageData>(cursor, getColumns(cursor), new SmsMessageData()) {
+            @Override
+            protected void bindData(Cursor cursor, int[] columns, SmsMessageData data) {
+                getMessageData(cursor, columns, data);
+            }
+        };
+    }
+
+    public static CursorWrapper<SmsMessageData> loadAllMessages(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(Blocked.CONTENT_URI, Blocked.ALL, null, null, null);
+        return loadAllMessages(cursor);
     }
 
     private static Uri convertIdToUri(long messageId) {
@@ -76,7 +79,7 @@ public final class BlockedSmsDbLoader {
 
     public static SmsMessageData loadMessage(Context context, Uri messageUri) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(messageUri, DEFAULT_PROJECTION, null, null, null);
+        Cursor cursor = contentResolver.query(messageUri, Blocked.ALL, null, null, null);
 
         if (!cursor.moveToFirst()) {
             Xlog.e(TAG, "URI does not match any message: %s", messageUri);
@@ -88,7 +91,7 @@ public final class BlockedSmsDbLoader {
             Xlog.w(TAG, "URI matched more than one message: %s", messageUri);
         }
 
-        SmsMessageData data = getMessageData(cursor, getDefaultColumns(cursor), null);
+        SmsMessageData data = getMessageData(cursor, getColumns(cursor), null);
         cursor.close();
         return data;
     }

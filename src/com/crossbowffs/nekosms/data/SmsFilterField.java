@@ -10,7 +10,7 @@ public enum SmsFilterField {
         }
 
         try {
-            return SmsFilterField.valueOf(fieldString);
+            return SmsFilterField.valueOf(fieldString.toUpperCase());
         } catch (IllegalArgumentException e) {
             throw new InvalidFilterException("Invalid filter field value: " + fieldString, e);
         }

@@ -70,6 +70,7 @@ import java.io.*;
 
     private void writeFilter(SmsFilterData filterData) throws IOException {
         mJsonWriter.beginObject();
+        mJsonWriter.name(KEY_FILTER_ACTION).value(filterData.getAction().name());
         mJsonWriter.name(KEY_FILTER_FIELD).value(filterData.getField().name());
         mJsonWriter.name(KEY_FILTER_MODE).value(filterData.getMode().name());
         mJsonWriter.name(KEY_FILTER_PATTERN).value(filterData.getPattern());

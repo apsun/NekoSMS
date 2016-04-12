@@ -209,7 +209,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
 
         for (SmsFilter filter : filters) {
-            if (filter.matches(sender, body)) {
+            switch (filter.match(sender, body)) {
+            case ALLOW:
+                return false;
+            case BLOCK:
                 return true;
             }
         }

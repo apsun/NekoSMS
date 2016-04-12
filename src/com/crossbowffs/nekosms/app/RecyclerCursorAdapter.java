@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 
 /* package */ abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private Cursor mCursor;
+    private int[] mColumns;
     private int mIdColumn;
 
     public RecyclerCursorAdapter() {
@@ -34,10 +35,19 @@ import android.support.v7.widget.RecyclerView;
     @Override
     public void onBindViewHolder(VH vh, int i) {
         mCursor.moveToPosition(i);
+        if (mColumns == null) {
+            mColumns = onBindColumns(mCursor);
+        }
         onBindViewHolder(vh, mCursor);
     }
 
-    public abstract void onBindViewHolder(VH vh, Cursor cursor);
+    protected int[] getColumns() {
+        return mColumns;
+    }
+
+    protected abstract int[] onBindColumns(Cursor cursor);
+
+    protected abstract void onBindViewHolder(VH vh, Cursor cursor);
 
     public void changeCursor(Cursor cursor) {
         Cursor oldCursor = swapCursor(cursor);
