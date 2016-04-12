@@ -39,13 +39,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String EXTRA_SECTION_BLOCKED_SMS_LIST = "blocked_sms_list";
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
-    private Fragment mFragment;
     private CoordinatorLayout mCoordinatorLayout;
-    private FloatingActionButton mFloatingActionButton;
-    private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
+    private NavigationView mNavigationView;
     private Toolbar mToolbar;
+    private FloatingActionButton mFloatingActionButton;
     private ActionBarDrawerToggle mDrawerToggle;
+    private Fragment mFragment;
     private String mCurrentSection;
 
     @Override
@@ -53,16 +53,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mCoordinatorLayout = (CoordinatorLayout)findViewById(R.id.main_coordinator);
-
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-        mFloatingActionButton = (FloatingActionButton)findViewById(R.id.main_fab);
+        mDrawerLayout = (DrawerLayout)findViewById(R.id.main_drawer);
         mNavigationView = (NavigationView)findViewById(R.id.main_navigation);
+        mToolbar = (Toolbar)findViewById(R.id.toolbar);
+        mFloatingActionButton = (FloatingActionButton)findViewById(R.id.main_fab);
+
         mNavigationView.setNavigationItemSelectedListener(this);
 
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.main_drawer);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open_drawer, R.string.close_drawer);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -75,6 +74,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showModuleOutdatedDialog();
         }
 
+        Intent intent = getIntent();
+        if (intent != null && ACTION_OPEN_SECTION.equals(intent.getAction())) {
+            setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
+            return;
+        }
         if (savedInstanceState != null) {
             String sectionKey = savedInstanceState.getString(EXTRA_SECTION);
             if (sectionKey != null) {
@@ -82,7 +86,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return;
             }
         }
-
         setSectionFragment(EXTRA_SECTION_FILTER_LIST);
     }
 
@@ -217,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
+            setIntent(intent);
             setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
         } else {
             BaseFragment fragment = getContentFragment();

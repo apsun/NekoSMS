@@ -59,10 +59,10 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         mBlockedSmsListView.setEmptyView(mEmptyView);
         mBlockedSmsListView.setLayoutManager(new LinearLayoutManager(getContext()));
         mMessageDetailsFormatString = getString(R.string.format_message_details);
-        showMessageDetailsDialog(getIntent());
         setFabVisible(false);
         setFabCallback(null);
         setTitle(R.string.blocked_messages);
+        showMessageDetailsDialog(getIntent());
     }
 
     @Override
@@ -141,6 +141,9 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         Uri uri = intent.getData();
         if (uri == null) {
             return;
+        } else {
+            // TODO: Is this a good workaround? Essentially "consume" the URI data
+            intent.setData(null);
         }
 
         SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(getContext(), uri);
