@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private Toolbar mToolbar;
     private ActionBarDrawerToggle mDrawerToggle;
+    private String mCurrentSection;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,8 +75,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             showModuleOutdatedDialog();
         }
 
-        setFragment(new FilterListFragment());
-        mNavigationView.setCheckedItem(R.id.main_drawer_filter_list);
+        if (savedInstanceState != null) {
+            String sectionKey = savedInstanceState.getString(EXTRA_SECTION);
+            if (sectionKey != null) {
+                setSectionFragment(sectionKey);
+                return;
+            }
+        }
+
+        setSectionFragment(EXTRA_SECTION_FILTER_LIST);
+    }
+
+    private void setSectionFragment(String key) {
+        Fragment fragment;
+        int navId;
+        switch (key) {
+        case EXTRA_SECTION_FILTER_LIST:
+            fragment = new FilterListFragment();
+            navId = R.id.main_drawer_filter_list;
+            break;
+        case EXTRA_SECTION_BLOCKED_SMS_LIST:
+            fragment = new BlockedSmsListFragment();
+            navId = R.id.main_drawer_blocked_sms_list;
+            break;
+        case EXTRA_SECTION_SETTINGS:
+            fragment = new SettingsFragment();
+            navId = R.id.main_drawer_settings;
+            break;
+        default:
+            throw new IllegalArgumentException("Invalid section: " + key);
+        }
+
+        setFragment(fragment);
+        mNavigationView.setCheckedItem(navId);
+        mDrawerLayout.closeDrawer(mNavigationView);
+        mCurrentSection = key;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_SECTION, mCurrentSection);
     }
 
     @Override
@@ -89,10 +129,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.syncState();
     }
-
-    /*public void setTitle(int titleId) {
-        mToolbar.setTitle(titleId);
-    }*/
 
     public void setFabVisible(boolean visible) {
         if (visible) {
@@ -181,27 +217,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            switch (intent.getStringExtra(EXTRA_SECTION)) {
-            case EXTRA_SECTION_FILTER_LIST:
-                setFragment(new FilterListFragment());
-                mNavigationView.setCheckedItem(R.id.main_drawer_filter_list);
-                break;
-            case EXTRA_SECTION_BLOCKED_SMS_LIST:
-                setFragment(new BlockedSmsListFragment());
-                mNavigationView.setCheckedItem(R.id.main_drawer_blocked_sms_list);
-                break;
-            case EXTRA_SECTION_SETTINGS:
-                setFragment(new SettingsFragment());
-                mNavigationView.setCheckedItem(R.id.main_drawer_settings);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown section");
+            setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
+        } else {
+            BaseFragment fragment = getContentFragment();
+            if (fragment != null) {
+                fragment.onNewIntent(intent);
             }
-            return;
-        }
-        BaseFragment fragment = getContentFragment();
-        if (fragment != null) {
-            fragment.onNewIntent(intent);
         }
     }
 
@@ -260,20 +281,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.main_drawer_blocked_sms_list:
-            setFragment(new BlockedSmsListFragment());
-            mDrawerLayout.closeDrawer(mNavigationView);
-            mNavigationView.setCheckedItem(R.id.main_drawer_blocked_sms_list);
-            return true;
         case R.id.main_drawer_filter_list:
-            setFragment(new FilterListFragment());
-            mDrawerLayout.closeDrawer(mNavigationView);
-            mNavigationView.setCheckedItem(R.id.main_drawer_filter_list);
+            setSectionFragment(EXTRA_SECTION_FILTER_LIST);
+            return true;
+        case R.id.main_drawer_blocked_sms_list:
+            setSectionFragment(EXTRA_SECTION_BLOCKED_SMS_LIST);
             return true;
         case R.id.main_drawer_settings:
-            setFragment(new SettingsFragment());
-            mDrawerLayout.closeDrawer(mNavigationView);
-            mNavigationView.setCheckedItem(R.id.main_drawer_settings);
+            setSectionFragment(EXTRA_SECTION_SETTINGS);
             return true;
         default:
             return false;

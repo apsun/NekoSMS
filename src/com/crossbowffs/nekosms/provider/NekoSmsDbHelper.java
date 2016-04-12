@@ -15,9 +15,6 @@ import java.util.List;
 
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters.CASE_SENSITIVE;
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters.MODE;
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters.PATTERN;
 
 /* package */ class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
@@ -29,13 +26,9 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters.PATTERN;
             Filters._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             Filters.ACTION             + " TEXT NOT NULL," +
             Filters.FIELD              + " TEXT NOT NULL," +
-            MODE               + " TEXT NOT NULL," +
-            PATTERN            + " TEXT NOT NULL," +
-            CASE_SENSITIVE     + " INTEGER NOT NULL," +
-            "UNIQUE(" +
-                Filters.FIELD + "," + MODE + "," +
-                PATTERN + "," + CASE_SENSITIVE +
-            ") ON CONFLICT IGNORE" +
+            Filters.MODE               + " TEXT NOT NULL," +
+            Filters.PATTERN            + " TEXT NOT NULL," +
+            Filters.CASE_SENSITIVE     + " INTEGER NOT NULL" +
         ");";
 
     private static final String CREATE_BLOCKED_TABLE =

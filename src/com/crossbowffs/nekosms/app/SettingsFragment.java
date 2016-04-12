@@ -29,9 +29,12 @@ public class SettingsFragment extends PreferenceFragment {
             enablePreference.setEnabled(false);
             enablePreference.setSummary(R.string.pref_enable_summary_alt);
         }
-
         bindRingtoneChangeListener();
+    }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         MainActivity activity = ((MainActivity)getActivity());
         activity.setFabVisible(false);
         activity.setFabCallback(null);
