@@ -68,12 +68,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        if (!XposedUtils.isModuleEnabled()) {
-            showEnableModuleDialog();
-        } else if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
-            showModuleOutdatedDialog();
-        }
-
         Intent intent = getIntent();
         if (intent != null && ACTION_OPEN_SECTION.equals(intent.getAction())) {
             setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
@@ -84,6 +78,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (sectionKey != null) {
                 setSectionFragment(sectionKey);
                 return;
+            }
+        } else {
+            if (!XposedUtils.isModuleEnabled()) {
+                showEnableModuleDialog();
+            } else if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
+                showModuleOutdatedDialog();
             }
         }
         setSectionFragment(EXTRA_SECTION_FILTER_LIST);
@@ -160,6 +160,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .translationY(mFloatingActionButton.getHeight() + lp.bottomMargin)
             .setInterpolator(new AccelerateInterpolator(2))
             .start();
+    }
+
+    public void setFabIcon(int iconId) {
+        mFloatingActionButton.setImageResource(iconId);
     }
 
     public Toolbar getToolbar() {

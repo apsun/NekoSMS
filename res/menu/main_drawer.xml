@@ -3,13 +3,16 @@
     <item
         android:id="@+id/main_drawer_filter_list"
         android:icon="@drawable/ic_code_white_24dp"
+        android:checkable="true"
         android:title="@string/filter_list"/>
     <item
         android:id="@+id/main_drawer_blocked_sms_list"
         android:icon="@drawable/ic_message_blocked_white_24dp"
+        android:checkable="true"
         android:title="@string/blocked_messages"/>
     <item
         android:id="@+id/main_drawer_settings"
         android:icon="@drawable/ic_settings_white_24dp"
+        android:checkable="true"
         android:title="@string/settings"/>
 </menu>
