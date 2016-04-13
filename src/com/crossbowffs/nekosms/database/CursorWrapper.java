@@ -24,11 +24,7 @@ public abstract class CursorWrapper<T> implements Closeable {
     }
 
     public T get(T data) {
-        if (data == null) {
-            data = newData();
-        }
-        bindData(mCursor, mColumns, data);
-        return data;
+        return bindData(mCursor, mColumns, data);
     }
 
     public T get() {
@@ -49,7 +45,5 @@ public abstract class CursorWrapper<T> implements Closeable {
         return list;
     }
 
-    protected abstract T newData();
-
-    protected abstract void bindData(Cursor cursor, int[] columns, T data);
+    protected abstract T bindData(Cursor cursor, int[] columns, T data);
 }

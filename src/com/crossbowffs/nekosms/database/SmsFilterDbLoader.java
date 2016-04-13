@@ -62,13 +62,8 @@ public final class SmsFilterDbLoader {
         }
         return new CursorWrapper<SmsFilterData>(cursor, getColumns(cursor)) {
             @Override
-            protected SmsFilterData newData() {
-                return new SmsFilterData();
-            }
-
-            @Override
-            protected void bindData(Cursor cursor, int[] columns, SmsFilterData data) {
-                getFilterData(cursor, columns, data);
+            protected SmsFilterData bindData(Cursor cursor, int[] columns, SmsFilterData data) {
+                return getFilterData(cursor, columns, data);
             }
         };
     }
