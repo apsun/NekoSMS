@@ -179,9 +179,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             }
 
             ArrayList<SmsFilter> filters = new ArrayList<>(filterCursor.getCount());
+            SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
-                SmsFilterData filterData = filterCursor.get();
-                filters.add(SmsFilter.create(filterData));
+                data = filterCursor.get(data);
+                filters.add(SmsFilter.create(data));
             }
             return filters;
         } catch (Exception e) {

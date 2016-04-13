@@ -9,12 +9,10 @@ import java.util.List;
 public abstract class CursorWrapper<T> implements Closeable {
     private final Cursor mCursor;
     private final int[] mColumns;
-    private final T mData;
 
-    public CursorWrapper(Cursor cursor, int[] columns, T data) {
+    public CursorWrapper(Cursor cursor, int[] columns) {
         mCursor = cursor;
         mColumns = columns;
-        mData = data;
     }
 
     public int getCount() {
@@ -25,9 +23,16 @@ public abstract class CursorWrapper<T> implements Closeable {
         return mCursor.moveToNext();
     }
 
+    public T get(T data) {
+        if (data == null) {
+            data = newData();
+        }
+        bindData(mCursor, mColumns, data);
+        return data;
+    }
+
     public T get() {
-        bindData(mCursor, mColumns, mData);
-        return mData;
+        return get(null);
     }
 
     @Override
@@ -43,6 +48,8 @@ public abstract class CursorWrapper<T> implements Closeable {
         }
         return list;
     }
+
+    protected abstract T newData();
 
     protected abstract void bindData(Cursor cursor, int[] columns, T data);
 }

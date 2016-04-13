@@ -55,7 +55,12 @@ public final class BlockedSmsDbLoader {
         if (cursor == null) {
             return null;
         }
-        return new CursorWrapper<SmsMessageData>(cursor, getColumns(cursor), new SmsMessageData()) {
+        return new CursorWrapper<SmsMessageData>(cursor, getColumns(cursor)) {
+            @Override
+            protected SmsMessageData newData() {
+                return new SmsMessageData();
+            }
+
             @Override
             protected void bindData(Cursor cursor, int[] columns, SmsMessageData data) {
                 getMessageData(cursor, columns, data);

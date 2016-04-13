@@ -86,8 +86,9 @@ import java.io.*;
             }
 
             mJsonWriter.name(KEY_FILTERS).beginArray();
+            SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
-                writeFilter(filterCursor.get());
+                writeFilter(filterCursor.get(data));
             }
             mJsonWriter.endArray();
         }

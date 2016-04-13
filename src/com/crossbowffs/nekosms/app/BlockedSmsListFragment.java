@@ -117,7 +117,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
 
     private void clearAllMessages() {
         BlockedSmsDbLoader.deleteAllMessages(getContext());
-        showToast(R.string.clear_blocked_messages);
+        showToast(R.string.cleared_blocked_messages);
     }
 
     private void showConfirmClearDialog() {

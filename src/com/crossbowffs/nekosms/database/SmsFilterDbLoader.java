@@ -6,7 +6,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.List;
@@ -57,7 +60,12 @@ public final class SmsFilterDbLoader {
         if (cursor == null) {
             return null;
         }
-        return new CursorWrapper<SmsFilterData>(cursor, getColumns(cursor), new SmsFilterData()) {
+        return new CursorWrapper<SmsFilterData>(cursor, getColumns(cursor)) {
+            @Override
+            protected SmsFilterData newData() {
+                return new SmsFilterData();
+            }
+
             @Override
             protected void bindData(Cursor cursor, int[] columns, SmsFilterData data) {
                 getFilterData(cursor, columns, data);
