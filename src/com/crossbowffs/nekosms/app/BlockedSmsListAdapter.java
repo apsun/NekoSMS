@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -59,6 +60,15 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
         holder.mSenderTextView.setText(sender);
         holder.mTimeSentTextView.setText(timeSentString);
         holder.mBodyTextView.setText(body);
+        if (!messageData.isRead()) {
+            holder.mSenderTextView.setTypeface(null, Typeface.BOLD);
+            holder.mTimeSentTextView.setTypeface(null, Typeface.BOLD);
+            holder.mBodyTextView.setTypeface(null, Typeface.BOLD);
+        } else {
+            holder.mSenderTextView.setTypeface(null, Typeface.NORMAL);
+            holder.mTimeSentTextView.setTypeface(null, Typeface.NORMAL);
+            holder.mBodyTextView.setTypeface(null, Typeface.NORMAL);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

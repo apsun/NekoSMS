@@ -185,6 +185,8 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
 
         AlertDialog dialog = builder.create();
         dialog.show();
+
+        BlockedSmsDbLoader.setReadStatus(getContext(), messageData.getId(), true);
     }
 
     private void startXposedActivity(String section) {
@@ -255,6 +257,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         message.setBody(getString(R.string.test_message_body));
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
+        message.setRead(false);
 
         Uri uri = BlockedSmsDbLoader.writeMessage(getContext(), message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);

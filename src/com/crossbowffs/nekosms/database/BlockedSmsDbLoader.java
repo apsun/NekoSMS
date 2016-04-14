@@ -137,4 +137,15 @@ public final class BlockedSmsDbLoader {
         deleteMessage(context, messageUri);
         return messageData;
     }
+
+    public static boolean setReadStatus(Context context, long messageId, boolean read) {
+        return setReadStatus(context, convertIdToUri(messageId), read);
+    }
+
+    public static boolean setReadStatus(Context context, Uri messageUri, boolean read) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues values = new ContentValues(1);
+        values.put(Blocked.READ, read ? 1 : 0);
+        return contentResolver.update(messageUri, values, null, null) >= 0;
+    }
 }
