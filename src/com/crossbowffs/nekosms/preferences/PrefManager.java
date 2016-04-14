@@ -5,20 +5,13 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 public class PrefManager {
-    public static final String KEY_ENABLE = "pref_enable";
-    public static final String KEY_DEBUG_MODE = "pref_debug_mode";
-    public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";
-    public static final String KEY_NOTIFICATIONS_RINGTONE = "pref_notifications_ringtone";
-    public static final String KEY_NOTIFICATIONS_VIBRATE = "pref_notifications_vibrate";
-    public static final String KEY_NOTIFICATIONS_LIGHTS = "pref_notifications_lights";
     private static final String DEFAULT_RINGTONE_URI = "content://settings/system/notification_sound";
-
-    public static final PrefItem<Boolean> PREF_ENABLE = new PrefItem<>(KEY_ENABLE, true);
-    public static final PrefItem<Boolean> PREF_DEBUG_MODE = new PrefItem<>(KEY_DEBUG_MODE, false);
-    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_ENABLE = new PrefItem<>(KEY_NOTIFICATIONS_ENABLE, false);
-    public static final PrefItem<String> PREF_NOTIFICATIONS_RINGTONE = new PrefItem<>(KEY_NOTIFICATIONS_RINGTONE, DEFAULT_RINGTONE_URI);
-    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_VIBRATE = new PrefItem<>(KEY_NOTIFICATIONS_VIBRATE, true);
-    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_LIGHTS = new PrefItem<>(KEY_NOTIFICATIONS_LIGHTS, true);
+    public static final PrefItem<Boolean> PREF_ENABLE = new PrefItem<>(PrefKeys.KEY_ENABLE, true);
+    public static final PrefItem<Boolean> PREF_DEBUG_MODE = new PrefItem<>(PrefKeys.KEY_DEBUG_MODE, false);
+    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_ENABLE = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_ENABLE, false);
+    public static final PrefItem<String> PREF_NOTIFICATIONS_RINGTONE = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_RINGTONE, DEFAULT_RINGTONE_URI);
+    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_VIBRATE = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_VIBRATE, true);
+    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_LIGHTS = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_LIGHTS, true);
 
     public static class Editor {
         private final SharedPreferences.Editor mEditor;

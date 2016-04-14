@@ -7,6 +7,7 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
+import com.crossbowffs.nekosms.preferences.PrefKeys;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -70,28 +71,28 @@ import java.util.ArrayList;
     private void readSettings(Context context) throws IOException {
         // The editor already holds these preferences in memory for us, so the
         // transaction is automatically atomic. No temporary object is required.
-        PrefManager preferences = PrefManager.fromContext(context);
+        PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
         PrefManager.Editor editor = preferences.edit();
         mJsonReader.beginObject();
         while (mJsonReader.hasNext()) {
             String name = mJsonReader.nextName();
             switch (name) {
-            case PrefManager.KEY_ENABLE:
+            case PrefKeys.KEY_ENABLE:
                 editor.put(PrefManager.PREF_ENABLE, mJsonReader.nextBoolean());
                 break;
-            case PrefManager.KEY_DEBUG_MODE:
+            case PrefKeys.KEY_DEBUG_MODE:
                 editor.put(PrefManager.PREF_DEBUG_MODE, mJsonReader.nextBoolean());
                 break;
-            case PrefManager.KEY_NOTIFICATIONS_ENABLE:
+            case PrefKeys.KEY_NOTIFICATIONS_ENABLE:
                 editor.put(PrefManager.PREF_NOTIFICATIONS_ENABLE, mJsonReader.nextBoolean());
                 break;
-            case PrefManager.KEY_NOTIFICATIONS_RINGTONE:
+            case PrefKeys.KEY_NOTIFICATIONS_RINGTONE:
                 editor.put(PrefManager.PREF_NOTIFICATIONS_RINGTONE, mJsonReader.nextString());
                 break;
-            case PrefManager.KEY_NOTIFICATIONS_VIBRATE:
+            case PrefKeys.KEY_NOTIFICATIONS_VIBRATE:
                 editor.put(PrefManager.PREF_NOTIFICATIONS_VIBRATE, mJsonReader.nextBoolean());
                 break;
-            case PrefManager.KEY_NOTIFICATIONS_LIGHTS:
+            case PrefKeys.KEY_NOTIFICATIONS_LIGHTS:
                 editor.put(PrefManager.PREF_NOTIFICATIONS_LIGHTS, mJsonReader.nextBoolean());
                 break;
             default:

@@ -32,6 +32,11 @@
             android:readPermission="android.permission.READ_SMS"
             android:writePermission="android.permission.WRITE_SMS"
             android:exported="true"/>
+        <provider
+            android:name=".provider.PreferenceProviderImpl"
+            android:label="PreferenceProviderImpl"
+            android:authorities="${applicationId}.preferences"
+            android:exported="true"/>
         <receiver
             android:name=".app.BlockedSmsReceiver">
             <intent-filter>

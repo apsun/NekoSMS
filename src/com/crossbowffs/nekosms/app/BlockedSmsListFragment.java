@@ -21,6 +21,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
+import com.crossbowffs.nekosms.preferences.PrefKeys;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
@@ -72,7 +73,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        PrefManager preferences = PrefManager.fromContext(getContext());
+        PrefManager preferences = PrefManager.fromContext(getContext(), PrefKeys.FILE_MAIN);
         if (preferences.getBoolean(PrefManager.PREF_DEBUG_MODE)) {
             inflater.inflate(R.menu.options_blockedsms_list_debug, menu);
         } else {

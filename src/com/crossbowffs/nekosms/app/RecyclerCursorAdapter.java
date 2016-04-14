@@ -35,13 +35,13 @@ import android.support.v7.widget.RecyclerView;
     @Override
     public void onBindViewHolder(VH vh, int i) {
         mCursor.moveToPosition(i);
-        if (mColumns == null) {
-            mColumns = onBindColumns(mCursor);
-        }
         onBindViewHolder(vh, mCursor);
     }
 
     protected int[] getColumns() {
+        if (mColumns == null) {
+            mColumns = onBindColumns(mCursor);
+        }
         return mColumns;
     }
 

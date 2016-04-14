@@ -19,12 +19,15 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.filters.SmsFilter;
-import com.crossbowffs.nekosms.preferences.PrefItem;
-import com.crossbowffs.nekosms.preferences.PrefManager;
+import com.crossbowffs.nekosms.preferences.PrefKeys;
+import com.crossbowffs.nekosms.preferences.RemotePreferences;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
-import de.robv.android.xposed.*;
+import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.util.ArrayList;
@@ -67,6 +70,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
     private BroadcastReceiver mBroadcastReceiver;
+    private RemotePreferences mPreferences;
     private ArrayList<SmsFilter> mSmsFilters;
 
     private static SmsMessageData createMessageData(SmsMessage[] messageParts) {
@@ -107,7 +111,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         ContentObserver contentObserver = new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean selfChange) {
-                Xlog.d(TAG, "SMS filter database updated, marking cache as dirty");
+                Xlog.i(TAG, "SMS filter database updated, marking cache as dirty");
                 resetFilters();
             }
         };
@@ -164,6 +168,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return receiver;
     }
 
+    private RemotePreferences createRemotePreferences(Context context) {
+        return new RemotePreferences(context, PrefKeys.REMOTE_PREFS_AUTHORITY, PrefKeys.FILE_MAIN);
+    }
+
     private void broadcastBlockedSms(Context context, Uri messageUri) {
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
@@ -196,7 +204,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         synchronized (mFiltersLock) {
             filters = mSmsFilters;
             if (filters == null) {
-                Xlog.d(TAG, "Cached SMS filters dirty, loading from database");
+                Xlog.i(TAG, "Cached SMS filters dirty, loading from database");
                 filters = loadSmsFilters(context);
             }
             mSmsFilters = filters;
@@ -264,6 +272,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         if (mBroadcastReceiver == null) {
             mBroadcastReceiver = registerBroadcastReceiver(context);
         }
+        if (mPreferences == null) {
+            mPreferences = createRemotePreferences(context);
+        }
         grantWriteSmsPermissions(context);
     }
 
@@ -275,12 +286,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        // For some reason, caching the instance and calling reload() doesn't
-        // update the values, so we have to create a new instance every time
-        XSharedPreferences preferences = new XSharedPreferences(NEKOSMS_PACKAGE);
-        PrefItem<Boolean> enablePref = PrefManager.PREF_ENABLE;
-        if (!preferences.getBoolean(enablePref.getKey(), enablePref.getDefaultValue())) {
-            Xlog.d(TAG, "SMS blocking disabled in app preferences");
+        boolean enable = mPreferences.getBoolean(PrefKeys.KEY_ENABLE, false);
+        if (!enable) {
+            Xlog.i(TAG, "SMS blocking disabled in app preferences");
             return;
         }
 

@@ -7,6 +7,7 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.preferences.PrefItem;
+import com.crossbowffs.nekosms.preferences.PrefKeys;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -57,7 +58,7 @@ import java.io.*;
     }
 
     private void writePreferences(Context context) throws IOException {
-        PrefManager preferences = PrefManager.fromContext(context);
+        PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
         mJsonWriter.name(KEY_SETTINGS).beginObject();
         writeBooleanPreference(preferences, PrefManager.PREF_ENABLE);
         writeBooleanPreference(preferences, PrefManager.PREF_DEBUG_MODE);

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
@@ -34,7 +35,7 @@ public class NekoSmsProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         switch (sUriMatcher.match(uri)) {
@@ -58,7 +59,7 @@ public class NekoSmsProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         long row;
         switch (sUriMatcher.match(uri)) {
@@ -80,7 +81,7 @@ public class NekoSmsProvider extends ContentProvider {
     }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] bulkValues) {
+    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] bulkValues) {
         SQLiteDatabase db = mDatabaseHelper.getReadableDatabase();
         int successCount = 0;
         String table;
@@ -109,7 +110,7 @@ public class NekoSmsProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         int deletedRows;
         switch (sUriMatcher.match(uri)) {
@@ -134,7 +135,7 @@ public class NekoSmsProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = mDatabaseHelper.getWritableDatabase();
         int updatedRows;
         switch (sUriMatcher.match(uri)) {
@@ -159,7 +160,7 @@ public class NekoSmsProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (sUriMatcher.match(uri)) {
         case FILTERS_ITEM_ID:
             return Filters.CONTENT_ITEM_TYPE;

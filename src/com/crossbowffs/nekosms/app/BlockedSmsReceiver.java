@@ -17,6 +17,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
+import com.crossbowffs.nekosms.preferences.PrefKeys;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -36,7 +37,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void displayNotification(Context context, SmsMessageData messageData, Uri uri) {
-        PrefManager preferences = PrefManager.fromContext(context);
+        PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
         if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
             return;
         }
