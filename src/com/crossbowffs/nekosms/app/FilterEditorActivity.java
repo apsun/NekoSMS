@@ -142,7 +142,7 @@ public class FilterEditorActivity extends AppCompatActivity {
             if (description == null) {
                 description = getString(R.string.invalid_pattern_reason_unknown);
             }
-            return getString(R.string.invalid_pattern_message, description);
+            return getString(R.string.format_invalid_pattern_message, description);
         }
 
         return null;

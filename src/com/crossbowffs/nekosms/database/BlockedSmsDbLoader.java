@@ -63,9 +63,19 @@ public final class BlockedSmsDbLoader {
         };
     }
 
-    public static CursorWrapper<SmsMessageData> loadAllMessages(Context context) {
+    public static CursorWrapper<SmsMessageData> loadAllMessages(Context context, boolean unreadOnly) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(Blocked.CONTENT_URI, Blocked.ALL, null, null, null);
+        String selection = null;
+        String[] selectionArgs = null;
+        if (unreadOnly) {
+            selection = Blocked.READ + "=?";
+            selectionArgs = new String[] {"0"};
+        }
+        Cursor cursor = contentResolver.query(
+            Blocked.CONTENT_URI,
+            Blocked.ALL,
+            selection, selectionArgs,
+            Blocked.TIME_SENT + " DESC");
         return loadAllMessages(cursor);
     }
 

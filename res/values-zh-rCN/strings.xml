@@ -83,7 +83,7 @@
     <string name="filter_saved">过滤规则已保存</string>
     <string name="filter_already_exists">过滤规则已存在</string>
     <string name="invalid_pattern_title">表达式不合法</string>
-    <string name="invalid_pattern_message">您输入的表达式不是合法的正则表达式！\n\n原因：%s</string>
+    <string name="format_invalid_pattern_message">您输入的表达式不是合法的正则表达式！\n\n原因：%s</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
@@ -113,10 +113,12 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">表达式</string>
-    <string name="filter_action">行动</string>
+    <string name="filter_action">操作</string>
     <string name="filter_field">匹配字段</string>
     <string name="filter_mode">匹配方法</string>
     <string name="filter_case_sensitive">区分大小写</string>
+    <string name="filter_action_allow">允许</string>
+    <string name="filter_action_block">拦截</string>
     <string name="filter_mode_regex">正则表达式</string>
     <string name="filter_mode_wildcard">通配符</string>
     <string name="filter_mode_contains">包含</string>
@@ -150,5 +152,7 @@
     </string>
 
     <!-- Notifications -->
-    <string name="notification_sender">已拦截: %s</string>
+    <string name="format_notification_single_sender">%s（已拦截）</string>
+    <string name="format_notification_multi_count">%d条已拦截信息</string>
+    <string name="format_notification_multi_item">%1$s：%2$s</string>
 </resources>

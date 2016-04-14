@@ -15,34 +15,25 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
+import com.crossbowffs.nekosms.database.CursorWrapper;
 import com.crossbowffs.nekosms.database.DatabaseException;
 import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
 import com.crossbowffs.nekosms.preferences.PrefKeys;
 import com.crossbowffs.nekosms.preferences.PrefManager;
+import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
     private static final String TAG = BlockedSmsReceiver.class.getSimpleName();
+    private static final int NOTIFICATION_ID = 1;
 
     private NotificationManager getNotificationManager(Context context) {
         return (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-    private int getNotificationId(Uri messageUri) {
-        // TODO: This is incredibly hacky!
-        // Basically, since we can't store persistent state in a broadcast receiver,
-        // we will use the row ID of the SMS message as the ID of the notification.
-        return (int)(ContentUris.parseId(messageUri) % Integer.MAX_VALUE);
-    }
-
-    private void displayNotification(Context context, SmsMessageData messageData, Uri uri) {
-        PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
-        if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
-            return;
-        }
-
-        NotificationManager notificationManager = getNotificationManager(context);
+    private Notification buildNotificationSingle(Context context, SmsMessageData messageData) {
+        Uri uri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, messageData.getId());
 
         Intent viewIntent = new Intent(context, MainActivity.class);
         viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
@@ -60,13 +51,9 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         restoreIntent.setData(uri);
         PendingIntent restorePendingIntent = PendingIntent.getBroadcast(context, 0, restoreIntent, 0);
 
-        // TODO: Figure out how to merge notifications
-        // This is kind of hard since we don't store any kind of "read" state
-        // for blocked SMS messages; there's no way to know if the user has
-        // already been notified about a message.
         Notification notification = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
-            .setContentTitle(context.getString(R.string.notification_sender, messageData.getSender()))
+            .setContentTitle(context.getString(R.string.format_notification_single_sender, messageData.getSender()))
             .setContentText(messageData.getBody())
             .setStyle(new NotificationCompat.BigTextStyle().bigText(messageData.getBody()))
             .setContentIntent(viewPendingIntent)
@@ -77,36 +64,89 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setAutoCancel(true)
             .build();
 
+        return notification;
+    }
+
+    private Notification buildNotificationMulti(Context context, CursorWrapper<SmsMessageData> messages) {
+        Intent viewIntent = new Intent(context, MainActivity.class);
+        viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
+        viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_SMS_LIST);
+        PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
+
+        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
+        SmsMessageData data = new SmsMessageData();
+        String firstLine = null;
+        while (messages.moveToNext()) {
+            data = messages.get(data);
+            String line = context.getString(R.string.format_notification_multi_item, data.getSender(), data.getBody());
+            if (firstLine == null) {
+                firstLine = line;
+            }
+            inboxStyle.addLine(line);
+        }
+
+        Notification notification = new NotificationCompat.Builder(context)
+            .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
+            .setContentTitle(context.getString(R.string.format_notification_multi_count, messages.getCount()))
+            .setContentText(firstLine)
+            .setStyle(inboxStyle)
+            .setNumber(messages.getCount())
+            .setContentIntent(viewPendingIntent)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setAutoCancel(true)
+            .build();
+
+        return notification;
+    }
+
+    private void displayNotification(Context context, Intent intent) {
+        PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
+        if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
+            return;
+        }
+
+        CursorWrapper<SmsMessageData> messages = BlockedSmsDbLoader.loadAllMessages(context, true);
+        Notification notification;
+        if (messages == null || messages.getCount() == 0) {
+            Xlog.e(TAG, "Failed to load read messages, falling back to intent URI");
+            Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+            SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, messageUri);
+            if (messageData == null) {
+                Xlog.e(TAG, "Failed to load message from intent URI");
+                return;
+            }
+            notification = buildNotificationSingle(context, messageData);
+        } else if (messages.getCount() == 1) {
+            messages.moveToNext();
+            notification = buildNotificationSingle(context, messages.get());
+        } else {
+            notification = buildNotificationMulti(context, messages);
+        }
+
+        NotificationManager notificationManager = getNotificationManager(context);
         String ringtone = preferences.getString(PrefManager.PREF_NOTIFICATIONS_RINGTONE);
         if (!TextUtils.isEmpty(ringtone)) {
             notification.sound = Uri.parse(ringtone);
         }
-
         if (preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_VIBRATE)) {
             notification.defaults |= Notification.DEFAULT_VIBRATE;
         }
-
         if (preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_LIGHTS)) {
             notification.defaults |= Notification.DEFAULT_LIGHTS;
         }
-
-        notificationManager.notify(getNotificationId(uri), notification);
+        notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
     private void onReceiveSms(Context context, Intent intent) {
-        Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, messageUri);
-        if (messageData == null) {
-            Xlog.e(TAG, "Failed to load message");
-            return;
-        }
-        displayNotification(context, messageData, messageUri);
+        displayNotification(context, intent);
     }
 
     private void onDeleteSms(Context context, Intent intent) {
-        Uri messageUri = intent.getData();
         NotificationManager notificationManager = getNotificationManager(context);
-        notificationManager.cancel(getNotificationId(messageUri));
+        notificationManager.cancel(NOTIFICATION_ID);
+
+        Uri messageUri = intent.getData();
         boolean deleted = BlockedSmsDbLoader.deleteMessage(context, messageUri);
         if (!deleted) {
             Xlog.e(TAG, "Failed to delete message: could not load data");
@@ -115,9 +155,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void onRestoreSms(Context context, Intent intent) {
-        Uri messageUri = intent.getData();
         NotificationManager notificationManager = getNotificationManager(context);
-        notificationManager.cancel(getNotificationId(messageUri));
+        notificationManager.cancel(NOTIFICATION_ID);
 
         if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
             Xlog.e(TAG, "Do not have permissions to write SMS");
@@ -140,6 +179,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             return;
         }
 
+        Uri messageUri = intent.getData();
         BlockedSmsDbLoader.deleteMessage(context, messageUri);
     }
 

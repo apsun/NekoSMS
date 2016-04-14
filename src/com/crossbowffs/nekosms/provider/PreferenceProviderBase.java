@@ -144,7 +144,7 @@ public abstract class PreferenceProviderBase extends ContentProvider implements 
             throw new IllegalArgumentException("Accessing unknown preference: " + prefName);
         }
         if (!checkAccess(prefName, prefKey, write)) {
-            throw new SecurityException("Insufficient permissions to access: " + prefName);
+            throw new SecurityException("Insufficient permissions to access: " + prefName + "/" + prefKey);
         }
         return prefs;
     }

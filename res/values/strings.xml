@@ -84,7 +84,7 @@
     <string name="filter_saved">Filter saved</string>
     <string name="filter_already_exists">Filter already exists</string>
     <string name="invalid_pattern_title">Invalid pattern</string>
-    <string name="invalid_pattern_message">The pattern you have entered is not a legal regular expression!\n\nReason: %s</string>
+    <string name="format_invalid_pattern_message">The pattern you have entered is not a legal regular expression!\n\nReason: %s</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
@@ -153,5 +153,7 @@
     </string>
 
     <!-- Notifications -->
-    <string name="notification_sender">Blocked: %s</string>
+    <string name="format_notification_single_sender">%s (blocked)</string>
+    <string name="format_notification_multi_count">%d blocked messages</string>
+    <string name="format_notification_multi_item">%1$s: %2$s</string>
 </resources>
