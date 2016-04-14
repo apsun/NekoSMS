@@ -11,23 +11,19 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class XposedUtilsHook implements IXposedHookLoadPackage {
     private static final String TAG = XposedUtilsHook.class.getSimpleName();
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
+    private static final int MODULE_VERSION = BuildConfig.MODULE_VERSION;
 
     private static void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = XposedUtils.class.getName();
 
         Xlog.i(TAG, "Hooking Xposed module status checker");
 
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "isModuleEnabled",
-            XC_MethodReplacement.returnConstant(true));
-
         // This is the version as fetched when the *module* is loaded
         // If the app is updated, this value will be changed within the
         // app, but will not be changed here. Thus, we can use this to
         // check whether the app and module versions are out of sync.
-        int moduleVersion = XposedUtils.getModuleVersion();
-
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, "getModuleVersion",
-            XC_MethodReplacement.returnConstant(moduleVersion));
+            XC_MethodReplacement.returnConstant(MODULE_VERSION));
     }
 
     @Override

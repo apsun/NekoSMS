@@ -90,8 +90,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             if (!XposedUtils.isModuleEnabled()) {
                 showEnableModuleDialog();
-            } else if (XposedUtils.getAppVersion() != XposedUtils.getModuleVersion()) {
-                showModuleOutdatedDialog();
+            } else if (XposedUtils.isModuleUpdated()) {
+                showModuleUpdatedDialog();
             }
         }
         setSectionFragment(EXTRA_SECTION_FILTER_LIST);
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dialog.show();
     }
 
-    private void showModuleOutdatedDialog() {
+    private void showModuleUpdatedDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)

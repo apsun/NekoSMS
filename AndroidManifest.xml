@@ -33,8 +33,8 @@
             android:writePermission="android.permission.WRITE_SMS"
             android:exported="true"/>
         <provider
-            android:name=".provider.PreferenceProviderImpl"
-            android:label="PreferenceProviderImpl"
+            android:name=".provider.MainPreferenceProvider"
+            android:label="MainPreferenceProvider"
             android:authorities="${applicationId}.preferences"
             android:exported="true"/>
         <receiver

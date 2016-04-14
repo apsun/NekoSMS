@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import com.crossbowffs.nekosms.provider.PreferenceProvider;
+import com.crossbowffs.nekosms.provider.PreferenceProviderBase;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Provides a {@link SharedPreferences} compatible API to {@link PreferenceProvider}.
+ * Provides a {@link SharedPreferences} compatible API to {@link PreferenceProviderBase}.
  * Note these important differences:
  * <ul>
  *     <li>Preference change listeners are <b>strongly</b> referenced</li>
@@ -123,7 +123,7 @@ public class RemotePreferences implements SharedPreferences {
         @Override
         public Editor putString(String key, String value) {
             ContentValues values = new ContentValues(1);
-            values.put(PreferenceProvider.COLUMN_VALUE, value);
+            values.put(PreferenceProviderBase.COLUMN_VALUE, value);
             mToAdd.put(key, values);
             return this;
         }
@@ -136,7 +136,7 @@ public class RemotePreferences implements SharedPreferences {
         @Override
         public Editor putInt(String key, int value) {
             ContentValues values = new ContentValues(1);
-            values.put(PreferenceProvider.COLUMN_VALUE, value);
+            values.put(PreferenceProviderBase.COLUMN_VALUE, value);
             mToAdd.put(key, values);
             return this;
         }
@@ -144,7 +144,7 @@ public class RemotePreferences implements SharedPreferences {
         @Override
         public Editor putLong(String key, long value) {
             ContentValues values = new ContentValues(1);
-            values.put(PreferenceProvider.COLUMN_VALUE, value);
+            values.put(PreferenceProviderBase.COLUMN_VALUE, value);
             mToAdd.put(key, values);
             return this;
         }
@@ -152,7 +152,7 @@ public class RemotePreferences implements SharedPreferences {
         @Override
         public Editor putFloat(String key, float value) {
             ContentValues values = new ContentValues(1);
-            values.put(PreferenceProvider.COLUMN_VALUE, value);
+            values.put(PreferenceProviderBase.COLUMN_VALUE, value);
             mToAdd.put(key, values);
             return this;
         }
@@ -160,7 +160,7 @@ public class RemotePreferences implements SharedPreferences {
         @Override
         public Editor putBoolean(String key, boolean value) {
             ContentValues values = new ContentValues(1);
-            values.put(PreferenceProvider.COLUMN_VALUE, value);
+            values.put(PreferenceProviderBase.COLUMN_VALUE, value);
             mToAdd.put(key, values);
             return this;
         }

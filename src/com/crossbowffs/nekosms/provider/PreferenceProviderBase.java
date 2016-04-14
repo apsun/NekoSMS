@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Exposes {@link SharedPreferences} to other apps running on the device.
  */
-public abstract class PreferenceProvider extends ContentProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
+public abstract class PreferenceProviderBase extends ContentProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String COLUMN_VALUE = "value";
     private static final int PREFERENCE_ID = 1;
 
@@ -22,7 +22,7 @@ public abstract class PreferenceProvider extends ContentProvider implements Shar
     private final Map<String, SharedPreferences> mPreferences;
     private final UriMatcher mUriMatcher;
 
-    public PreferenceProvider(String authority, String[] prefNames) {
+    public PreferenceProviderBase(String authority, String[] prefNames) {
         mBaseUri = Uri.parse("content://" + authority);
         mPrefNames = prefNames;
         mPreferences = new HashMap<>(prefNames.length);
@@ -44,7 +44,7 @@ public abstract class PreferenceProvider extends ContentProvider implements Shar
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         PrefKeyPair prefKeyPair = parseUri(uri);
-        SharedPreferences preferences = getPreferences(prefKeyPair.mPrefName, false);
+        SharedPreferences preferences = getPreferences(prefKeyPair, false);
         Map<String, ?> preferenceMap = preferences.getAll();
         MatrixCursor cursor = new MatrixCursor(new String[] {COLUMN_VALUE});
         Object value = preferenceMap.get(prefKeyPair.mPrefKey);
@@ -67,9 +67,9 @@ public abstract class PreferenceProvider extends ContentProvider implements Shar
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         PrefKeyPair prefKeyPair = parseUri(uri);
-        SharedPreferences preferences = getPreferences(prefKeyPair.mPrefName, true);
         String key = prefKeyPair.mPrefKey;
         Object value = values.get(COLUMN_VALUE);
+        SharedPreferences preferences = getPreferences(prefKeyPair, true);
         SharedPreferences.Editor editor = preferences.edit();
         if (value == null) {
             throw new IllegalArgumentException("Attempting to insert preference with null value");
@@ -93,8 +93,8 @@ public abstract class PreferenceProvider extends ContentProvider implements Shar
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         PrefKeyPair prefKeyPair = parseUri(uri);
-        SharedPreferences preferences = getPreferences(prefKeyPair.mPrefName, true);
         String key = prefKeyPair.mPrefKey;
+        SharedPreferences preferences = getPreferences(prefKeyPair, true);
         if (key.isEmpty()) {
             preferences.edit().clear().apply();
         } else {
@@ -136,13 +136,15 @@ public abstract class PreferenceProvider extends ContentProvider implements Shar
         return false;
     }
 
-    private SharedPreferences getPreferences(String prefName, boolean write) {
-        if (!checkAccess(prefName, write)) {
-            throw new SecurityException("Insufficient permissions to access: " + prefName);
-        }
+    private SharedPreferences getPreferences(PrefKeyPair prefKeyPair, boolean write) {
+        String prefName = prefKeyPair.mPrefName;
+        String prefKey = prefKeyPair.mPrefKey;
         SharedPreferences prefs = mPreferences.get(prefName);
         if (prefs == null) {
-            throw new AssertionError("Preference not provided in constructor: " + prefName);
+            throw new IllegalArgumentException("Accessing unknown preference: " + prefName);
+        }
+        if (!checkAccess(prefName, prefKey, write)) {
+            throw new SecurityException("Insufficient permissions to access: " + prefName);
         }
         return prefs;
     }
@@ -156,7 +158,9 @@ public abstract class PreferenceProvider extends ContentProvider implements Shar
         throw new AssertionError("Cannot find name for SharedPreferences");
     }
 
-    protected abstract boolean checkAccess(String prefName, boolean write);
+    protected boolean checkAccess(String prefName, String prefKey, boolean write) {
+        return true;
+    }
 
     private class PrefKeyPair {
         public final String mPrefName;

@@ -17,23 +17,18 @@ public final class XposedUtils {
     private XposedUtils() { }
 
     public static boolean isModuleEnabled() {
-        // This method is hooked by the module to return true.
-        // Use non-constexpr to suppress constant return value warnings.
-        return Boolean.parseBoolean("false");
+        return getModuleVersion() >= 0;
     }
 
-    public static int getAppVersion() {
-        // This method is *NOT* hooked by the module; it must
-        // be compared to the value of getModuleVersion()
-        // to check whether the app and module are out of sync.
-        return MODULE_VERSION;
+    public static boolean isModuleUpdated() {
+        return MODULE_VERSION != getModuleVersion();
     }
 
-    public static int getModuleVersion() {
+    private static int getModuleVersion() {
         // This method is hooked by the module to return the
-        // value of XposedUtils.MODULE_VERSION, as seen from the
+        // value of BuildConfig.MODULE_VERSION, as seen from the
         // module side.
-        return MODULE_VERSION;
+        return -1;
     }
 
     public static boolean isXposedInstalled(Context context) {
