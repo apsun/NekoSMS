@@ -64,6 +64,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         setFabCallback(null);
         setTitle(R.string.blocked_messages);
         showMessageDetailsDialog(getIntent());
+        BlockedSmsDbLoader.markAllSeen(getContext());
     }
 
     @Override
@@ -258,6 +259,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
         message.setRead(false);
+        message.setSeen(false);
 
         Uri uri = BlockedSmsDbLoader.writeMessage(getContext(), message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);

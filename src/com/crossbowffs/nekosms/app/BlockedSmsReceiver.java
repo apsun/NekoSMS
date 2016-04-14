@@ -51,6 +51,10 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         restoreIntent.setData(uri);
         PendingIntent restorePendingIntent = PendingIntent.getBroadcast(context, 0, restoreIntent, 0);
 
+        Intent dismissIntent = new Intent(context, BlockedSmsReceiver.class);
+        dismissIntent.setAction(BroadcastConsts.ACTION_DISMISS_NOTIFICATION);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, 0, dismissIntent, 0);
+
         Notification notification = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
             .setContentTitle(context.getString(R.string.format_notification_single_sender, messageData.getSender()))
@@ -59,6 +63,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setContentIntent(viewPendingIntent)
             .addAction(R.drawable.ic_delete_white_24dp, context.getString(R.string.delete), deletePendingIntent)
             .addAction(R.drawable.ic_unarchive_white_24dp, context.getString(R.string.restore), restorePendingIntent)
+            .setDeleteIntent(dismissPendingIntent)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
@@ -72,6 +77,10 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
         viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_SMS_LIST);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
+
+        Intent dismissIntent = new Intent(context, BlockedSmsReceiver.class);
+        dismissIntent.setAction(BroadcastConsts.ACTION_DISMISS_NOTIFICATION);
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, 0, dismissIntent, 0);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         SmsMessageData data = new SmsMessageData();
@@ -92,6 +101,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setStyle(inboxStyle)
             .setNumber(messages.getCount())
             .setContentIntent(viewPendingIntent)
+            .setDeleteIntent(dismissPendingIntent)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
@@ -103,6 +113,9 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     private void displayNotification(Context context, Intent intent) {
         PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
         if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
+            // Just mark the message as seen and return
+            Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+            BlockedSmsDbLoader.setSeenStatus(context, messageUri, true);
             return;
         }
 
@@ -183,6 +196,14 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         BlockedSmsDbLoader.deleteMessage(context, messageUri);
     }
 
+    private void onDismissNotification(Context context, Intent intent) {
+        // When the notification is dismissed, mark all messages as seen.
+        // Technically we should only mark messages in the notification as
+        // seen, but unless there is a race condition, the notification will
+        // always contain all unseen messages.
+        BlockedSmsDbLoader.markAllSeen(context);
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         switch (intent.getAction()) {
@@ -194,6 +215,9 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             break;
         case BroadcastConsts.ACTION_RESTORE_SMS:
             onRestoreSms(context, intent);
+            break;
+        case BroadcastConsts.ACTION_DISMISS_NOTIFICATION:
+            onDismissNotification(context, intent);
             break;
         }
     }

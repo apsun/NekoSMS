@@ -22,7 +22,7 @@ public final class InboxSmsDbLoader {
         values.put(Telephony.Sms.DATE, messageData.getTimeReceived());
         values.put(Telephony.Sms.DATE_SENT, messageData.getTimeSent());
         values.put(Telephony.Sms.READ, messageData.isRead());
-        values.put(Telephony.Sms.SEEN, 1);
+        values.put(Telephony.Sms.SEEN, messageData.isSeen());
 
         Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, values);
         long id = ContentUris.parseId(uri);

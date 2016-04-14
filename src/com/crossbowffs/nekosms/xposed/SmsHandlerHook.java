@@ -84,6 +84,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         message.setBody(body);
         message.setTimeSent(timeSent);
         message.setTimeReceived(timeReceived);
+        message.setRead(false);
+        message.setSeen(false);
         return message;
     }
 

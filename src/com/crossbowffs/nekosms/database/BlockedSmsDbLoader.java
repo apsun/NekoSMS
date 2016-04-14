@@ -19,17 +19,19 @@ public final class BlockedSmsDbLoader {
     private static final int COL_TIME_SENT = 3;
     private static final int COL_TIME_RECEIVED = 4;
     private static final int COL_READ = 5;
+    private static final int COL_SEEN = 6;
 
     private BlockedSmsDbLoader() { }
 
     public static int[] getColumns(Cursor cursor) {
-        int[] columns = new int[6];
+        int[] columns = new int[7];
         columns[COL_ID] = cursor.getColumnIndex(Blocked._ID);
         columns[COL_SENDER] = cursor.getColumnIndex(Blocked.SENDER);
         columns[COL_BODY] = cursor.getColumnIndex(Blocked.BODY);
         columns[COL_TIME_SENT] = cursor.getColumnIndex(Blocked.TIME_SENT);
         columns[COL_TIME_RECEIVED] = cursor.getColumnIndex(Blocked.TIME_RECEIVED);
         columns[COL_READ] = cursor.getColumnIndex(Blocked.READ);
+        columns[COL_SEEN] = cursor.getColumnIndex(Blocked.SEEN);
         return columns;
     }
 
@@ -48,6 +50,8 @@ public final class BlockedSmsDbLoader {
             data.setTimeReceived(cursor.getLong(columns[COL_TIME_RECEIVED]));
         if (columns[COL_READ] >= 0)
             data.setRead(cursor.getInt(columns[COL_READ]) != 0);
+        if (columns[COL_SEEN] >= 0)
+            data.setSeen(cursor.getInt(columns[COL_SEEN]) != 0);
         return data;
     }
 
@@ -63,12 +67,12 @@ public final class BlockedSmsDbLoader {
         };
     }
 
-    public static CursorWrapper<SmsMessageData> loadAllMessages(Context context, boolean unreadOnly) {
+    public static CursorWrapper<SmsMessageData> loadAllMessages(Context context, boolean unseenOnly) {
         ContentResolver contentResolver = context.getContentResolver();
         String selection = null;
         String[] selectionArgs = null;
-        if (unreadOnly) {
-            selection = Blocked.READ + "=?";
+        if (unseenOnly) {
+            selection = Blocked.SEEN + "=?";
             selectionArgs = new String[] {"0"};
         }
         Cursor cursor = contentResolver.query(
@@ -154,8 +158,29 @@ public final class BlockedSmsDbLoader {
 
     public static boolean setReadStatus(Context context, Uri messageUri, boolean read) {
         ContentResolver contentResolver = context.getContentResolver();
-        ContentValues values = new ContentValues(1);
+        ContentValues values = new ContentValues(2);
         values.put(Blocked.READ, read ? 1 : 0);
+        if (read) {
+            values.put(Blocked.SEEN, 1);
+        }
         return contentResolver.update(messageUri, values, null, null) >= 0;
+    }
+
+    public static boolean setSeenStatus(Context context, long messageId, boolean seen) {
+        return setSeenStatus(context, convertIdToUri(messageId), seen);
+    }
+
+    public static boolean setSeenStatus(Context context, Uri messageUri, boolean seen) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues values = new ContentValues(1);
+        values.put(Blocked.SEEN, seen ? 1 : 0);
+        return contentResolver.update(messageUri, values, null, null) >= 0;
+    }
+
+    public static void markAllSeen(Context context) {
+        ContentResolver contentResolver = context.getContentResolver();
+        ContentValues values = new ContentValues(1);
+        values.put(Blocked.SEEN, 1);
+        contentResolver.update(Blocked.CONTENT_URI, values, Blocked.SEEN + "=?", new String[] {"0"});
     }
 }

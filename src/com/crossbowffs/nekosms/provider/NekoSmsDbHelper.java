@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.crossbowffs.nekosms.BuildConfig;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
@@ -38,7 +39,8 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
             Blocked.BODY               + " TEXT NOT NULL," +
             Blocked.TIME_SENT          + " INTEGER NOT NULL," +
             Blocked.TIME_RECEIVED      + " INTEGER NOT NULL," +
-            Blocked.READ               + " INTEGER NOT NULL" +
+            Blocked.READ               + " INTEGER NOT NULL," +
+            Blocked.SEEN               + " INTEGER NOT NULL" +
         ");";
 
     public NekoSmsDbHelper(Context context) {
@@ -77,9 +79,12 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
         onCreate(db);
         if (oldVersion == 8) {
             for (SmsFilterData filter : filters) {
+                filter.setAction(SmsFilterAction.BLOCK);
                 db.insert(Filters.TABLE, null, filter.serialize());
             }
             for (SmsMessageData message : messages) {
+                message.setSeen(true);
+                message.setRead(true);
                 db.insert(Blocked.TABLE, null, message.serialize());
             }
         }

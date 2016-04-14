@@ -20,13 +20,15 @@ public final class NekoSmsContract {
         public static final String TIME_SENT          = "time_sent";
         public static final String TIME_RECEIVED      = "time_received";
         public static final String READ               = "read";
+        public static final String SEEN               = "seen";
         public static final String[] ALL              = {
             _ID,
             SENDER,
             BODY,
             TIME_SENT,
             TIME_RECEIVED,
-            READ
+            READ,
+            SEEN
         };
     }
 

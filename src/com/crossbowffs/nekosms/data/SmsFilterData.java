@@ -8,7 +8,7 @@ import java.util.regex.PatternSyntaxException;
 
 public class SmsFilterData {
     private long mId = -1;
-    private SmsFilterAction mAction = SmsFilterAction.BLOCK; // For compatibility
+    private SmsFilterAction mAction;
     private SmsFilterField mField;
     private SmsFilterMode mMode;
     private String mPattern;
@@ -23,7 +23,7 @@ public class SmsFilterData {
         values.put(NekoSmsContract.Filters.FIELD, getField().name());
         values.put(NekoSmsContract.Filters.MODE, getMode().name());
         values.put(NekoSmsContract.Filters.PATTERN, getPattern());
-        values.put(NekoSmsContract.Filters.CASE_SENSITIVE, isCaseSensitive() ? 1 : 0);
+        values.put(NekoSmsContract.Filters.CASE_SENSITIVE, isCaseSensitive());
         return values;
     }
 
