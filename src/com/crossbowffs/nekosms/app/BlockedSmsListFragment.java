@@ -82,9 +82,6 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case android.R.id.home:
-            finishTryTransition();
-            return true;
         case R.id.menu_item_create_test:
             createTestSms();
             return true;

@@ -73,10 +73,6 @@ public class BaseFragment extends Fragment {
         getMainActivity().scrollFabOut();
     }
 
-    public void finishTryTransition() {
-        getMainActivity().finishTryTransition();
-    }
-
     public void requestPermissions(int requestCode, String... permissions) {
         getMainActivity().requestPermissions(requestCode, permissions);
     }

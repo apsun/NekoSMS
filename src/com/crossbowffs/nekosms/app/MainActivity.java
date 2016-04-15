@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open_drawer, R.string.close_drawer);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -105,6 +104,86 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSectionFragment(EXTRA_SECTION_FILTER_LIST);
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_SECTION, mCurrentSection);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Workaround for a weird issue where the drawer state
+        // hasn't been restored in onPostCreate, leaving the arrow
+        // state out-of-sync if the drawer is open.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        mDrawerLayout.closeDrawer(mNavigationView);
+        switch (item.getItemId()) {
+        case R.id.main_drawer_filter_list:
+            setSectionFragment(EXTRA_SECTION_FILTER_LIST);
+            return true;
+        case R.id.main_drawer_blocked_sms_list:
+            setSectionFragment(EXTRA_SECTION_BLOCKED_SMS_LIST);
+            return true;
+        case R.id.main_drawer_settings:
+            setSectionFragment(EXTRA_SECTION_SETTINGS);
+            return true;
+        case R.id.main_drawer_about:
+            showAboutDialog();
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    @Override
+    public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        BaseFragment fragment = getContentFragment();
+        if (fragment != null) {
+            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
+            setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
+        } else {
+            BaseFragment fragment = getContentFragment();
+            if (fragment != null) {
+                fragment.onNewIntent(intent);
+            }
+        }
+    }
+
+    private BaseFragment getContentFragment() {
+        if (mFragment instanceof BaseFragment) {
+            return (BaseFragment)mFragment;
+        } else {
+            return null;
+        }
+    }
+
+    private void setFragment(Fragment fragment) {
+        mFragment = fragment;
+        getFragmentManager()
+            .beginTransaction()
+            .replace(R.id.main_content, fragment)
+            .commit();
+    }
+
     private void setSectionFragment(String key) {
         Fragment fragment;
         int navId;
@@ -129,24 +208,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setFragment(fragment);
         mNavigationView.setCheckedItem(navId);
         mCurrentSection = key;
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_SECTION, mCurrentSection);
-    }
-
-    @Override
-    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.syncState();
     }
 
     public void setFabVisible(boolean visible) {
@@ -196,30 +257,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private BaseFragment getContentFragment() {
-        if (mFragment instanceof BaseFragment) {
-            return (BaseFragment)mFragment;
-        } else {
-            return null;
-        }
-    }
-
-    private void setFragment(Fragment fragment) {
-        mFragment = fragment;
-        getFragmentManager()
-            .beginTransaction()
-            .replace(R.id.main_content, fragment)
-            .commit();
-    }
-
-    public void finishTryTransition() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            finishAfterTransition();
-        } else {
-            finish();
-        }
-    }
-
     public void requestPermissions(int requestCode, String... permissions) {
         int[] status = new int[permissions.length];
         for (int i = 0; i < permissions.length; ++i) {
@@ -232,28 +269,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             status[i] = permissionStatus;
         }
         onRequestPermissionsResult(requestCode, permissions, status);
-    }
-
-    @Override
-    public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        BaseFragment fragment = getContentFragment();
-        if (fragment != null) {
-            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        setIntent(intent);
-        if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
-        } else {
-            BaseFragment fragment = getContentFragment();
-            if (fragment != null) {
-                fragment.onNewIntent(intent);
-            }
-        }
     }
 
     private void startBrowserActivity(String url) {
@@ -322,26 +337,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         TextView textView = (TextView)dialog.findViewById(android.R.id.message);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        mDrawerLayout.closeDrawer(mNavigationView);
-        switch (item.getItemId()) {
-        case R.id.main_drawer_filter_list:
-            setSectionFragment(EXTRA_SECTION_FILTER_LIST);
-            return true;
-        case R.id.main_drawer_blocked_sms_list:
-            setSectionFragment(EXTRA_SECTION_BLOCKED_SMS_LIST);
-            return true;
-        case R.id.main_drawer_settings:
-            setSectionFragment(EXTRA_SECTION_SETTINGS);
-            return true;
-        case R.id.main_drawer_about:
-            showAboutDialog();
-            return true;
-        default:
-            return false;
-        }
     }
 }
