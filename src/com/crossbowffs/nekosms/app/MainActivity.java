@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -34,6 +35,10 @@ import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.WeakHashMap;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String ACTION_OPEN_SECTION = "action_open_section";
     public static final String EXTRA_SECTION = "section";
@@ -53,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar mToolbar;
     private FloatingActionButton mFloatingActionButton;
     private ActionBarDrawerToggle mDrawerToggle;
+    private Set<Snackbar> mSnackbars;
     private Fragment mFragment;
     private String mCurrentSection;
 
@@ -75,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+
+        mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
 
         Intent intent = getIntent();
         if (intent != null && ACTION_OPEN_SECTION.equals(intent.getAction())) {
@@ -117,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             throw new IllegalArgumentException("Invalid section: " + key);
         }
 
+        dismissSnackbar();
         setFragment(fragment);
         mNavigationView.setCheckedItem(navId);
         mCurrentSection = key;
@@ -173,12 +182,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mFloatingActionButton.setImageResource(iconId);
     }
 
-    public Toolbar getToolbar() {
-        return mToolbar;
+    public Snackbar makeSnackbar(int textId) {
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, textId, Snackbar.LENGTH_LONG);
+        mSnackbars.add(snackbar);
+        return snackbar;
     }
 
-    public CoordinatorLayout getCoordinatorLayout() {
-        return mCoordinatorLayout;
+    public void dismissSnackbar() {
+        // Items will be automatically removed from the cache
+        // once the references are GC'd
+        for (Snackbar snackbar : mSnackbars) {
+            snackbar.dismiss();
+        }
     }
 
     private BaseFragment getContentFragment() {

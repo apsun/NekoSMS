@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Toast;
@@ -26,7 +25,7 @@ public class BaseFragment extends Fragment {
     }
 
     public Snackbar makeSnackbar(int textId) {
-        return Snackbar.make(getCoordinatorLayout(), textId, Snackbar.LENGTH_LONG);
+        return getMainActivity().makeSnackbar(textId);
     }
 
     public Snackbar makeSnackbar(int textId, int actionTextId, View.OnClickListener listener) {
@@ -38,19 +37,20 @@ public class BaseFragment extends Fragment {
     }
 
     public Toast makeToast(int textId) {
-        return Toast.makeText(getContext(), textId, Toast.LENGTH_SHORT);
+        Context context = getContext();
+        if (context == null) return null;
+        return Toast.makeText(context, textId, Toast.LENGTH_SHORT);
     }
 
     public void showToast(int textId) {
-        makeToast(textId).show();
+        Toast toast = makeToast(textId);
+        if (toast != null) {
+            makeToast(textId).show();
+        }
     }
 
     public Intent getIntent() {
         return getMainActivity().getIntent();
-    }
-
-    public CoordinatorLayout getCoordinatorLayout() {
-        return getMainActivity().getCoordinatorLayout();
     }
 
     public void setTitle(int titleId) {

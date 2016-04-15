@@ -1,10 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.LoaderManager;
-import android.content.CursorLoader;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.Loader;
+import android.content.*;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -118,12 +115,16 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     }
 
     private void clearAllMessages() {
-        BlockedSmsDbLoader.deleteAllMessages(getContext());
+        Context context = getContext();
+        if (context == null) return;
+        BlockedSmsDbLoader.deleteAllMessages(context);
         showToast(R.string.cleared_blocked_messages);
     }
 
     private void showConfirmClearDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+        Context context = getContext();
+        if (context == null) return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.confirm_clear_messages_title)
             .setMessage(R.string.confirm_clear_messages_message)
@@ -191,13 +192,18 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     }
 
     private void startXposedActivity(String section) {
-        if (!XposedUtils.startXposedActivity(getContext(), section)) {
+        Context context = getContext();
+        if (context == null) return;
+        if (!XposedUtils.startXposedActivity(context, section)) {
             showToast(R.string.xposed_not_installed);
         }
     }
 
     private void restoreSms(long smsId) {
-        if (!AppOpsUtils.noteOp(getContext(), AppOpsUtils.OP_WRITE_SMS)) {
+        Context context = getContext();
+        if (context == null) return;
+
+        if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
             Xlog.e(TAG, "Do not have permissions to write SMS");
             showSnackbar(R.string.must_enable_xposed_module, R.string.enable, new View.OnClickListener() {
                 @Override
@@ -208,7 +214,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
             return;
         }
 
-        final SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(getContext(), smsId);
+        final SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
             showToast(R.string.load_blocked_message_failed);
@@ -217,7 +223,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
 
         final Uri inboxSmsUri;
         try {
-            inboxSmsUri = InboxSmsDbLoader.writeMessage(getContext(), messageData);
+            inboxSmsUri = InboxSmsDbLoader.writeMessage(context, messageData);
         } catch (DatabaseException e) {
             Xlog.e(TAG, "Failed to restore message: could not write to SMS inbox");
             showToast(R.string.message_restore_failed);
@@ -230,14 +236,18 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         showSnackbar(R.string.message_restored, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InboxSmsDbLoader.deleteMessage(getContext(), inboxSmsUri);
-                BlockedSmsDbLoader.writeMessage(getContext(), messageData);
+                Context context2 = getContext();
+                if (context2 == null) return;
+                InboxSmsDbLoader.deleteMessage(context2, inboxSmsUri);
+                BlockedSmsDbLoader.writeMessage(context2, messageData);
             }
         });
     }
 
     private void deleteSms(long smsId) {
-        final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(getContext(), smsId);
+        Context context = getContext();
+        if (context == null) return;
+        final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(context, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to delete message: could not load data");
             showToast(R.string.load_blocked_message_failed);
@@ -247,12 +257,17 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         showSnackbar(R.string.message_deleted, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BlockedSmsDbLoader.writeMessage(getContext(), messageData);
+                Context context2 = getContext();
+                if (context2 == null) return;
+                BlockedSmsDbLoader.writeMessage(context2, messageData);
             }
         });
     }
 
     private void createTestSms() {
+        Context context = getContext();
+        if (context == null) return;
+
         SmsMessageData message = new SmsMessageData();
         message.setSender(getString(R.string.test_message_sender));
         message.setBody(getString(R.string.test_message_body));
@@ -261,9 +276,9 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         message.setRead(false);
         message.setSeen(false);
 
-        Uri uri = BlockedSmsDbLoader.writeMessage(getContext(), message);
+        Uri uri = BlockedSmsDbLoader.writeMessage(context, message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, uri);
-        getContext().sendBroadcast(intent);
+        context.sendBroadcast(intent);
     }
 }
