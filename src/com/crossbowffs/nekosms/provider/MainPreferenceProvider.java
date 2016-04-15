@@ -1,9 +1,9 @@
 package com.crossbowffs.nekosms.provider;
 
-import android.os.Binder;
 import com.crossbowffs.nekosms.preferences.PrefKeys;
+import com.crossbowffs.nekosms.remotepreferences.RemotePreferenceProvider;
 
-public class MainPreferenceProvider extends PreferenceProviderBase {
+public class MainPreferenceProvider extends RemotePreferenceProvider {
     public MainPreferenceProvider() {
         super(PrefKeys.REMOTE_PREFS_AUTHORITY, new String[] {PrefKeys.FILE_MAIN});
     }
@@ -21,9 +21,7 @@ public class MainPreferenceProvider extends PreferenceProviderBase {
         }
 
         // Only allow access from telephony process
-        int callerUid = Binder.getCallingUid();
-        String callerName = getContext().getPackageManager().getNameForUid(callerUid);
-        String uidName = callerName.split(":")[0];
-        return "android.uid.phone".equals(uidName);
+        String callerPackage = getCallingPackage();
+        return "com.android.phone".equals(callerPackage);
     }
 }
