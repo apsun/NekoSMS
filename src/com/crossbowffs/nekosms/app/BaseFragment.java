@@ -37,16 +37,11 @@ public class BaseFragment extends Fragment {
     }
 
     public Toast makeToast(int textId) {
-        Context context = getContext();
-        if (context == null) return null;
-        return Toast.makeText(context, textId, Toast.LENGTH_SHORT);
+        return Toast.makeText(getContext(), textId, Toast.LENGTH_SHORT);
     }
 
     public void showToast(int textId) {
-        Toast toast = makeToast(textId);
-        if (toast != null) {
-            makeToast(textId).show();
-        }
+        makeToast(textId).show();
     }
 
     public Intent getIntent() {

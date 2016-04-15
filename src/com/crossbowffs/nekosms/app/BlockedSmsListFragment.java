@@ -114,6 +114,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     private void clearAllMessages() {
         Context context = getContext();
         if (context == null) return;
+
         BlockedSmsDbLoader.deleteAllMessages(context);
         showToast(R.string.cleared_blocked_messages);
     }
@@ -121,6 +122,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     private void showConfirmClearDialog() {
         Context context = getContext();
         if (context == null) return;
+
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.confirm_clear_messages_title)
@@ -138,6 +140,9 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     }
 
     private void showMessageDetailsDialog(Intent intent) {
+        Context context = getContext();
+        if (context == null) return;
+
         Uri uri = intent.getData();
         if (uri == null) {
             return;
@@ -146,7 +151,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
             intent.setData(null);
         }
 
-        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(getContext(), uri);
+        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, uri);
         if (messageData != null) {
             showMessageDetailsDialog(messageData);
         } else {
@@ -156,17 +161,20 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     }
 
     public void showMessageDetailsDialog(final SmsMessageData messageData) {
+        Context context = getContext();
+        if (context == null) return;
+
         final long smsId = messageData.getId();
         String sender = messageData.getSender();
         String body = messageData.getBody();
         long timeSent = messageData.getTimeSent();
         String escapedBody = Html.escapeHtml(body).replace("&#10;", "<br>");
         String timeSentString = DateUtils.getRelativeDateTimeString(
-            getContext(), timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
+            context, timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
         Spanned html = Html.fromHtml(String.format(
             mMessageDetailsFormatString, sender, timeSentString, escapedBody));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
             .setMessage(html)
             .setNeutralButton(R.string.close, null)
             .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
@@ -185,7 +193,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        BlockedSmsDbLoader.setReadStatus(getContext(), messageData.getId(), true);
+        BlockedSmsDbLoader.setReadStatus(context, messageData.getId(), true);
     }
 
     private void startXposedActivity(String section) {
@@ -228,7 +236,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         }
 
         // Only delete the message after we have successfully written it to the SMS inbox
-        BlockedSmsDbLoader.deleteMessage(getContext(), smsId);
+        BlockedSmsDbLoader.deleteMessage(context, smsId);
 
         showSnackbar(R.string.message_restored, R.string.undo, new View.OnClickListener() {
             @Override
