@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Toast;
+import com.crossbowffs.nekosms.utils.PermissionUtils;
 
 public class BaseFragment extends Fragment {
     public MainActivity getMainActivity() {
@@ -68,8 +69,16 @@ public class BaseFragment extends Fragment {
         getMainActivity().scrollFabOut();
     }
 
-    public void requestPermissions(int requestCode, String... permissions) {
-        getMainActivity().requestPermissions(requestCode, permissions);
+    public void requestPermissionsCompat(String[] permissions, int requestCode) {
+        // Unlike requestPermissions(), this will not display the request dialog
+        // on Android 23+ if the permissions have already been granted.
+        int[] grantResults = new int[permissions.length];
+        boolean hasPermissions = PermissionUtils.checkPermissions(getContext(), permissions, grantResults);
+        if (!hasPermissions && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(permissions, requestCode);
+        } else {
+            onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override

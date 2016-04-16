@@ -166,9 +166,9 @@ public class FilterListFragment extends BaseFragment implements LoaderManager.Lo
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
-                        requestPermissions(IMPORT_BACKUP_REQUEST, Manifest.permission.READ_EXTERNAL_STORAGE);
+                        requestPermissionsCompat(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, IMPORT_BACKUP_REQUEST);
                     } else if (which == 1) {
-                        requestPermissions(EXPORT_BACKUP_REQUEST, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                        requestPermissionsCompat(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXPORT_BACKUP_REQUEST);
                     }
                 }
             });

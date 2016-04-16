@@ -3,18 +3,14 @@ package com.crossbowffs.nekosms.app;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -57,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private FloatingActionButton mFloatingActionButton;
     private ActionBarDrawerToggle mDrawerToggle;
     private Set<Snackbar> mSnackbars;
-    private Fragment mFragment;
-    private String mCurrentSection;
+    private Fragment mContentFragment;
+    private String mContentSection;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -85,13 +81,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Intent intent = getIntent();
         if (intent != null && ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
+            setContentSection(intent.getStringExtra(EXTRA_SECTION));
             return;
         }
         if (savedInstanceState != null) {
             String sectionKey = savedInstanceState.getString(EXTRA_SECTION);
             if (sectionKey != null) {
-                setSectionFragment(sectionKey);
+                setContentSection(sectionKey);
                 return;
             }
         } else {
@@ -101,13 +97,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showModuleUpdatedDialog();
             }
         }
-        setSectionFragment(EXTRA_SECTION_FILTER_LIST);
+        setContentSection(EXTRA_SECTION_FILTER_LIST);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_SECTION, mCurrentSection);
+        outState.putString(EXTRA_SECTION, mContentSection);
     }
 
     @Override
@@ -130,13 +126,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.closeDrawer(mNavigationView);
         switch (item.getItemId()) {
         case R.id.main_drawer_filter_list:
-            setSectionFragment(EXTRA_SECTION_FILTER_LIST);
+            setContentSection(EXTRA_SECTION_FILTER_LIST);
             return true;
         case R.id.main_drawer_blocked_sms_list:
-            setSectionFragment(EXTRA_SECTION_BLOCKED_SMS_LIST);
+            setContentSection(EXTRA_SECTION_BLOCKED_SMS_LIST);
             return true;
         case R.id.main_drawer_settings:
-            setSectionFragment(EXTRA_SECTION_SETTINGS);
+            setContentSection(EXTRA_SECTION_SETTINGS);
             return true;
         case R.id.main_drawer_about:
             showAboutDialog();
@@ -147,44 +143,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public final void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        BaseFragment fragment = getContentFragment();
-        if (fragment != null) {
-            fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
         if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            setSectionFragment(intent.getStringExtra(EXTRA_SECTION));
+            setContentSection(intent.getStringExtra(EXTRA_SECTION));
         } else {
-            BaseFragment fragment = getContentFragment();
-            if (fragment != null) {
-                fragment.onNewIntent(intent);
+            if (mContentFragment instanceof BaseFragment) {
+                ((BaseFragment)mContentFragment).onNewIntent(intent);
             }
         }
     }
 
-    private BaseFragment getContentFragment() {
-        if (mFragment instanceof BaseFragment) {
-            return (BaseFragment)mFragment;
-        } else {
-            return null;
-        }
-    }
-
-    private void setFragment(Fragment fragment) {
-        mFragment = fragment;
-        getFragmentManager()
-            .beginTransaction()
-            .replace(R.id.main_content, fragment)
-            .commit();
-    }
-
-    private void setSectionFragment(String key) {
+    private void setContentSection(String key) {
         Fragment fragment;
         int navId;
         switch (key) {
@@ -205,9 +176,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         dismissSnackbar();
-        setFragment(fragment);
+        getFragmentManager()
+            .beginTransaction()
+            .replace(R.id.main_content, fragment)
+            .commit();
+        mContentFragment = fragment;
+        mContentSection = key;
         mNavigationView.setCheckedItem(navId);
-        mCurrentSection = key;
     }
 
     public void setFabVisible(boolean visible) {
@@ -255,20 +230,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (Snackbar snackbar : mSnackbars) {
             snackbar.dismiss();
         }
-    }
-
-    public void requestPermissions(int requestCode, String... permissions) {
-        int[] status = new int[permissions.length];
-        for (int i = 0; i < permissions.length; ++i) {
-            String permission = permissions[i];
-            int permissionStatus = ContextCompat.checkSelfPermission(this, permission);
-            if (permissionStatus != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, permissions, requestCode);
-                return;
-            }
-            status[i] = permissionStatus;
-        }
-        onRequestPermissionsResult(requestCode, permissions, status);
     }
 
     private void startBrowserActivity(String url) {
