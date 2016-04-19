@@ -15,5 +15,5 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/filter_list_empty_text"/>
+        android:text="@string/user_filters_empty_text"/>
 </FrameLayout>

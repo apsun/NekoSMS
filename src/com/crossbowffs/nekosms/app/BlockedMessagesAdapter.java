@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
+import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 
-/* package */ class BlockedSmsListAdapter extends RecyclerCursorAdapter<BlockedSmsListAdapter.BlockedSmsItemHolder> {
+/* package */ class BlockedMessagesAdapter extends RecyclerCursorAdapter<BlockedMessagesAdapter.BlockedSmsItemHolder> {
     public class BlockedSmsItemHolder extends RecyclerView.ViewHolder {
         public final TextView mSenderTextView;
         public final TextView mTimeSentTextView;
@@ -28,10 +28,10 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
         }
     }
 
-    private static final String TAG = BlockedSmsListAdapter.class.getSimpleName();
-    private final BlockedSmsListFragment mFragment;
+    private static final String TAG = BlockedMessagesAdapter.class.getSimpleName();
+    private final BlockedMessagesFragment mFragment;
 
-    public BlockedSmsListAdapter(BlockedSmsListFragment fragment) {
+    public BlockedMessagesAdapter(BlockedMessagesFragment fragment) {
         mFragment = fragment;
     }
 
@@ -44,12 +44,12 @@ import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
 
     @Override
     protected int[] onBindColumns(Cursor cursor) {
-        return BlockedSmsDbLoader.getColumns(cursor);
+        return BlockedSmsLoader.get().getColumns(cursor);
     }
 
     @Override
     public void onBindViewHolder(BlockedSmsItemHolder holder, Cursor cursor) {
-        final SmsMessageData messageData = BlockedSmsDbLoader.getMessageData(cursor, getColumns(), holder.mMessageData);
+        final SmsMessageData messageData = BlockedSmsLoader.get().getData(cursor, getColumns(), holder.mMessageData);
         holder.mMessageData = messageData;
 
         String sender = messageData.getSender();

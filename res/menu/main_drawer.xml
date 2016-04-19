@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/main_drawer_filter_list"
+        android:id="@+id/main_drawer_user_filters"
         android:icon="@drawable/ic_code_white_24dp"
         android:checkable="true"
-        android:title="@string/filter_list"/>
+        android:title="@string/user_filters"/>
     <item
-        android:id="@+id/main_drawer_blocked_sms_list"
+        android:id="@+id/main_drawer_filter_lists"
+        android:icon="@drawable/ic_public_white_24dp"
+        android:checkable="true"
+        android:title="@string/filter_lists"/>
+    <item
+        android:id="@+id/main_drawer_blocked_messages"
         android:icon="@drawable/ic_message_blocked_white_24dp"
         android:checkable="true"
         android:title="@string/blocked_messages"/>

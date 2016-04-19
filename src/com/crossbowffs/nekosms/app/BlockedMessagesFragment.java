@@ -13,24 +13,23 @@ import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.view.*;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.BroadcastConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
-import com.crossbowffs.nekosms.database.DatabaseException;
-import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
-import com.crossbowffs.nekosms.preferences.PrefKeys;
+import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
+import com.crossbowffs.nekosms.loader.DatabaseException;
+import com.crossbowffs.nekosms.loader.InboxSmsLoader;
+import com.crossbowffs.nekosms.preferences.PrefConsts;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-public class BlockedSmsListFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = BlockedSmsListFragment.class.getSimpleName();
+public class BlockedMessagesFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String TAG = BlockedMessagesFragment.class.getSimpleName();
 
     private ListRecyclerView mBlockedSmsListView;
     private View mEmptyView;
-    private BlockedSmsListAdapter mAdapter;
+    private BlockedMessagesAdapter mAdapter;
     private String mMessageDetailsFormatString;
 
     @Override
@@ -50,7 +49,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mAdapter = new BlockedSmsListAdapter(this);
+        mAdapter = new BlockedMessagesAdapter(this);
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
         mBlockedSmsListView.setAdapter(mAdapter);
@@ -61,7 +60,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         setFabCallback(null);
         setTitle(R.string.blocked_messages);
         showMessageDetailsDialog(getIntent());
-        BlockedSmsDbLoader.markAllSeen(getContext());
+        BlockedSmsLoader.get().markAllSeen(getContext());
     }
 
     @Override
@@ -71,7 +70,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        PrefManager preferences = PrefManager.fromContext(getContext(), PrefKeys.FILE_MAIN);
+        PrefManager preferences = PrefManager.fromContext(getContext(), PrefConsts.FILE_MAIN);
         if (preferences.getBoolean(PrefManager.PREF_DEBUG_MODE)) {
             inflater.inflate(R.menu.options_blockedsms_list_debug, menu);
         } else {
@@ -96,9 +95,9 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getContext(),
-            NekoSmsContract.Blocked.CONTENT_URI,
-            NekoSmsContract.Blocked.ALL, null, null,
-            NekoSmsContract.Blocked.TIME_SENT + " DESC");
+            NekoSmsContract.BlockedMessages.CONTENT_URI,
+            NekoSmsContract.BlockedMessages.ALL, null, null,
+            NekoSmsContract.BlockedMessages.TIME_SENT + " DESC");
     }
 
     @Override
@@ -115,7 +114,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         Context context = getContext();
         if (context == null) return;
 
-        BlockedSmsDbLoader.deleteAllMessages(context);
+        BlockedSmsLoader.get().deleteAll(context);
         showToast(R.string.cleared_blocked_messages);
     }
 
@@ -151,7 +150,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
             intent.setData(null);
         }
 
-        SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, uri);
+        SmsMessageData messageData = BlockedSmsLoader.get().query(context, uri);
         if (messageData != null) {
             showMessageDetailsDialog(messageData);
         } else {
@@ -193,7 +192,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        BlockedSmsDbLoader.setReadStatus(context, messageData.getId(), true);
+        BlockedSmsLoader.get().setReadStatus(context, messageData.getId(), true);
     }
 
     private void startXposedActivity(String section) {
@@ -219,7 +218,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
             return;
         }
 
-        final SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, smsId);
+        final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
             showToast(R.string.load_blocked_message_failed);
@@ -228,7 +227,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
 
         final Uri inboxSmsUri;
         try {
-            inboxSmsUri = InboxSmsDbLoader.writeMessage(context, messageData);
+            inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (DatabaseException e) {
             Xlog.e(TAG, "Failed to restore message: could not write to SMS inbox");
             showToast(R.string.message_restore_failed);
@@ -236,15 +235,15 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         }
 
         // Only delete the message after we have successfully written it to the SMS inbox
-        BlockedSmsDbLoader.deleteMessage(context, smsId);
+        BlockedSmsLoader.get().delete(context, smsId);
 
         showSnackbar(R.string.message_restored, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Context context2 = getContext();
                 if (context2 == null) return;
-                InboxSmsDbLoader.deleteMessage(context2, inboxSmsUri);
-                BlockedSmsDbLoader.writeMessage(context2, messageData);
+                InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
+                BlockedSmsLoader.get().insert(context2, messageData);
             }
         });
     }
@@ -252,7 +251,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
     private void deleteSms(long smsId) {
         Context context = getContext();
         if (context == null) return;
-        final SmsMessageData messageData = BlockedSmsDbLoader.loadAndDeleteMessage(context, smsId);
+        final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);
         if (messageData == null) {
             Xlog.e(TAG, "Failed to delete message: could not load data");
             showToast(R.string.load_blocked_message_failed);
@@ -264,7 +263,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
             public void onClick(View v) {
                 Context context2 = getContext();
                 if (context2 == null) return;
-                BlockedSmsDbLoader.writeMessage(context2, messageData);
+                BlockedSmsLoader.get().insert(context2, messageData);
             }
         });
     }
@@ -281,7 +280,7 @@ public class BlockedSmsListFragment extends BaseFragment implements LoaderManage
         message.setRead(false);
         message.setSeen(false);
 
-        Uri uri = BlockedSmsDbLoader.writeMessage(context, message);
+        Uri uri = BlockedSmsLoader.get().insert(context, message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, uri);
         context.sendBroadcast(intent);
