@@ -28,7 +28,7 @@ public class ListRecyclerView extends RecyclerView {
             for (int i = 0; i < childCount; i++) {
                 View child = parent.getChildAt(i);
                 RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)child.getLayoutParams();
-                int top = child.getBottom() + params.bottomMargin;
+                int top = child.getBottom() + params.bottomMargin + (int)child.getTranslationY();
                 int bottom = top + mDivider.getIntrinsicHeight();
                 mDivider.setBounds(left, top, right, bottom);
                 mDivider.draw(c);
