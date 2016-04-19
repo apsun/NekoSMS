@@ -6,12 +6,12 @@ import android.preference.PreferenceManager;
 
 public class PrefManager {
     private static final String DEFAULT_RINGTONE_URI = "content://settings/system/notification_sound";
-    public static final PrefItem<Boolean> PREF_ENABLE = new PrefItem<>(PrefKeys.KEY_ENABLE, true);
-    public static final PrefItem<Boolean> PREF_DEBUG_MODE = new PrefItem<>(PrefKeys.KEY_DEBUG_MODE, false);
-    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_ENABLE = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_ENABLE, false);
-    public static final PrefItem<String> PREF_NOTIFICATIONS_RINGTONE = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_RINGTONE, DEFAULT_RINGTONE_URI);
-    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_VIBRATE = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_VIBRATE, true);
-    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_LIGHTS = new PrefItem<>(PrefKeys.KEY_NOTIFICATIONS_LIGHTS, true);
+    public static final PrefItem<Boolean> PREF_ENABLE = new PrefItem<>(PrefConsts.KEY_ENABLE, true);
+    public static final PrefItem<Boolean> PREF_DEBUG_MODE = new PrefItem<>(PrefConsts.KEY_DEBUG_MODE, false);
+    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_ENABLE = new PrefItem<>(PrefConsts.KEY_NOTIFICATIONS_ENABLE, false);
+    public static final PrefItem<String> PREF_NOTIFICATIONS_RINGTONE = new PrefItem<>(PrefConsts.KEY_NOTIFICATIONS_RINGTONE, DEFAULT_RINGTONE_URI);
+    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_VIBRATE = new PrefItem<>(PrefConsts.KEY_NOTIFICATIONS_VIBRATE, true);
+    public static final PrefItem<Boolean> PREF_NOTIFICATIONS_LIGHTS = new PrefItem<>(PrefConsts.KEY_NOTIFICATIONS_LIGHTS, true);
 
     public static class Editor {
         private final SharedPreferences.Editor mEditor;

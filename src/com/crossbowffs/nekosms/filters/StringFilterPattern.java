@@ -1,11 +1,11 @@
 package com.crossbowffs.nekosms.filters;
 
-import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 
-/* package */ class StringSmsFilter extends SmsFilter {
+/* package */ class StringFilterPattern extends SmsFilterPattern {
     private final String mNormalizedPattern;
 
-    public StringSmsFilter(SmsFilterData data) {
+    public StringFilterPattern(SmsFilterPatternData data) {
         super(data);
         if (!isCaseSensitive()) {
             mNormalizedPattern = getPattern().toLowerCase();
@@ -15,7 +15,7 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
     }
 
     @Override
-    public boolean matchImpl(String sender, String body) {
+    public boolean match(String sender, String body) {
         String testString;
         switch (getField()) {
         case SENDER:

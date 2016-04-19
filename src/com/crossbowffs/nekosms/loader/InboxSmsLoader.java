@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.database;
+package com.crossbowffs.nekosms.loader;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -9,13 +9,12 @@ import android.provider.Telephony;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-public final class InboxSmsDbLoader {
-    private static final String TAG = InboxSmsDbLoader.class.getSimpleName();
+public final class InboxSmsLoader {
+    private static final String TAG = InboxSmsLoader.class.getSimpleName();
 
-    private InboxSmsDbLoader() { }
+    private InboxSmsLoader() { }
 
-    public static Uri writeMessage(Context context, SmsMessageData messageData) {
-        ContentResolver contentResolver = context.getContentResolver();
+    private static ContentValues serializeMessage(SmsMessageData messageData) {
         ContentValues values = new ContentValues(6);
         values.put(Telephony.Sms.ADDRESS, messageData.getSender());
         values.put(Telephony.Sms.BODY, messageData.getBody());
@@ -23,11 +22,15 @@ public final class InboxSmsDbLoader {
         values.put(Telephony.Sms.DATE_SENT, messageData.getTimeSent());
         values.put(Telephony.Sms.READ, messageData.isRead());
         values.put(Telephony.Sms.SEEN, messageData.isSeen());
+        return values;
+    }
 
-        Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, values);
+    public static Uri writeMessage(Context context, SmsMessageData messageData) {
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, serializeMessage(messageData));
         long id = ContentUris.parseId(uri);
 
-        // An ID of 0 when writing to the SMS inbox could mean we don't have the
+        // An NAMESPACE of 0 when writing to the SMS inbox could mean we don't have the
         // OP_WRITE_SMS permission. See ContentProvider#rejectInsert(Uri, ContentValues).
         // Another explanation would be that this is actually the first message written.
         // Because we check for permissions before calling this method, we can assume

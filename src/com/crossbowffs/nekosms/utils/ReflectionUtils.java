@@ -1,10 +1,40 @@
 package com.crossbowffs.nekosms.utils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public final class ReflectionUtils {
     private ReflectionUtils() { }
+
+    public static Field getDeclaredField(Class<?> cls, String fieldName) {
+        Field field;
+        try {
+            field = cls.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            throw new AssertionError(e);
+        }
+        field.setAccessible(true);
+        return field;
+    }
+
+    public static Object getFieldValue(Field field, Object object) {
+        try {
+            return field.get(object);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Object getInstanceFieldValue(Object object, String fieldName) {
+        Field field = getDeclaredField(object.getClass(), fieldName);
+        return getFieldValue(field, object);
+    }
+
+    public static Object getStaticFieldValue(Class<?> cls, String fieldName) {
+        Field field = getDeclaredField(cls, fieldName);
+        return getFieldValue(field, null);
+    }
 
     public static Method getDeclaredMethod(Class<?> cls, String methodName, Class<?>... paramTypes) {
         Method method;

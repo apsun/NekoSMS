@@ -4,7 +4,6 @@
     package="com.crossbowffs.nekosms">
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.WRITE_SMS"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:label="@string/app_name"
@@ -25,15 +24,9 @@
             android:name=".app.FilterEditorActivity"
             android:label="@string/filter_editor">
         </activity>
+
         <provider
-            android:name=".provider.NekoSmsProvider"
-            android:label="NekoSmsProvider"
-            android:authorities="${applicationId}.provider"
-            android:readPermission="android.permission.READ_SMS"
-            android:writePermission="android.permission.WRITE_SMS"
-            android:exported="true"/>
-        <provider
-            android:name=".provider.MainPreferenceProvider"
+            android:name=".provider.NekoSmsPreferenceProvider"
             android:label="MainPreferenceProvider"
             android:authorities="${applicationId}.preferences"
             android:exported="true"/>

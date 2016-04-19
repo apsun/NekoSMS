@@ -1,11 +1,11 @@
 package com.crossbowffs.nekosms.provider;
 
-import com.crossbowffs.nekosms.preferences.PrefKeys;
+import com.crossbowffs.nekosms.preferences.PrefConsts;
 import com.crossbowffs.nekosms.remotepreferences.RemotePreferenceProvider;
 
-public class MainPreferenceProvider extends RemotePreferenceProvider {
-    public MainPreferenceProvider() {
-        super(PrefKeys.REMOTE_PREFS_AUTHORITY, new String[] {PrefKeys.FILE_MAIN});
+public class NekoSmsPreferenceProvider extends RemotePreferenceProvider {
+    public NekoSmsPreferenceProvider() {
+        super(PrefConsts.REMOTE_PREFS_AUTHORITY, new String[] {PrefConsts.FILE_MAIN});
     }
 
     @Override
@@ -16,7 +16,7 @@ public class MainPreferenceProvider extends RemotePreferenceProvider {
         }
 
         // Only allow access to enable preference
-        if (!PrefKeys.KEY_ENABLE.equals(prefKey)) {
+        if (!PrefConsts.KEY_ENABLE.equals(prefKey)) {
             return false;
         }
 

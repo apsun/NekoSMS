@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.database;
+package com.crossbowffs.nekosms.loader;
 
 import android.database.Cursor;
 

@@ -5,42 +5,61 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
-import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.List;
 
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.Blocked;
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
+import static com.crossbowffs.nekosms.provider.NekoSmsContract.*;
 
 /* package */ class NekoSmsDbHelper extends SQLiteOpenHelper {
     private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "nekosms.db";
     private static final int DATABASE_VERSION = BuildConfig.DATABASE_VERSION;
 
-    private static final String CREATE_FILTERS_TABLE =
-        "CREATE TABLE " + Filters.TABLE + "(" +
-            Filters._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            Filters.ACTION             + " TEXT NOT NULL," +
-            Filters.FIELD              + " TEXT NOT NULL," +
-            Filters.MODE               + " TEXT NOT NULL," +
-            Filters.PATTERN            + " TEXT NOT NULL," +
-            Filters.CASE_SENSITIVE     + " INTEGER NOT NULL" +
+    private static final String CREATE_BLOCKED_MESSAGES_TABLE =
+        "CREATE TABLE " + BlockedMessages.TABLE + "(" +
+            BlockedMessages._ID                 + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            BlockedMessages.SENDER              + " TEXT NOT NULL," +
+            BlockedMessages.BODY                + " TEXT NOT NULL," +
+            BlockedMessages.TIME_SENT           + " INTEGER NOT NULL," +
+            BlockedMessages.TIME_RECEIVED       + " INTEGER NOT NULL," +
+            BlockedMessages.READ                + " INTEGER NOT NULL," +
+            BlockedMessages.SEEN                + " INTEGER NOT NULL" +
         ");";
 
-    private static final String CREATE_BLOCKED_TABLE =
-        "CREATE TABLE " + Blocked.TABLE + "(" +
-            Blocked._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            Blocked.SENDER             + " TEXT NOT NULL," +
-            Blocked.BODY               + " TEXT NOT NULL," +
-            Blocked.TIME_SENT          + " INTEGER NOT NULL," +
-            Blocked.TIME_RECEIVED      + " INTEGER NOT NULL," +
-            Blocked.READ               + " INTEGER NOT NULL," +
-            Blocked.SEEN               + " INTEGER NOT NULL" +
+    private static final String CREATE_USER_RULES_TABLE =
+        "CREATE TABLE " + UserRules.TABLE + "(" +
+            UserRules._ID                      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            UserRules.ACTION                   + " INTEGER NOT NULL, " +
+            UserRules.SENDER_MODE              + " TEXT, " +
+            UserRules.SENDER_PATTERN           + " TEXT, " +
+            UserRules.SENDER_CASE_SENSITIVE    + " INTEGER, " +
+            UserRules.BODY_MODE                + " TEXT, " +
+            UserRules.BODY_PATTERN             + " TEXT, " +
+            UserRules.BODY_CASE_SENSITIVE      + " INTEGER" +
+        ");";
+
+    private static final String CREATE_FILTER_LISTS_TABLE =
+        "CREATE TABLE " + FilterLists.TABLE + "(" +
+            FilterLists._ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            FilterLists.NAMESPACE              + " TEXT NOT NULL, " +
+            FilterLists.NAME                   + " TEXT NOT NULL, " +
+            FilterLists.VERSION                + " INTEGER NOT NULL, " +
+            FilterLists.AUTHOR                 + " TEXT, " +
+            FilterLists.URL                    + " TEXT, " +
+            FilterLists.UPDATED                + " INTEGER" +
+        ");";
+
+    public static final String CREATE_FILTER_LIST_RULES_TABLE =
+        "CREATE TABLE " + FilterListRules.TABLE + "(" +
+            FilterListRules._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            FilterListRules.LIST_ID            + " INTEGER NOT NULL, " +
+            FilterListRules.ACTION             + " INTEGER NOT NULL, " +
+            FilterListRules.SENDER_PATTERN     + " TEXT, " +
+            FilterListRules.BODY_PATTERN       + " TEXT, " +
+            "FOREIGN KEY(" + FilterListRules.LIST_ID + ") REFERENCES " + FilterLists.TABLE + "(" + FilterLists._ID + ")" +
         ");";
 
     public NekoSmsDbHelper(Context context) {
@@ -49,8 +68,10 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_FILTERS_TABLE);
-        db.execSQL(CREATE_BLOCKED_TABLE);
+        db.execSQL(CREATE_BLOCKED_MESSAGES_TABLE);
+        db.execSQL(CREATE_USER_RULES_TABLE);
+        db.execSQL(CREATE_FILTER_LISTS_TABLE);
+        db.execSQL(CREATE_FILTER_LIST_RULES_TABLE);
     }
 
     @Override
@@ -58,35 +79,30 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.Filters;
         Xlog.i(TAG, "Upgrading database from v%d to v%d", oldVersion, newVersion);
         List<SmsFilterData> filters = null;
         List<SmsMessageData> messages = null;
-        if (oldVersion == 8) {
-            Cursor tableCursor = db.query(Filters.TABLE, new String[] {
-                Filters.FIELD,
-                Filters.MODE,
-                Filters.PATTERN,
-                Filters.CASE_SENSITIVE
+        if (oldVersion < 8) {
+            db.execSQL("DROP TABLE IF EXISTS filters");
+            db.execSQL("DROP TABLE IF EXISTS blocked");
+        } else if (oldVersion == 8) {
+            Xlog.i(TAG, "Performing database upgrade from v8");
+            Cursor tableCursor = db.query("filters", new String[] {
+                "field",
+                "mode",
+                "pattern",
+                "case_sensitive"
             }, null, null, null, null, null);
-            filters = SmsFilterDbLoader.loadAllFilters(tableCursor).toList();
-            Cursor messagesCursor = db.query(Blocked.TABLE, new String[] {
-                Blocked.SENDER,
-                Blocked.BODY,
-                Blocked.TIME_SENT,
-                Blocked.TIME_RECEIVED
+            Cursor messagesCursor = db.query("blocked", new String[] {
+                "sender",
+                "body",
+                "time_sent",
+                "time_received"
             }, null, null, null, null, null);
-            messages = BlockedSmsDbLoader.loadAllMessages(messagesCursor).toList();
+            // TODO
+            db.execSQL("DROP TABLE IF EXISTS filters");
+            db.execSQL("DROP TABLE IF EXISTS blocked");
         }
-        db.execSQL("DROP TABLE IF EXISTS " + Filters.TABLE);
-        db.execSQL("DROP TABLE IF EXISTS " + Blocked.TABLE);
         onCreate(db);
         if (oldVersion == 8) {
-            for (SmsFilterData filter : filters) {
-                filter.setAction(SmsFilterAction.BLOCK);
-                db.insert(Filters.TABLE, null, filter.serialize());
-            }
-            for (SmsMessageData message : messages) {
-                message.setSeen(true);
-                message.setRead(true);
-                db.insert(Blocked.TABLE, null, message.serialize());
-            }
+            // TODO
         }
     }
 }

@@ -71,8 +71,8 @@ public class FilterListParser {
 
     private void fillHeaderField(FilterListInfo header, String key, String value) {
         key = key.toLowerCase();
-        if ("id".equals(key)) {
-            header.mId = value;
+        if ("namespace".equals(key)) {
+            header.mNamespace = value;
         } else if ("name".equals(key)) {
             header.mName = value;
         } else if ("version".equals(key)) {

@@ -1,75 +1,55 @@
 package com.crossbowffs.nekosms.filters;
 
-import com.crossbowffs.nekosms.data.SmsFilterAction;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-public abstract class SmsFilter {
+public class SmsFilter {
     private static final String TAG = SmsFilter.class.getSimpleName();
 
     private final SmsFilterAction mAction;
-    private final SmsFilterField mField;
-    private final SmsFilterMode mMode;
-    private final String mPattern;
-    private final boolean mCaseSensitive;
+    private final SmsFilterPattern mSenderPattern;
+    private final SmsFilterPattern mBodyPattern;
 
     public SmsFilter(SmsFilterData data) {
         mAction = data.getAction();
-        mField = data.getField();
-        mMode = data.getMode();
-        mPattern = data.getPattern();
-        mCaseSensitive = data.isCaseSensitive();
+        mSenderPattern = createPattern(data.getSenderPattern());
+        mBodyPattern = createPattern(data.getBodyPattern());
     }
 
     public SmsFilterAction getAction() {
         return mAction;
     }
 
-    public SmsFilterField getField() {
-        return mField;
-    }
-
-    public SmsFilterMode getMode() {
-        return mMode;
-    }
-
-    public String getPattern() {
-        return mPattern;
-    }
-
-    public boolean isCaseSensitive() {
-        return mCaseSensitive;
-    }
-
-    public SmsFilterAction match(String sender, String body) {
+    public boolean match(String sender, String body) {
         Xlog.v(TAG, "Checking SMS filter");
-        Xlog.v(TAG, "  Field: %s", getField().name().toLowerCase());
-        Xlog.v(TAG, "  Mode: %s", getMode().name().toLowerCase());
-        Xlog.v(TAG, "  Pattern: %s", getPattern());
-        Xlog.v(TAG, "  Case sensitive: %s", isCaseSensitive());
-        boolean matches = matchImpl(sender, body);
-        Xlog.v(TAG, "  Matches: %s", matches);
-        if (matches) {
-            return getAction();
-        } else {
-            return SmsFilterAction.PASS;
+        if (mSenderPattern == null && mBodyPattern == null) {
+            Xlog.w(TAG, "  No sender or body pattern, ignoring filter");
+            return false;
         }
+        boolean matches = true;
+        if (mSenderPattern != null) {
+            matches &= mSenderPattern.match(sender, body);
+        }
+        if (mBodyPattern != null) {
+            matches &= mBodyPattern.match(sender, body);
+        }
+        Xlog.v(TAG, "  Matches: %s", matches);
+        return matches;
     }
 
-    public abstract boolean matchImpl(String sender, String body);
-
-    public static SmsFilter create(SmsFilterData data) {
+    private static SmsFilterPattern createPattern(SmsFilterPatternData data) {
+        if (data == null) {
+            return null;
+        }
         switch (data.getMode()) {
         case REGEX:
         case WILDCARD:
-            return new RegexSmsFilter(data);
+            return new RegexFilterPattern(data);
         case CONTAINS:
         case PREFIX:
         case SUFFIX:
         case EQUALS:
-            return new StringSmsFilter(data);
+            return new StringFilterPattern(data);
         default:
             throw new IllegalArgumentException("Invalid filter mode: " + data.getMode());
         }

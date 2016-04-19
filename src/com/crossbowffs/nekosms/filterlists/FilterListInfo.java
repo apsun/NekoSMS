@@ -1,15 +1,15 @@
 package com.crossbowffs.nekosms.filterlists;
 
 public class FilterListInfo {
-    /* package */ String mId;
+    /* package */ String mNamespace;
     /* package */ String mName;
     /* package */ int mVersion;
     /* package */ String mAuthor;
     /* package */ String mUrl;
     /* package */ long mUpdated;
 
-    public String getId() {
-        return mId;
+    public String getNamespace() {
+        return mNamespace;
     }
 
     public String getName() {

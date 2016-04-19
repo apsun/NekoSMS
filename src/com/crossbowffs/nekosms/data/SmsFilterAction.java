@@ -2,8 +2,7 @@ package com.crossbowffs.nekosms.data;
 
 public enum SmsFilterAction {
     ALLOW,
-    BLOCK,
-    PASS;
+    BLOCK;
 
     public static SmsFilterAction parse(String actionString) {
         if (actionString == null) {

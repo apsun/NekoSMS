@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.database;
+package com.crossbowffs.nekosms.loader;
 
 public class DatabaseException extends RuntimeException {
     public DatabaseException(String detailMessage) {

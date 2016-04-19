@@ -1,8 +1,5 @@
 package com.crossbowffs.nekosms.data;
 
-import android.content.ContentValues;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
-
 public class SmsMessageData {
     private long mId = -1;
     private String mSender;
@@ -11,20 +8,6 @@ public class SmsMessageData {
     private long mTimeReceived;
     private boolean mRead;
     private boolean mSeen;
-
-    public ContentValues serialize() {
-        ContentValues values = new ContentValues(7);
-        if (mId >= 0) {
-            values.put(NekoSmsContract.Blocked._ID, mId);
-        }
-        values.put(NekoSmsContract.Blocked.SENDER, getSender());
-        values.put(NekoSmsContract.Blocked.BODY, getBody());
-        values.put(NekoSmsContract.Blocked.TIME_SENT, getTimeSent());
-        values.put(NekoSmsContract.Blocked.TIME_RECEIVED, getTimeReceived());
-        values.put(NekoSmsContract.Blocked.READ, isRead());
-        values.put(NekoSmsContract.Blocked.SEEN, isSeen());
-        return values;
-    }
 
     public void setId(long id) {
         mId = id;

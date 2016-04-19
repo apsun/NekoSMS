@@ -1,15 +1,15 @@
 package com.crossbowffs.nekosms.filters;
 
-import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/* package */ class RegexSmsFilter extends SmsFilter {
+/* package */ class RegexFilterPattern extends SmsFilterPattern {
     private final Matcher mMatcher;
 
-    public RegexSmsFilter(SmsFilterData data) {
+    public RegexFilterPattern(SmsFilterPatternData data) {
         super(data);
         String regexPattern = getPattern();
         if (getMode() == SmsFilterMode.WILDCARD) {
@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
     }
 
     @Override
-    public boolean matchImpl(String sender, String body) {
+    public boolean match(String sender, String body) {
         switch (getField()) {
         case SENDER:
             mMatcher.reset(sender);
