@@ -19,7 +19,7 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
         return sInstance;
     }
 
-    public BlockedSmsLoader() {
+    private BlockedSmsLoader() {
         super(BlockedMessages.class);
     }
 

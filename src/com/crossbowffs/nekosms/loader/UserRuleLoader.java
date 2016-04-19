@@ -20,7 +20,7 @@ public class UserRuleLoader extends SmsFilterLoader {
         return sInstance;
     }
 
-    public UserRuleLoader() {
+    private UserRuleLoader() {
         super(UserRules.class);
     }
 

@@ -17,7 +17,7 @@ public class FilterListRuleLoader extends SmsFilterLoader {
         return sInstance;
     }
 
-    public FilterListRuleLoader() {
+    private FilterListRuleLoader() {
         super(FilterListRules.class);
     }
 
