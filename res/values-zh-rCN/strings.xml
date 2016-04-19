@@ -42,8 +42,8 @@
     <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter list -->
-    <string name="filter_list">过滤规则</string>
-    <string name="filter_list_empty_text">快来创建几个过滤规则吧！喵~</string>
+    <string name="user_filters">过滤规则</string>
+    <string name="user_filters_empty_text">快来创建几个过滤规则吧！喵~</string>
     <string name="format_filter_config">%1$s%2$s%3$s%4$s</string>
     <string name="filter_config_action_allow">允许：</string>
     <string name="filter_config_action_block">拦截：</string>

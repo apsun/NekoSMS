@@ -41,9 +41,9 @@
     <string name="progress_importing">Importing data from storage…</string>
     <string name="progress_exporting">Exporting data to storage…</string>
 
-    <!-- Filter list -->
-    <string name="filter_list">Filter list</string>
-    <string name="filter_list_empty_text">Go ahead, create a filter! Nyaa~</string>
+    <!-- User filters -->
+    <string name="user_filters">User filters</string>
+    <string name="user_filters_empty_text">Go ahead, create a filter! Nyaa~</string>
     <string name="format_filter_config">%1$s %2$s %3$s %4$s</string>
     <string name="filter_config_action_allow">Allow if</string>
     <string name="filter_config_action_block">Block if</string>
@@ -86,6 +86,9 @@
     <string name="invalid_pattern_title">Invalid pattern</string>
     <string name="format_invalid_pattern_message">The pattern you have entered is not a legal regular expression!\n\nReason: %s</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
+
+    <!-- Filter lists -->
+    <string name="filter_lists">Filter lists</string>
 
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>
