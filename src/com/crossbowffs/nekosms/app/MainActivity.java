@@ -125,10 +125,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         mDrawerLayout.closeDrawer(mNavigationView);
         switch (item.getItemId()) {
-        case R.id.main_drawer_filter_list:
+        case R.id.main_drawer_user_filters:
             setContentSection(EXTRA_SECTION_FILTER_LIST);
             return true;
-        case R.id.main_drawer_blocked_sms_list:
+        case R.id.main_drawer_blocked_messages:
             setContentSection(EXTRA_SECTION_BLOCKED_SMS_LIST);
             return true;
         case R.id.main_drawer_settings:
@@ -160,12 +160,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int navId;
         switch (key) {
         case EXTRA_SECTION_FILTER_LIST:
-            fragment = new FilterListFragment();
-            navId = R.id.main_drawer_filter_list;
+            fragment = new UserFiltersFragment();
+            navId = R.id.main_drawer_user_filters;
             break;
         case EXTRA_SECTION_BLOCKED_SMS_LIST:
-            fragment = new BlockedSmsListFragment();
-            navId = R.id.main_drawer_blocked_sms_list;
+            fragment = new BlockedMessagesFragment();
+            navId = R.id.main_drawer_blocked_messages;
             break;
         case EXTRA_SECTION_SETTINGS:
             fragment = new SettingsFragment();

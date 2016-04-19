@@ -12,13 +12,10 @@ import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.BroadcastConsts;
+import com.crossbowffs.nekosms.loader.CursorWrapper;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.database.BlockedSmsDbLoader;
-import com.crossbowffs.nekosms.database.CursorWrapper;
-import com.crossbowffs.nekosms.database.DatabaseException;
-import com.crossbowffs.nekosms.database.InboxSmsDbLoader;
-import com.crossbowffs.nekosms.preferences.PrefKeys;
+import com.crossbowffs.nekosms.loader.*;
+import com.crossbowffs.nekosms.preferences.PrefConsts;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.NekoSmsContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
@@ -33,7 +30,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private Notification buildNotificationSingle(Context context, SmsMessageData messageData) {
-        Uri uri = ContentUris.withAppendedId(NekoSmsContract.Blocked.CONTENT_URI, messageData.getId());
+        Uri uri = ContentUris.withAppendedId(NekoSmsContract.BlockedMessages.CONTENT_URI, messageData.getId());
 
         Intent viewIntent = new Intent(context, MainActivity.class);
         viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
@@ -111,20 +108,20 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void displayNotification(Context context, Intent intent) {
-        PrefManager preferences = PrefManager.fromContext(context, PrefKeys.FILE_MAIN);
+        PrefManager preferences = PrefManager.fromContext(context, PrefConsts.FILE_MAIN);
         if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
             // Just mark the message as seen and return
             Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-            BlockedSmsDbLoader.setSeenStatus(context, messageUri, true);
+            BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
             return;
         }
 
-        CursorWrapper<SmsMessageData> messages = BlockedSmsDbLoader.loadAllMessages(context, true);
+        CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context);
         Notification notification;
         if (messages == null || messages.getCount() == 0) {
             Xlog.e(TAG, "Failed to load read messages, falling back to intent URI");
             Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-            SmsMessageData messageData = BlockedSmsDbLoader.loadMessage(context, messageUri);
+            SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
             if (messageData == null) {
                 Xlog.e(TAG, "Failed to load message from intent URI");
                 return;
@@ -160,7 +157,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         notificationManager.cancel(NOTIFICATION_ID);
 
         Uri messageUri = intent.getData();
-        boolean deleted = BlockedSmsDbLoader.deleteMessage(context, messageUri);
+        boolean deleted = BlockedSmsLoader.get().delete(context, messageUri);
         if (!deleted) {
             Xlog.e(TAG, "Failed to delete message: could not load data");
             Toast.makeText(context, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
@@ -177,7 +174,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             return;
         }
 
-        SmsMessageData messageToRestore = BlockedSmsDbLoader.loadMessage(context, intent.getData());
+        SmsMessageData messageToRestore = BlockedSmsLoader.get().query(context, intent.getData());
         if (messageToRestore == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
             Toast.makeText(context, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
@@ -185,7 +182,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         }
 
         try {
-            InboxSmsDbLoader.writeMessage(context, messageToRestore);
+            InboxSmsLoader.writeMessage(context, messageToRestore);
         } catch (DatabaseException e) {
             Xlog.e(TAG, "Failed to restore message: could not write to SMS inbox");
             Toast.makeText(context, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
@@ -193,7 +190,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         }
 
         Uri messageUri = intent.getData();
-        BlockedSmsDbLoader.deleteMessage(context, messageUri);
+        BlockedSmsLoader.get().delete(context, messageUri);
     }
 
     private void onDismissNotification(Context context, Intent intent) {
@@ -201,7 +198,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         // Technically we should only mark messages in the notification as
         // seen, but unless there is a race condition, the notification will
         // always contain all unseen messages.
-        BlockedSmsDbLoader.markAllSeen(context);
+        BlockedSmsLoader.get().markAllSeen(context);
     }
 
     @Override

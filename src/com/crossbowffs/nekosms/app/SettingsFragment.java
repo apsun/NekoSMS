@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.preferences.PrefKeys;
+import com.crossbowffs.nekosms.preferences.PrefConsts;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -15,7 +15,7 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.settings);
         if (!XposedUtils.isModuleEnabled()) {
-            Preference enablePreference = findPreference(PrefKeys.KEY_ENABLE);
+            Preference enablePreference = findPreference(PrefConsts.KEY_ENABLE);
             enablePreference.setEnabled(false);
             enablePreference.setSummary(R.string.pref_enable_summary_alt);
         }
