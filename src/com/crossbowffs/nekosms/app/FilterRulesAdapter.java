@@ -7,19 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.data.SmsFilterMode;
-import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
+import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 
-/* package */ class FilterListAdapter extends RecyclerCursorAdapter<FilterListAdapter.FilterListItemHolder> {
-    public static class FilterListItemHolder extends RecyclerView.ViewHolder {
+/* package */ class FilterRulesAdapter extends RecyclerCursorAdapter<FilterRulesAdapter.UserFiltersItemHolder> {
+    public static class UserFiltersItemHolder extends RecyclerView.ViewHolder {
         public final TextView mConfigTextView;
         public final TextView mPatternTextView;
         public SmsFilterData mFilterData;
 
-        public FilterListItemHolder(View itemView) {
+        public UserFiltersItemHolder(View itemView) {
             super(itemView);
 
             mConfigTextView = (TextView)itemView.findViewById(R.id.listitem_filter_list_config_textview);
@@ -27,40 +24,42 @@ import com.crossbowffs.nekosms.database.SmsFilterDbLoader;
         }
     }
 
-    private static final String TAG = FilterListAdapter.class.getSimpleName();
-    private final FilterListFragment mFragment;
+    private static final String TAG = FilterRulesAdapter.class.getSimpleName();
+    private final FilterRulesFragment mFragment;
 
-    public FilterListAdapter(FilterListFragment fragment) {
+    public FilterRulesAdapter(FilterRulesFragment fragment) {
         mFragment = fragment;
     }
 
     @Override
-    public FilterListItemHolder onCreateViewHolder(ViewGroup group, int i) {
+    public UserFiltersItemHolder onCreateViewHolder(ViewGroup group, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(mFragment.getContext());
-        View view = layoutInflater.inflate(R.layout.listitem_filter_list, group, false);
-        return new FilterListItemHolder(view);
+        View view = layoutInflater.inflate(R.layout.listitem_filter_rules, group, false);
+        return new UserFiltersItemHolder(view);
     }
 
     @Override
     protected int[] onBindColumns(Cursor cursor) {
-        return SmsFilterDbLoader.getColumns(cursor);
+        return FilterRuleLoader.get().getColumns(cursor);
     }
 
     @Override
-    public void onBindViewHolder(FilterListItemHolder holder, Cursor cursor) {
-        SmsFilterData filterData = SmsFilterDbLoader.getFilterData(cursor, getColumns(), holder.mFilterData);
+    public void onBindViewHolder(UserFiltersItemHolder holder, Cursor cursor) {
+        SmsFilterData filterData = FilterRuleLoader.get().getData(cursor, getColumns(), holder.mFilterData);
         holder.mFilterData = filterData;
 
         final long id = filterData.getId();
         SmsFilterAction action = filterData.getAction();
+        /*SmsFilterPatternData senderPattern = filterData.getSenderPattern();
+        SmsFilterPatternData bodyPattern = filterData.getBodyPattern();
         SmsFilterField field = filterData.getField();
-        SmsFilterMode mode = filterData.getMode();
-        String pattern = filterData.getPattern();
-        boolean caseSensitive = filterData.isCaseSensitive();
+        SmsFilterMode mode = filterData.getMode();*/
+        String pattern = ""; //filterData.getPattern();
+        boolean caseSensitive = false; //filterData.isCaseSensitive();
 
         String actionString = mFragment.getString(getFilterActionStringId(action));
-        String fieldString = mFragment.getString(getFilterFieldStringId(field));
-        String modeString = mFragment.getString(getFilterModeStringId(mode));
+        String fieldString = ""; //mFragment.getString(getFilterFieldStringId(field));
+        String modeString = ""; //mFragment.getString(getFilterModeStringId(mode));
         String caseSensitiveString = "";
         if (caseSensitive) {
             caseSensitiveString = mFragment.getString(R.string.filter_config_case_sensitive);

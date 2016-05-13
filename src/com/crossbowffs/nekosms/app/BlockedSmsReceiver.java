@@ -17,7 +17,7 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.*;
 import com.crossbowffs.nekosms.preferences.PrefConsts;
 import com.crossbowffs.nekosms.preferences.PrefManager;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -30,7 +30,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private Notification buildNotificationSingle(Context context, SmsMessageData messageData) {
-        Uri uri = ContentUris.withAppendedId(NekoSmsContract.BlockedMessages.CONTENT_URI, messageData.getId());
+        Uri uri = ContentUris.withAppendedId(DatabaseContract.BlockedMessages.CONTENT_URI, messageData.getId());
 
         Intent viewIntent = new Intent(context, MainActivity.class);
         viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
@@ -90,6 +90,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             }
             inboxStyle.addLine(line);
         }
+        inboxStyle.setSummaryText("View in NekoSMS"); // TODO
 
         Notification notification = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
@@ -160,7 +161,9 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         boolean deleted = BlockedSmsLoader.get().delete(context, messageUri);
         if (!deleted) {
             Xlog.e(TAG, "Failed to delete message: could not load data");
-            Toast.makeText(context, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.message_delete_failed, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(context, R.string.message_deleted, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -177,7 +180,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         SmsMessageData messageToRestore = BlockedSmsLoader.get().query(context, intent.getData());
         if (messageToRestore == null) {
             Xlog.e(TAG, "Failed to restore message: could not load data");
-            Toast.makeText(context, R.string.load_blocked_message_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -191,6 +194,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
         Uri messageUri = intent.getData();
         BlockedSmsLoader.get().delete(context, messageUri);
+        Toast.makeText(context, R.string.message_restored, Toast.LENGTH_SHORT).show();
     }
 
     private void onDismissNotification(Context context, Intent intent) {

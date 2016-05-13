@@ -7,21 +7,21 @@ import android.net.Uri;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.UserRules;
+import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
-public class UserRuleLoader extends SmsFilterLoader {
-    private static final String TAG = UserRuleLoader.class.getSimpleName();
-    private static UserRuleLoader sInstance;
+public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
+    private static final String TAG = FilterRuleLoader.class.getSimpleName();
+    private static FilterRuleLoader sInstance;
 
-    public static UserRuleLoader get() {
+    public static FilterRuleLoader get() {
         if (sInstance == null) {
-            sInstance = new UserRuleLoader();
+            sInstance = new FilterRuleLoader();
         }
         return sInstance;
     }
 
-    private UserRuleLoader() {
-        super(UserRules.class);
+    private FilterRuleLoader() {
+        super(FilterRules.CONTENT_URI, FilterRules.ALL);
     }
 
     @Override
@@ -32,33 +32,33 @@ public class UserRuleLoader extends SmsFilterLoader {
     @Override
     protected void bindData(Cursor cursor, int column, String columnName, SmsFilterData data) {
         switch (columnName) {
-        case UserRules._ID:
+        case FilterRules._ID:
             data.setId(cursor.getLong(column));
             break;
-        case UserRules.ACTION:
+        case FilterRules.ACTION:
             data.setAction(cursor.getInt(column) == 0 ? SmsFilterAction.ALLOW : SmsFilterAction.BLOCK);
             break;
-        case UserRules.SENDER_MODE:
+        case FilterRules.SENDER_MODE:
             if (!cursor.isNull(column))
                 ensureSenderPattern(data).setMode(SmsFilterMode.parse(cursor.getString(column)));
             break;
-        case UserRules.SENDER_PATTERN:
+        case FilterRules.SENDER_PATTERN:
             if (!cursor.isNull(column))
                 ensureSenderPattern(data).setPattern(cursor.getString(column));
             break;
-        case UserRules.SENDER_CASE_SENSITIVE:
+        case FilterRules.SENDER_CASE_SENSITIVE:
             if (!cursor.isNull(column))
                 ensureSenderPattern(data).setCaseSensitive(cursor.getInt(column) != 0);
             break;
-        case UserRules.BODY_MODE:
+        case FilterRules.BODY_MODE:
             if (!cursor.isNull(column))
                 ensureBodyPattern(data).setMode(SmsFilterMode.parse(cursor.getString(column)));
             break;
-        case UserRules.BODY_PATTERN:
+        case FilterRules.BODY_PATTERN:
             if (!cursor.isNull(column))
                 ensureBodyPattern(data).setPattern(cursor.getString(column));
             break;
-        case UserRules.BODY_CASE_SENSITIVE:
+        case FilterRules.BODY_CASE_SENSITIVE:
             if (!cursor.isNull(column))
                 ensureBodyPattern(data).setCaseSensitive(cursor.getInt(column) != 0);
             break;
@@ -69,27 +69,34 @@ public class UserRuleLoader extends SmsFilterLoader {
     protected ContentValues serialize(SmsFilterData data) {
         ContentValues values = new ContentValues(8);
         if (data.getId() >= 0) {
-            values.put(UserRules._ID, data.getId());
+            values.put(FilterRules._ID, data.getId());
         }
-        values.put(UserRules.ACTION, data.getAction() == SmsFilterAction.BLOCK ? 1 : 0);
+        values.put(FilterRules.ACTION, data.getAction() == SmsFilterAction.BLOCK ? 1 : 0);
         SmsFilterPatternData senderPattern = data.getSenderPattern();
         if (senderPattern != null) {
-            values.put(UserRules.SENDER_MODE, senderPattern.getMode().name());
-            values.put(UserRules.SENDER_PATTERN, senderPattern.getPattern());
-            values.put(UserRules.SENDER_CASE_SENSITIVE, senderPattern.isCaseSensitive() ? 1 : 0);
+            values.put(FilterRules.SENDER_MODE, senderPattern.getMode().name());
+            values.put(FilterRules.SENDER_PATTERN, senderPattern.getPattern());
+            values.put(FilterRules.SENDER_CASE_SENSITIVE, senderPattern.isCaseSensitive() ? 1 : 0);
+        } else {
+            values.putNull(FilterRules.SENDER_MODE);
+            values.putNull(FilterRules.SENDER_PATTERN);
+            values.putNull(FilterRules.SENDER_CASE_SENSITIVE);
         }
         SmsFilterPatternData bodyPattern = data.getBodyPattern();
         if (bodyPattern != null) {
-            values.put(UserRules.BODY_MODE, bodyPattern.getMode().name());
-            values.put(UserRules.BODY_PATTERN, bodyPattern.getPattern());
-            values.put(UserRules.BODY_CASE_SENSITIVE, bodyPattern.isCaseSensitive() ? 1 : 0);
+            values.put(FilterRules.BODY_MODE, bodyPattern.getMode().name());
+            values.put(FilterRules.BODY_PATTERN, bodyPattern.getPattern());
+            values.put(FilterRules.BODY_CASE_SENSITIVE, bodyPattern.isCaseSensitive() ? 1 : 0);
+        } else {
+            values.putNull(FilterRules.BODY_MODE);
+            values.putNull(FilterRules.BODY_PATTERN);
+            values.putNull(FilterRules.BODY_CASE_SENSITIVE);
         }
         return values;
     }
 
-    @Override
     public CursorWrapper<SmsFilterData> queryAllWhitelistFirst(Context context) {
-        return queryAll(context, null, null, UserRules.ACTION + " ASC");
+        return queryAll(context, null, null, FilterRules.ACTION + " ASC");
     }
 
     public Uri update(Context context, Uri filterUri, SmsFilterData filterData, boolean insertIfError) {

@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:2.0.0"
+        classpath "com.android.tools.build:gradle:2.1.0"
     }
 }
 
@@ -19,6 +19,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:23.2.1"
     compile "com.android.support:recyclerview-v7:23.2.1"
     compile "com.android.support:design:23.2.1"
+    compile "com.crossbowffs.remotepreferences:remotepreferences:0.1"
     provided "de.robv.android.xposed:api:53"
 }
 

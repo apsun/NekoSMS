@@ -9,12 +9,6 @@
             android:summary="@string/pref_enable_summary"
             android:defaultValue="true"
             android:widgetLayout="@layout/switch_compat"/>
-        <CheckBoxPreference
-            android:key="pref_debug_mode"
-            android:title="@string/pref_debug_mode"
-            android:summary="@string/pref_debug_mode_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/switch_compat"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_notifications">
         <CheckBoxPreference

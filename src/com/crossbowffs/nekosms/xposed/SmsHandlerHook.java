@@ -18,10 +18,10 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.loader.*;
 import com.crossbowffs.nekosms.preferences.PrefConsts;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
-import com.crossbowffs.nekosms.remotepreferences.RemotePreferences;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.remotepreferences.RemotePreferences;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -118,7 +118,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         };
 
         ContentResolver contentResolver = context.getContentResolver();
-        contentResolver.registerContentObserver(NekoSmsContract.FilterListRules.CONTENT_URI, true, contentObserver);
+        contentResolver.registerContentObserver(DatabaseContract.FilterRules.CONTENT_URI, true, contentObserver);
         return contentObserver;
     }
 
@@ -179,7 +179,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         context.sendBroadcast(intent);
     }
 
-    private static boolean loadSmsFilters(ArrayList<SmsFilter> filters, Context context, SmsFilterLoader loader) {
+    private static boolean fillSmsFilters(ArrayList<SmsFilter> filters, Context context, FilterRuleLoader loader) {
         try (CursorWrapper<SmsFilterData> filterCursor = loader.queryAllWhitelistFirst(context)) {
             if (filterCursor == null) {
                 // Can occur if NekoSMS has been uninstalled
@@ -201,8 +201,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
         ArrayList<SmsFilter> filters = new ArrayList<>();
-        loadSmsFilters(filters, context, UserRuleLoader.get());
-        loadSmsFilters(filters, context, FilterListRuleLoader.get());
+        if (!fillSmsFilters(filters, context, FilterRuleLoader.get())) {
+            return null;
+        }
         return filters;
     }
 

@@ -30,7 +30,6 @@
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_create_white_24dp"
                 app:fabSize="normal"
                 app:elevation="6dp"
                 app:borderWidth="0dp"/>

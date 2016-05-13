@@ -30,7 +30,7 @@ public final class InboxSmsLoader {
         Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, serializeMessage(messageData));
         long id = ContentUris.parseId(uri);
 
-        // An NAMESPACE of 0 when writing to the SMS inbox could mean we don't have the
+        // An ID of 0 when writing to the SMS inbox could mean we don't have the
         // OP_WRITE_SMS permission. See ContentProvider#rejectInsert(Uri, ContentValues).
         // Another explanation would be that this is actually the first message written.
         // Because we check for permissions before calling this method, we can assume

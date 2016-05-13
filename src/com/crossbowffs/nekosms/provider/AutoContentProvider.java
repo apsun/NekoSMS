@@ -8,11 +8,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import com.crossbowffs.nekosms.utils.ReflectionUtils;
-
-import java.util.Arrays;
 
 public abstract class AutoContentProvider extends ContentProvider {
     protected static class ProviderTable {
@@ -25,40 +21,13 @@ public abstract class AutoContentProvider extends ContentProvider {
             mItemType = itemType;
             mDirType = dirType;
         }
-
-        public static ProviderTable from(Class<?> cls) {
-            String tableName = (String)ReflectionUtils.getStaticFieldValue(cls, "TABLE");
-            String itemType = (String)ReflectionUtils.getStaticFieldValue(cls, "CONTENT_ITEM_TYPE");
-            String dirType = (String)ReflectionUtils.getStaticFieldValue(cls, "CONTENT_TYPE");
-            return new ProviderTable(tableName, itemType, dirType);
-        }
     }
 
-    private ProviderTable[] mTables;
-    private UriMatcher mUriMatcher;
+    private final ProviderTable[] mTables;
+    private final UriMatcher mUriMatcher;
     private SQLiteOpenHelper mDatabase;
 
-    public AutoContentProvider(Class<?> contractCls) {
-        String authority = (String)ReflectionUtils.getStaticFieldValue(contractCls, "AUTHORITY");
-        Class<?>[] innerClasses = contractCls.getDeclaredClasses();
-        ProviderTable[] tables = new ProviderTable[innerClasses.length];
-        int i = 0;
-        for (Class<?> cls : innerClasses) {
-            if (BaseColumns.class.isAssignableFrom(cls)) {
-                tables[i++] = ProviderTable.from(cls);
-            }
-        }
-        if (i != innerClasses.length) {
-            tables = Arrays.copyOf(tables, i);
-        }
-        init(authority, tables);
-    }
-
     public AutoContentProvider(String authority, ProviderTable[] tables) {
-        init(authority, tables);
-    }
-
-    private void init(String authority, ProviderTable[] tables) {
         mTables = tables;
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         for (int i = 0; i < tables.length; ++i) {
@@ -91,7 +60,6 @@ public abstract class AutoContentProvider extends ContentProvider {
         return cursor;
     }
 
-    @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
         int matchCode = mUriMatcher.match(uri);
@@ -101,7 +69,6 @@ public abstract class AutoContentProvider extends ContentProvider {
         return getType(matchCode);
     }
 
-    @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
         int matchCode = mUriMatcher.match(uri);

@@ -4,12 +4,7 @@
         android:id="@+id/main_drawer_user_filters"
         android:icon="@drawable/ic_code_white_24dp"
         android:checkable="true"
-        android:title="@string/user_filters"/>
-    <item
-        android:id="@+id/main_drawer_filter_lists"
-        android:icon="@drawable/ic_public_white_24dp"
-        android:checkable="true"
-        android:title="@string/filter_lists"/>
+        android:title="@string/filter_rules"/>
     <item
         android:id="@+id/main_drawer_blocked_messages"
         android:icon="@drawable/ic_message_blocked_white_24dp"

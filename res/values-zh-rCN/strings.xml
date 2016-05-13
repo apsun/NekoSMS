@@ -41,9 +41,9 @@
     <string name="progress_importing">正在导入数据…</string>
     <string name="progress_exporting">正在导出数据…</string>
 
-    <!-- Filter list -->
-    <string name="user_filters">过滤规则</string>
-    <string name="user_filters_empty_text">快来创建几个过滤规则吧！喵~</string>
+    <!-- Filter rules -->
+    <string name="filter_rules">过滤规则</string>
+    <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
     <string name="format_filter_config">%1$s%2$s%3$s%4$s</string>
     <string name="filter_config_action_allow">允许：</string>
     <string name="filter_config_action_block">拦截：</string>
@@ -96,6 +96,7 @@
     <string name="cleared_blocked_messages">已删除所有信息</string>
     <string name="message_deleted">信息已删除</string>
     <string name="message_restored">信息已恢复到收件箱</string>
+    <string name="message_delete_failed">信息无法删除</string>
     <string name="message_restore_failed">信息无法恢复</string>
     <string name="load_blocked_message_failed">无法加载信息</string>
     <string name="format_message_details">
@@ -134,8 +135,6 @@
     <string name="pref_enable">启用NekoSMS</string>
     <string name="pref_enable_summary">拦截那些恼人的垃圾信息！</string>
     <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
-    <string name="pref_debug_mode">调试模式</string>
-    <string name="pref_debug_mode_summary">显示「创建测试信息」选项</string>
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_enable">启用通知</string>
     <string name="pref_notifications_enable_summary">信息被拦截时显示通知</string>
@@ -144,12 +143,8 @@
     <string name="pref_notifications_vibrate">震动</string>
     <string name="pref_notifications_lights">灯光</string>
 
-    <!-- Debug stuff (to be removed) -->
+    <!-- Debug stuff -->
     <string name="create_test_message">创建测试信息</string>
-    <string name="test_message_sender">1234567890</string>
-    <string name="test_message_body">
-        这是一条很长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长的测试信息
-    </string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s（已拦截）</string>

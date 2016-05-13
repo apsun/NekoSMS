@@ -11,10 +11,10 @@ import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.List;
 
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.*;
+import static com.crossbowffs.nekosms.provider.DatabaseContract.*;
 
-/* package */ class NekoSmsDbHelper extends SQLiteOpenHelper {
-    private static final String TAG = NekoSmsDbHelper.class.getSimpleName();
+/* package */ class DatabaseHelper extends SQLiteOpenHelper {
+    private static final String TAG = DatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "nekosms.db";
     private static final int DATABASE_VERSION = BuildConfig.DATABASE_VERSION;
 
@@ -29,49 +29,26 @@ import static com.crossbowffs.nekosms.provider.NekoSmsContract.*;
             BlockedMessages.SEEN                + " INTEGER NOT NULL" +
         ");";
 
-    private static final String CREATE_USER_RULES_TABLE =
-        "CREATE TABLE " + UserRules.TABLE + "(" +
-            UserRules._ID                      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            UserRules.ACTION                   + " INTEGER NOT NULL, " +
-            UserRules.SENDER_MODE              + " TEXT, " +
-            UserRules.SENDER_PATTERN           + " TEXT, " +
-            UserRules.SENDER_CASE_SENSITIVE    + " INTEGER, " +
-            UserRules.BODY_MODE                + " TEXT, " +
-            UserRules.BODY_PATTERN             + " TEXT, " +
-            UserRules.BODY_CASE_SENSITIVE      + " INTEGER" +
+    private static final String CREATE_FILTER_RULES_TABLE =
+        "CREATE TABLE " + FilterRules.TABLE + "(" +
+            FilterRules._ID                      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            FilterRules.ACTION                   + " INTEGER NOT NULL, " +
+            FilterRules.SENDER_MODE              + " TEXT, " +
+            FilterRules.SENDER_PATTERN           + " TEXT, " +
+            FilterRules.SENDER_CASE_SENSITIVE    + " INTEGER, " +
+            FilterRules.BODY_MODE                + " TEXT, " +
+            FilterRules.BODY_PATTERN             + " TEXT, " +
+            FilterRules.BODY_CASE_SENSITIVE      + " INTEGER" +
         ");";
 
-    private static final String CREATE_FILTER_LISTS_TABLE =
-        "CREATE TABLE " + FilterLists.TABLE + "(" +
-            FilterLists._ID                    + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            FilterLists.NAMESPACE              + " TEXT NOT NULL, " +
-            FilterLists.NAME                   + " TEXT NOT NULL, " +
-            FilterLists.VERSION                + " INTEGER NOT NULL, " +
-            FilterLists.AUTHOR                 + " TEXT, " +
-            FilterLists.URL                    + " TEXT, " +
-            FilterLists.UPDATED                + " INTEGER" +
-        ");";
-
-    public static final String CREATE_FILTER_LIST_RULES_TABLE =
-        "CREATE TABLE " + FilterListRules.TABLE + "(" +
-            FilterListRules._ID                + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            FilterListRules.LIST_ID            + " INTEGER NOT NULL, " +
-            FilterListRules.ACTION             + " INTEGER NOT NULL, " +
-            FilterListRules.SENDER_PATTERN     + " TEXT, " +
-            FilterListRules.BODY_PATTERN       + " TEXT, " +
-            "FOREIGN KEY(" + FilterListRules.LIST_ID + ") REFERENCES " + FilterLists.TABLE + "(" + FilterLists._ID + ")" +
-        ");";
-
-    public NekoSmsDbHelper(Context context) {
+    public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_BLOCKED_MESSAGES_TABLE);
-        db.execSQL(CREATE_USER_RULES_TABLE);
-        db.execSQL(CREATE_FILTER_LISTS_TABLE);
-        db.execSQL(CREATE_FILTER_LIST_RULES_TABLE);
+        db.execSQL(CREATE_FILTER_RULES_TABLE);
     }
 
     @Override

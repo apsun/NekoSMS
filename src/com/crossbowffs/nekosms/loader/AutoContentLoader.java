@@ -6,15 +6,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.crossbowffs.nekosms.utils.ReflectionUtils;
 
 public abstract class AutoContentLoader<T> {
     private final Uri mContentUri;
     private final String[] mAllColumns;
 
-    public AutoContentLoader(Class<?> contractCls) {
-        mAllColumns = (String[])ReflectionUtils.getStaticFieldValue(contractCls, "ALL");
-        mContentUri = (Uri)ReflectionUtils.getStaticFieldValue(contractCls, "CONTENT_URI");
+    public AutoContentLoader(Uri contentUri, String[] allColumns) {
+        mContentUri = contentUri;
+        mAllColumns = allColumns;
     }
 
     public int[] getColumns(Cursor cursor) {

@@ -5,9 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 
-import static com.crossbowffs.nekosms.provider.NekoSmsContract.BlockedMessages;
+import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
 
 public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     private static BlockedSmsLoader sInstance;
@@ -20,7 +20,7 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     }
 
     private BlockedSmsLoader() {
-        super(BlockedMessages.class);
+        super(BlockedMessages.CONTENT_URI, BlockedMessages.ALL);
     }
 
     @Override
@@ -59,14 +59,14 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     protected ContentValues serialize(SmsMessageData data) {
         ContentValues values = new ContentValues(7);
         if (data.getId() >= 0) {
-            values.put(NekoSmsContract.BlockedMessages._ID, data.getId());
+            values.put(DatabaseContract.BlockedMessages._ID, data.getId());
         }
-        values.put(NekoSmsContract.BlockedMessages.SENDER, data.getSender());
-        values.put(NekoSmsContract.BlockedMessages.BODY, data.getBody());
-        values.put(NekoSmsContract.BlockedMessages.TIME_SENT, data.getTimeSent());
-        values.put(NekoSmsContract.BlockedMessages.TIME_RECEIVED, data.getTimeReceived());
-        values.put(NekoSmsContract.BlockedMessages.READ, data.isRead());
-        values.put(NekoSmsContract.BlockedMessages.SEEN, data.isSeen());
+        values.put(DatabaseContract.BlockedMessages.SENDER, data.getSender());
+        values.put(DatabaseContract.BlockedMessages.BODY, data.getBody());
+        values.put(DatabaseContract.BlockedMessages.TIME_SENT, data.getTimeSent());
+        values.put(DatabaseContract.BlockedMessages.TIME_RECEIVED, data.getTimeReceived());
+        values.put(DatabaseContract.BlockedMessages.READ, data.isRead());
+        values.put(DatabaseContract.BlockedMessages.SEEN, data.isSeen());
         return values;
     }
 

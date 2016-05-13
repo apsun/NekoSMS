@@ -41,9 +41,9 @@
     <string name="progress_importing">Importing data from storage…</string>
     <string name="progress_exporting">Exporting data to storage…</string>
 
-    <!-- User filters -->
-    <string name="user_filters">User filters</string>
-    <string name="user_filters_empty_text">Go ahead, create a filter! Nyaa~</string>
+    <!-- Filter rules -->
+    <string name="filter_rules">Filter rules</string>
+    <string name="filter_rules_empty_text">Go ahead, create a filter rule! Nyaa~</string>
     <string name="format_filter_config">%1$s %2$s %3$s %4$s</string>
     <string name="filter_config_action_allow">Allow if</string>
     <string name="filter_config_action_block">Block if</string>
@@ -100,6 +100,7 @@
     <string name="cleared_blocked_messages">Deleted all blocked messages</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
+    <string name="message_delete_failed">Message could not be deleted</string>
     <string name="message_restore_failed">Message could not be restored</string>
     <string name="load_blocked_message_failed">Could not load blocked message</string>
     <string name="format_message_details">
@@ -138,8 +139,6 @@
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">Block those annoying SMS messages!</string>
     <string name="pref_enable_summary_alt">You must enable the Xposed module first!</string>
-    <string name="pref_debug_mode">Debug mode</string>
-    <string name="pref_debug_mode_summary">Enables the \'create test message\' button</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_enable">Enable notifications</string>
     <string name="pref_notifications_enable_summary">When a message is blocked, display a notification</string>
@@ -148,12 +147,8 @@
     <string name="pref_notifications_vibrate">Vibration</string>
     <string name="pref_notifications_lights">Lights</string>
 
-    <!-- Debug stuff (to be removed) -->
+    <!-- Debug stuff -->
     <string name="create_test_message">Create test message</string>
-    <string name="test_message_sender">1234567890</string>
-    <string name="test_message_body">
-        This is a test message with looooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonger content
-    </string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s (blocked)</string>

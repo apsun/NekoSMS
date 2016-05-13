@@ -25,15 +25,13 @@
             android:label="@string/filter_editor">
         </activity>
         <provider
-            android:name=".provider.NekoSmsProvider"
-            android:label="NekoSmsProvider"
-            android:authorities="${applicationId}.provider"
+            android:name=".provider.DatabaseProvider"
+            android:authorities="${applicationId}.database"
             android:readPermission="android.permission.READ_SMS"
             android:writePermission="android.permission.WRITE_SMS"
             android:exported="true"/>
         <provider
-            android:name=".provider.NekoSmsPreferenceProvider"
-            android:label="MainPreferenceProvider"
+            android:name=".provider.PreferenceProvider"
             android:authorities="${applicationId}.preferences"
             android:exported="true"/>
         <receiver

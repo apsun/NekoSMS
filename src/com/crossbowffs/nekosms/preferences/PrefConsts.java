@@ -8,7 +8,6 @@ public class PrefConsts {
     public static final String REMOTE_PREFS_AUTHORITY = NEKOSMS_PACKAGE + ".preferences";
 
     public static final String KEY_ENABLE = "pref_enable";
-    public static final String KEY_DEBUG_MODE = "pref_debug_mode";
     public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";
     public static final String KEY_NOTIFICATIONS_RINGTONE = "pref_notifications_ringtone";
     public static final String KEY_NOTIFICATIONS_VIBRATE = "pref_notifications_vibrate";

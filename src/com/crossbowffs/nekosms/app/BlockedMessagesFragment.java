@@ -12,20 +12,20 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.view.*;
+import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
-import com.crossbowffs.nekosms.preferences.PrefConsts;
-import com.crossbowffs.nekosms.preferences.PrefManager;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-public class BlockedMessagesFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BlockedMessagesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String TAG = BlockedMessagesFragment.class.getSimpleName();
+    private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
 
     private ListRecyclerView mBlockedSmsListView;
     private View mEmptyView;
@@ -70,11 +70,9 @@ public class BlockedMessagesFragment extends BaseFragment implements LoaderManag
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        PrefManager preferences = PrefManager.fromContext(getContext(), PrefConsts.FILE_MAIN);
-        if (preferences.getBoolean(PrefManager.PREF_DEBUG_MODE)) {
-            inflater.inflate(R.menu.options_blockedsms_list_debug, menu);
-        } else {
-            inflater.inflate(R.menu.options_blockedsms_list, menu);
+        inflater.inflate(R.menu.options_blocked_messages, menu);
+        if (DEBUG_MODE) {
+            inflater.inflate(R.menu.options_debug, menu);
         }
     }
 
@@ -95,9 +93,9 @@ public class BlockedMessagesFragment extends BaseFragment implements LoaderManag
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getContext(),
-            NekoSmsContract.BlockedMessages.CONTENT_URI,
-            NekoSmsContract.BlockedMessages.ALL, null, null,
-            NekoSmsContract.BlockedMessages.TIME_SENT + " DESC");
+            DatabaseContract.BlockedMessages.CONTENT_URI,
+            DatabaseContract.BlockedMessages.ALL, null, null,
+            DatabaseContract.BlockedMessages.TIME_SENT + " DESC");
     }
 
     @Override
@@ -146,7 +144,8 @@ public class BlockedMessagesFragment extends BaseFragment implements LoaderManag
         if (uri == null) {
             return;
         } else {
-            // TODO: Is this a good workaround? Essentially "consume" the URI data
+            // Consume the URI data, so we don't re-show the dialog
+            // when re-initializing the fragment
             intent.setData(null);
         }
 
@@ -273,8 +272,12 @@ public class BlockedMessagesFragment extends BaseFragment implements LoaderManag
         if (context == null) return;
 
         SmsMessageData message = new SmsMessageData();
-        message.setSender(getString(R.string.test_message_sender));
-        message.setBody(getString(R.string.test_message_body));
+        message.setSender("+12345678900");
+        message.setBody(
+            "This is a test message with " +
+            "loooooooooooooooooooooooooooooooooooooooooooo" +
+            "ooooooooooooooooooooooooong content\n\n" +
+            "This is a new line!");
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
         message.setRead(false);

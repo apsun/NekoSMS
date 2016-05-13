@@ -1,10 +1,10 @@
 package com.crossbowffs.nekosms.provider;
 
 import com.crossbowffs.nekosms.preferences.PrefConsts;
-import com.crossbowffs.nekosms.remotepreferences.RemotePreferenceProvider;
+import com.crossbowffs.remotepreferences.RemotePreferenceProvider;
 
-public class NekoSmsPreferenceProvider extends RemotePreferenceProvider {
-    public NekoSmsPreferenceProvider() {
+public class PreferenceProvider extends RemotePreferenceProvider {
+    public PreferenceProvider() {
         super(PrefConsts.REMOTE_PREFS_AUTHORITY, new String[] {PrefConsts.FILE_MAIN});
     }
 

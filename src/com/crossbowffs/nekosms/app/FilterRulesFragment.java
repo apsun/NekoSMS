@@ -11,11 +11,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.*;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.loader.UserRuleLoader;
-import com.crossbowffs.nekosms.provider.NekoSmsContract;
+import com.crossbowffs.nekosms.loader.FilterRuleLoader;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 
-public class UserFiltersFragment extends BaseFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private class ScrollListener extends RecyclerView.OnScrollListener {
         private static final int SHOW_THRESHOLD = 50;
         private static final int HIDE_THRESHOLD = 100;
@@ -40,11 +40,11 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
         }
     }
 
-    private static final String TAG = UserFiltersFragment.class.getSimpleName();
+    private static final String TAG = FilterRulesFragment.class.getSimpleName();
 
     private ListRecyclerView mFilterListView;
     private View mEmptyView;
-    private UserFiltersAdapter mAdapter;
+    private FilterRulesAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        UserFiltersAdapter adapter = new UserFiltersAdapter(this);
+        FilterRulesAdapter adapter = new FilterRulesAdapter(this);
         mAdapter = adapter;
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
@@ -75,6 +75,7 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
         mFilterListView.addOnScrollListener(new ScrollListener());
         registerForContextMenu(mFilterListView);
         setFabVisible(true);
+        setFabIcon(R.drawable.ic_create_white_24dp);
         setFabCallback(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +83,7 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
                 startActivity(intent);
             }
         });
-        setTitle(R.string.user_filters);
+        setTitle(R.string.filter_rules);
     }
 
     @Override
@@ -108,15 +109,10 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.options_filter_list, menu);
-    }
-
-    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getContext(),
-            NekoSmsContract.FilterListRules.CONTENT_URI,
-            NekoSmsContract.FilterListRules.ALL, null, null, null);
+            DatabaseContract.FilterRules.CONTENT_URI,
+            DatabaseContract.FilterRules.ALL, null, null, null);
     }
 
     @Override
@@ -130,7 +126,7 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
     }
 
     private void deleteFilter(long filterId) {
-        final SmsFilterData filterData = UserRuleLoader.get().queryAndDelete(getContext(), filterId);
+        final SmsFilterData filterData = FilterRuleLoader.get().queryAndDelete(getContext(), filterId);
         if (filterData == null) {
             Xlog.e(TAG, "Failed to delete filter: could not load data");
             return;
@@ -139,14 +135,14 @@ public class UserFiltersFragment extends BaseFragment implements LoaderManager.L
         showSnackbar(R.string.filter_deleted, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserRuleLoader.get().insert(getContext(), filterData);
+                FilterRuleLoader.get().insert(getContext(), filterData);
             }
         });
     }
 
     public void startFilterEditorActivity(long id) {
         Intent intent = new Intent(getContext(), FilterEditorActivity.class);
-        Uri filterUri = ContentUris.withAppendedId(NekoSmsContract.FilterListRules.CONTENT_URI, id);
+        Uri filterUri = ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, id);
         intent.setData(filterUri);
         startActivity(intent);
     }

@@ -38,7 +38,7 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
     @Override
     public BlockedSmsItemHolder onCreateViewHolder(ViewGroup group, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(mFragment.getContext());
-        View view = layoutInflater.inflate(R.layout.listitem_blockedsms_list, group, false);
+        View view = layoutInflater.inflate(R.layout.listitem_blocked_messages, group, false);
         return new BlockedSmsItemHolder(view);
     }
 

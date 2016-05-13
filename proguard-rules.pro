@@ -8,6 +8,3 @@
 
 # Prevent ProGuard from deleting our Xposed hook classes
 -keep class * implements de.robv.android.xposed.IXposedMod
-
-# Contract members are accessed via reflection
--keep class com.crossbowffs.nekosms.provider.NekoSmsContract

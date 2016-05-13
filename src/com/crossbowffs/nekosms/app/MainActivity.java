@@ -149,18 +149,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
             setContentSection(intent.getStringExtra(EXTRA_SECTION));
         } else {
-            if (mContentFragment instanceof BaseFragment) {
-                ((BaseFragment)mContentFragment).onNewIntent(intent);
+            if (mContentFragment instanceof MainFragment) {
+                ((MainFragment)mContentFragment).onNewIntent(intent);
             }
         }
     }
 
     private void setContentSection(String key) {
+        if (key.equals(mContentSection)) {
+            return;
+        }
+
         Fragment fragment;
         int navId;
         switch (key) {
         case EXTRA_SECTION_FILTER_LIST:
-            fragment = new UserFiltersFragment();
+            fragment = new FilterRulesFragment();
             navId = R.id.main_drawer_user_filters;
             break;
         case EXTRA_SECTION_BLOCKED_SMS_LIST:
@@ -195,6 +199,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    public void setFabIcon(int iconId) {
+        mFloatingActionButton.setImageResource(iconId);
+    }
+
     public void setFabCallback(View.OnClickListener listener) {
         mFloatingActionButton.setOnClickListener(listener);
     }
@@ -212,10 +220,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .translationY(mFloatingActionButton.getHeight() + lp.bottomMargin)
             .setInterpolator(new AccelerateInterpolator(2))
             .start();
-    }
-
-    public void setFabIcon(int iconId) {
-        mFloatingActionButton.setImageResource(iconId);
     }
 
     public Snackbar makeSnackbar(int textId) {
