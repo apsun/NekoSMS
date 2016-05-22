@@ -6,7 +6,7 @@ import android.provider.BaseColumns;
 import com.crossbowffs.nekosms.BuildConfig;
 
 public final class DatabaseContract {
-    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".database";
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     public static class BlockedMessages implements BaseColumns {

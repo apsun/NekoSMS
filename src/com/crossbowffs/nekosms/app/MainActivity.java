@@ -36,8 +36,8 @@ import java.util.WeakHashMap;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String ACTION_OPEN_SECTION = "action_open_section";
     public static final String EXTRA_SECTION = "section";
-    public static final String EXTRA_SECTION_FILTER_LIST = "filter_list";
-    public static final String EXTRA_SECTION_BLOCKED_SMS_LIST = "blocked_sms_list";
+    public static final String EXTRA_SECTION_FILTER_RULES = "filter_rules";
+    public static final String EXTRA_SECTION_BLOCKED_MESSAGES = "blocked_messages";
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
     private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showModuleUpdatedDialog();
             }
         }
-        setContentSection(EXTRA_SECTION_FILTER_LIST);
+        setContentSection(EXTRA_SECTION_FILTER_RULES);
     }
 
     @Override
@@ -125,11 +125,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         mDrawerLayout.closeDrawer(mNavigationView);
         switch (item.getItemId()) {
-        case R.id.main_drawer_user_filters:
-            setContentSection(EXTRA_SECTION_FILTER_LIST);
+        case R.id.main_drawer_filter_rules:
+            setContentSection(EXTRA_SECTION_FILTER_RULES);
             return true;
         case R.id.main_drawer_blocked_messages:
-            setContentSection(EXTRA_SECTION_BLOCKED_SMS_LIST);
+            setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES);
             return true;
         case R.id.main_drawer_settings:
             setContentSection(EXTRA_SECTION_SETTINGS);
@@ -163,11 +163,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment;
         int navId;
         switch (key) {
-        case EXTRA_SECTION_FILTER_LIST:
+        case EXTRA_SECTION_FILTER_RULES:
             fragment = new FilterRulesFragment();
             navId = R.id.main_drawer_user_filters;
             break;
-        case EXTRA_SECTION_BLOCKED_SMS_LIST:
+        case EXTRA_SECTION_BLOCKED_MESSAGES:
             fragment = new BlockedMessagesFragment();
             navId = R.id.main_drawer_blocked_messages;
             break;
