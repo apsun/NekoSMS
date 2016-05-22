@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.app;
+package com.crossbowffs.nekosms.widget;
 
 import android.app.Fragment;
 import android.app.FragmentManager;

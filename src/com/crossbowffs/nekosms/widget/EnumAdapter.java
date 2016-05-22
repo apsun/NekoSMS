@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.app;
+package com.crossbowffs.nekosms.widget;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,21 +11,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/* package */ class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
+public class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
     private final Context mContext;
     private final LayoutInflater mInflater;
-    private final int mLayout;
+    private final int mMainLayout;
+    private final int mDropdownLayout;
     private final List<T> mItems;
     private Map<T, String> mStringMap;
 
     public EnumAdapter(Context context, int layout, Class<T> cls) {
-        this(context, layout, cls.getEnumConstants());
+        this(context, layout, layout, cls);
     }
 
     public EnumAdapter(Context context, int layout, T[] items) {
+        this(context, layout, layout, items);
+    }
+
+    public EnumAdapter(Context context, int mainLayout, int dropdownLayout, Class<T> cls) {
+        this(context, mainLayout, dropdownLayout, cls.getEnumConstants());
+    }
+
+    public EnumAdapter(Context context, int mainLayout, int dropdownLayout, T[] items) {
         mContext = context;
         mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mLayout = layout;
+        mMainLayout = mainLayout;
+        mDropdownLayout = dropdownLayout;
         mItems = Arrays.asList(items);
     }
 
@@ -35,6 +45,10 @@ import java.util.Map;
 
     public Map<T, String> getStringMap() {
         return mStringMap;
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     public int getPosition(T item) {
@@ -64,18 +78,22 @@ import java.util.Map;
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            convertView = newView(mContext, parent);
+            convertView = mInflater.inflate(mMainLayout, parent, false);
         }
-
-        bindView(mContext, convertView, getItem(position));
+        bindMainView(convertView, getItem(position));
         return convertView;
     }
 
-    protected View newView(Context context, ViewGroup parent) {
-        return mInflater.inflate(mLayout, parent, false);
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = mInflater.inflate(mDropdownLayout, parent, false);
+        }
+        bindDropdownView(convertView, getItem(position));
+        return convertView;
     }
 
-    protected void bindView(Context context, View view, T item) {
+    private void defaultBindView(View view, T item) {
         if (view instanceof TextView) {
             TextView textView = (TextView)view;
             String itemString = getItemString(item);
@@ -84,6 +102,14 @@ import java.util.Map;
         }
 
         throw new IllegalStateException("Cannot automatically bind view of type " + view.getClass().getName());
+    }
+
+    protected void bindMainView(View view, T item) {
+        defaultBindView(view, item);
+    }
+
+    protected void bindDropdownView(View view, T item) {
+        defaultBindView(view, item);
     }
 
     protected String getItemString(T item) {

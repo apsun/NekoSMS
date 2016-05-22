@@ -19,28 +19,6 @@
     <string name="open_drawer">Open navigation drawer</string>
     <string name="close_drawer">Close navigation drawer</string>
 
-    <!-- Import/export -->
-    <string name="import_export">Import/export</string>
-    <string name="import_from_storage">Import from storage</string>
-    <string name="export_to_storage">Export to storage</string>
-    <string name="import_success">Import successful</string>
-    <string name="import_no_backup">No backup file found</string>
-    <string name="import_invalid_backup">Invalid backup file</string>
-    <string name="import_read_failed">Could not read backup file</string>
-    <string name="import_cannot_read_storage">External storage is not readable</string>
-    <string name="export_success">Export successful</string>
-    <string name="export_write_failed">Could not write backup file</string>
-    <string name="export_cannot_write_storage">External storage is not writable</string>
-    <string name="need_storage_permission">Storage permissions required</string>
-    <string name="backup_option_filters">Filters</string>
-    <string name="backup_option_settings">Settings</string>
-    <string name="backup_options_dialog_title_import">Select items to import</string>
-    <string name="backup_options_dialog_title_export">Select items to export</string>
-    <string name="backup_button_import">Import</string>
-    <string name="backup_button_export">Export</string>
-    <string name="progress_importing">Importing data from storage…</string>
-    <string name="progress_exporting">Exporting data to storage…</string>
-
     <!-- Filter rules -->
     <string name="filter_rules">Filter rules</string>
     <string name="filter_rules_empty_text">Go ahead, create a filter rule! Nyaa~</string>
@@ -79,16 +57,14 @@
 
     <!-- Filter editor -->
     <string name="filter_editor">Filter editor</string>
-    <string name="save_filter">Save filter</string>
     <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter saved</string>
-    <string name="filter_already_exists">Filter already exists</string>
+    <string name="filter_save_failed">Unable to save filter</string>
     <string name="invalid_pattern_title">Invalid pattern</string>
-    <string name="format_invalid_pattern_message">The pattern you have entered is not a legal regular expression!\n\nReason: %s</string>
+    <string name="format_invalid_pattern_message">The %1$s pattern you have entered is not a legal regular expression!\n\nReason: %2$s</string>
+    <string name="invalid_pattern_field_sender">sender</string>
+    <string name="invalid_pattern_field_body">body</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
-
-    <!-- Filter lists -->
-    <string name="filter_lists">Filter lists</string>
 
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>
@@ -121,9 +97,9 @@
     <string name="filter_action">Action</string>
     <string name="filter_field">Field</string>
     <string name="filter_mode">Mode</string>
-    <string name="filter_case_sensitive">Case sensitive</string>
-    <string name="filter_action_allow">Allow</string>
-    <string name="filter_action_block">Block</string>
+    <string name="filter_case">Case</string>
+    <string name="filter_action_allow">Whitelist mode</string>
+    <string name="filter_action_block">Blacklist mode</string>
     <string name="filter_mode_regex">Regular expression</string>
     <string name="filter_mode_wildcard">Wildcard</string>
     <string name="filter_mode_contains">Contains</string>
@@ -132,6 +108,8 @@
     <string name="filter_mode_equals">Equals</string>
     <string name="filter_field_sender">Sender</string>
     <string name="filter_field_body">Body</string>
+    <string name="filter_case_sensitive">Sensitive</string>
+    <string name="filter_case_insensitive">Insensitive</string>
 
     <!-- Preferences -->
     <string name="settings">Settings</string>

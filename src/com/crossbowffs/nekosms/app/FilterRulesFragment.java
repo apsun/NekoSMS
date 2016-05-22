@@ -13,6 +13,7 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.widget.ListRecyclerView;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -56,7 +57,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Context darkTheme = new ContextThemeWrapper(getActivity(), R.style.AppTheme);
         LayoutInflater localInflater = inflater.cloneInContext(darkTheme);
-        View view = localInflater.inflate(R.layout.fragment_filter_list, container, false);
+        View view = localInflater.inflate(R.layout.fragment_filter_rules, container, false);
         mFilterListView = (ListRecyclerView)view.findViewById(R.id.activity_filter_list_recyclerview);
         mEmptyView = view.findViewById(android.R.id.empty);
         return view;

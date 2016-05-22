@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.app;
+package com.crossbowffs.nekosms.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

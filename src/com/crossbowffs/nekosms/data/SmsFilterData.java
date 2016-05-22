@@ -6,20 +6,30 @@ public class SmsFilterData {
     private SmsFilterPatternData mSenderPattern;
     private SmsFilterPatternData mBodyPattern;
 
-    public void setId(long id) {
+    public SmsFilterData setId(long id) {
         mId = id;
+        return this;
     }
 
-    public void setAction(SmsFilterAction action) {
+    public SmsFilterData setAction(SmsFilterAction action) {
         mAction = action;
+        return this;
     }
 
-    public void setSenderPattern(SmsFilterPatternData pattern) {
+    public SmsFilterData setSenderPattern(SmsFilterPatternData pattern) {
+        if (pattern.getField() != SmsFilterField.SENDER) {
+            throw new IllegalArgumentException("Pattern must have field set to SENDER");
+        }
         mSenderPattern = pattern;
+        return this;
     }
 
-    public void setBodyPattern(SmsFilterPatternData pattern) {
+    public SmsFilterData setBodyPattern(SmsFilterPatternData pattern) {
+        if (pattern.getField() != SmsFilterField.BODY) {
+            throw new IllegalArgumentException("Pattern must have field set to BODY");
+        }
         mBodyPattern = pattern;
+        return this;
     }
 
     public long getId() {

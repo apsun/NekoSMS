@@ -19,28 +19,6 @@
     <string name="open_drawer">扩展导航抽屉</string>
     <string name="close_drawer">隐藏导航抽屉</string>
 
-    <!-- Import/export -->
-    <string name="import_export">导入/导出</string>
-    <string name="import_from_storage">从储存导入</string>
-    <string name="export_to_storage">导出到储存</string>
-    <string name="import_success">导入成功</string>
-    <string name="import_no_backup">未找到备份文件</string>
-    <string name="import_invalid_backup">备份文件已损坏</string>
-    <string name="import_read_failed">无法读取备份文件</string>
-    <string name="import_cannot_read_storage">无法读取储存</string>
-    <string name="export_success">导出成功</string>
-    <string name="export_write_failed">无法写入备份文件</string>
-    <string name="export_cannot_write_storage">无法写入储存</string>
-    <string name="need_storage_permission">此功能需要储存续写权限</string>
-    <string name="backup_option_filters">过滤规则</string>
-    <string name="backup_option_settings">设置</string>
-    <string name="backup_options_dialog_title_import">导入选项</string>
-    <string name="backup_options_dialog_title_export">导出选项</string>
-    <string name="backup_button_import">导入</string>
-    <string name="backup_button_export">导出</string>
-    <string name="progress_importing">正在导入数据…</string>
-    <string name="progress_exporting">正在导出数据…</string>
-
     <!-- Filter rules -->
     <string name="filter_rules">过滤规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
@@ -48,7 +26,7 @@
     <string name="filter_config_action_allow">允许：</string>
     <string name="filter_config_action_block">拦截：</string>
     <string name="filter_config_field_sender">发送者</string>
-    <string name="filter_config_field_body">内容</string>
+    <string name="filter_config_field_body">文本</string>
     <string name="filter_config_mode_regex">匹配正则表达式</string>
     <string name="filter_config_mode_wildcard">匹配通配符</string>
     <string name="filter_config_mode_contains">包含</string>
@@ -77,13 +55,14 @@
     </string>
 
     <!-- Filter editor -->
-    <string name="filter_editor">编辑过滤规则</string>
-    <string name="save_filter">保存过滤规则</string>
+    <string name="filter_editor">过滤规则编辑器</string>
     <string name="discard_changes">舍弃更改</string>
     <string name="filter_saved">过滤规则已保存</string>
-    <string name="filter_already_exists">过滤规则已存在</string>
-    <string name="invalid_pattern_title">表达式不合法</string>
-    <string name="format_invalid_pattern_message">您输入的表达式不是合法的正则表达式！\n\n原因：%s</string>
+    <string name="filter_save_failed">无法保存过滤规则</string>
+    <string name="format_invalid_pattern_title">表达式不合法</string>
+    <string name="format_invalid_pattern_message">您输入%1$s的表达式不是合法的正则表达式！\n\n原因：%2$s</string>
+    <string name="invalid_pattern_field_sender">发送者</string>
+    <string name="invalid_pattern_field_body">文本</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
@@ -117,9 +96,9 @@
     <string name="filter_action">操作</string>
     <string name="filter_field">匹配字段</string>
     <string name="filter_mode">匹配方法</string>
-    <string name="filter_case_sensitive">区分大小写</string>
-    <string name="filter_action_allow">允许</string>
-    <string name="filter_action_block">拦截</string>
+    <string name="filter_case">大小写</string>
+    <string name="filter_action_allow">白名单模式</string>
+    <string name="filter_action_block">黑名单模式</string>
     <string name="filter_mode_regex">正则表达式</string>
     <string name="filter_mode_wildcard">通配符</string>
     <string name="filter_mode_contains">包含</string>
@@ -127,7 +106,9 @@
     <string name="filter_mode_suffix">以…结尾</string>
     <string name="filter_mode_equals">等于</string>
     <string name="filter_field_sender">发送者</string>
-    <string name="filter_field_body">内容</string>
+    <string name="filter_field_body">文本</string>
+    <string name="filter_case_sensitive">区分</string>
+    <string name="filter_case_insensitive">不区分</string>
 
     <!-- Preferences -->
     <string name="settings">设置</string>

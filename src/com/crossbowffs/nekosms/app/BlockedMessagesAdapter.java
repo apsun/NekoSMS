@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
+import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
 /* package */ class BlockedMessagesAdapter extends RecyclerCursorAdapter<BlockedMessagesAdapter.BlockedSmsItemHolder> {
     public class BlockedSmsItemHolder extends RecyclerView.ViewHolder {

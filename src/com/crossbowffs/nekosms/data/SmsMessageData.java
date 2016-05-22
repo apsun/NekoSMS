@@ -9,32 +9,39 @@ public class SmsMessageData {
     private boolean mRead;
     private boolean mSeen;
 
-    public void setId(long id) {
+    public SmsMessageData setId(long id) {
         mId = id;
+        return this;
     }
 
-    public void setSender(String sender) {
+    public SmsMessageData setSender(String sender) {
         mSender = sender;
+        return this;
     }
 
-    public void setBody(String body) {
+    public SmsMessageData setBody(String body) {
         mBody = body;
+        return this;
     }
 
-    public void setTimeSent(long timeSent) {
+    public SmsMessageData setTimeSent(long timeSent) {
         mTimeSent = timeSent;
+        return this;
     }
 
-    public void setTimeReceived(long timeReceived) {
+    public SmsMessageData setTimeReceived(long timeReceived) {
         mTimeReceived = timeReceived;
+        return this;
     }
 
-    public void setRead(boolean read) {
+    public SmsMessageData setRead(boolean read) {
         mRead = read;
+        return this;
     }
 
-    public void setSeen(boolean seen) {
+    public SmsMessageData setSeen(boolean seen) {
         mSeen = seen;
+        return this;
     }
 
     public long getId() {

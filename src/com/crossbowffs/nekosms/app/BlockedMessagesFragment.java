@@ -19,6 +19,7 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.widget.ListRecyclerView;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
@@ -40,7 +41,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_blockedsms_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_blocked_messages, container, false);
         mBlockedSmsListView = (ListRecyclerView)view.findViewById(R.id.activity_blockedsms_list_recyclerview);
         mEmptyView = view.findViewById(android.R.id.empty);
         return view;

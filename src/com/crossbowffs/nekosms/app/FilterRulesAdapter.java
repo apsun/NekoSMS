@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
+import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
 /* package */ class FilterRulesAdapter extends RecyclerCursorAdapter<FilterRulesAdapter.UserFiltersItemHolder> {
     public static class UserFiltersItemHolder extends RecyclerView.ViewHolder {

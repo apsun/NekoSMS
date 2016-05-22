@@ -31,14 +31,14 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
     private static final String CREATE_FILTER_RULES_TABLE =
         "CREATE TABLE " + FilterRules.TABLE + "(" +
-            FilterRules._ID                      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            FilterRules.ACTION                   + " INTEGER NOT NULL, " +
-            FilterRules.SENDER_MODE              + " TEXT, " +
-            FilterRules.SENDER_PATTERN           + " TEXT, " +
-            FilterRules.SENDER_CASE_SENSITIVE    + " INTEGER, " +
-            FilterRules.BODY_MODE                + " TEXT, " +
-            FilterRules.BODY_PATTERN             + " TEXT, " +
-            FilterRules.BODY_CASE_SENSITIVE      + " INTEGER" +
+            FilterRules._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            FilterRules.ACTION                  + " INTEGER NOT NULL, " +
+            FilterRules.SENDER_MODE             + " TEXT, " +
+            FilterRules.SENDER_PATTERN          + " TEXT, " +
+            FilterRules.SENDER_CASE_SENSITIVE   + " INTEGER, " +
+            FilterRules.BODY_MODE               + " TEXT, " +
+            FilterRules.BODY_PATTERN            + " TEXT, " +
+            FilterRules.BODY_CASE_SENSITIVE     + " INTEGER" +
         ");";
 
     public DatabaseHelper(Context context) {

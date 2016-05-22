@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.crossbowffs.nekosms.app.ListRecyclerView
+    <com.crossbowffs.nekosms.widget.ListRecyclerView
         android:id="@+id/activity_blockedsms_list_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

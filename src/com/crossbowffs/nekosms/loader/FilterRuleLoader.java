@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -73,7 +74,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         }
         values.put(FilterRules.ACTION, data.getAction() == SmsFilterAction.BLOCK ? 1 : 0);
         SmsFilterPatternData senderPattern = data.getSenderPattern();
-        if (senderPattern != null) {
+        if (senderPattern != null && !TextUtils.isEmpty(senderPattern.getPattern())) {
             values.put(FilterRules.SENDER_MODE, senderPattern.getMode().name());
             values.put(FilterRules.SENDER_PATTERN, senderPattern.getPattern());
             values.put(FilterRules.SENDER_CASE_SENSITIVE, senderPattern.isCaseSensitive() ? 1 : 0);
@@ -83,7 +84,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             values.putNull(FilterRules.SENDER_CASE_SENSITIVE);
         }
         SmsFilterPatternData bodyPattern = data.getBodyPattern();
-        if (bodyPattern != null) {
+        if (bodyPattern != null && !TextUtils.isEmpty(bodyPattern.getPattern())) {
             values.put(FilterRules.BODY_MODE, bodyPattern.getMode().name());
             values.put(FilterRules.BODY_PATTERN, bodyPattern.getPattern());
             values.put(FilterRules.BODY_CASE_SENSITIVE, bodyPattern.isCaseSensitive() ? 1 : 0);

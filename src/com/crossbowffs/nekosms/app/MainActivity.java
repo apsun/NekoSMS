@@ -66,24 +66,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mFloatingActionButton = (FloatingActionButton)findViewById(R.id.main_fab);
 
-        mNavigationView.setNavigationItemSelectedListener(this);
-
+        // Setup toolbar
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Setup navigation drawer
+        mNavigationView.setNavigationItemSelectedListener(this);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open_drawer, R.string.close_drawer);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
+        // This is used to cache displayed snackbars, so we can
+        // dismiss them when switching between fragments.
         mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
 
+        // Process intent. Open a specific section if necessary.
         Intent intent = getIntent();
         if (intent != null && ACTION_OPEN_SECTION.equals(intent.getAction())) {
             setContentSection(intent.getStringExtra(EXTRA_SECTION));
             return;
         }
+
+        // Restore saved state. Note that the Xposed dialog stuff
+        // is only displayed on initial activity creation, to prevent
+        // it from being re-displayed when the screen rotates.
         if (savedInstanceState != null) {
             String sectionKey = savedInstanceState.getString(EXTRA_SECTION);
             if (sectionKey != null) {
@@ -165,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (key) {
         case EXTRA_SECTION_FILTER_RULES:
             fragment = new FilterRulesFragment();
-            navId = R.id.main_drawer_user_filters;
+            navId = R.id.main_drawer_filter_rules;
             break;
         case EXTRA_SECTION_BLOCKED_MESSAGES:
             fragment = new BlockedMessagesFragment();

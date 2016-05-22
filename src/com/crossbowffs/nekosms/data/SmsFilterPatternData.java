@@ -6,20 +6,24 @@ public class SmsFilterPatternData {
     private String mPattern;
     private boolean mCaseSensitive;
 
-    public void setField(SmsFilterField field) {
+    public SmsFilterPatternData setField(SmsFilterField field) {
         mField = field;
+        return this;
     }
 
-    public void setMode(SmsFilterMode mode) {
+    public SmsFilterPatternData setMode(SmsFilterMode mode) {
         mMode = mode;
+        return this;
     }
 
-    public void setPattern(String pattern) {
+    public SmsFilterPatternData setPattern(String pattern) {
         mPattern = pattern;
+        return this;
     }
 
-    public void setCaseSensitive(boolean caseSensitive) {
+    public SmsFilterPatternData setCaseSensitive(boolean caseSensitive) {
         mCaseSensitive = caseSensitive;
+        return this;
     }
 
     public SmsFilterField getField() {
