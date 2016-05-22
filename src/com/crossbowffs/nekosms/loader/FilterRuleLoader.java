@@ -42,26 +42,38 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         case FilterRules.SENDER_MODE:
             if (!cursor.isNull(column))
                 ensureSenderPattern(data).setMode(SmsFilterMode.parse(cursor.getString(column)));
+            else
+                data.setSenderPattern(null);
             break;
         case FilterRules.SENDER_PATTERN:
             if (!cursor.isNull(column))
                 ensureSenderPattern(data).setPattern(cursor.getString(column));
+            else
+                data.setSenderPattern(null);
             break;
         case FilterRules.SENDER_CASE_SENSITIVE:
             if (!cursor.isNull(column))
                 ensureSenderPattern(data).setCaseSensitive(cursor.getInt(column) != 0);
+            else
+                data.setSenderPattern(null);
             break;
         case FilterRules.BODY_MODE:
             if (!cursor.isNull(column))
                 ensureBodyPattern(data).setMode(SmsFilterMode.parse(cursor.getString(column)));
+            else
+                data.setBodyPattern(null);
             break;
         case FilterRules.BODY_PATTERN:
             if (!cursor.isNull(column))
                 ensureBodyPattern(data).setPattern(cursor.getString(column));
+            else
+                data.setBodyPattern(null);
             break;
         case FilterRules.BODY_CASE_SENSITIVE:
             if (!cursor.isNull(column))
                 ensureBodyPattern(data).setCaseSensitive(cursor.getInt(column) != 0);
+            else
+                data.setBodyPattern(null);
             break;
         }
     }

@@ -23,9 +23,9 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         public BlockedSmsItemHolder(View itemView) {
             super(itemView);
 
-            mSenderTextView = (TextView)itemView.findViewById(R.id.listitem_blockedsms_list_sender_textview);
-            mTimeSentTextView = (TextView)itemView.findViewById(R.id.listitem_blockedsms_list_timesent_textview);
-            mBodyTextView = (TextView)itemView.findViewById(R.id.listitem_blockedsms_list_body_textview);
+            mSenderTextView = (TextView)itemView.findViewById(R.id.blocked_message_sender_textview);
+            mTimeSentTextView = (TextView)itemView.findViewById(R.id.blocked_message_time_sent_textview);
+            mBodyTextView = (TextView)itemView.findViewById(R.id.blocked_message_body_textview);
         }
     }
 

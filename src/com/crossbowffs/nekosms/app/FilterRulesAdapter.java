@@ -9,19 +9,23 @@ import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
+import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
 /* package */ class FilterRulesAdapter extends RecyclerCursorAdapter<FilterRulesAdapter.UserFiltersItemHolder> {
     public static class UserFiltersItemHolder extends RecyclerView.ViewHolder {
-        public final TextView mConfigTextView;
-        public final TextView mPatternTextView;
+        public final TextView mInfoTextView1;
+        public final TextView mPatternTextView1;
+        public final TextView mInfoTextView2;
+        public final TextView mPatternTextView2;
         public SmsFilterData mFilterData;
 
         public UserFiltersItemHolder(View itemView) {
             super(itemView);
-
-            mConfigTextView = (TextView)itemView.findViewById(R.id.listitem_filter_list_config_textview);
-            mPatternTextView = (TextView)itemView.findViewById(R.id.listitem_filter_list_pattern_textview);
+            mInfoTextView1 = (TextView)itemView.findViewById(R.id.filter_rule_info_textview1);
+            mPatternTextView1 = (TextView)itemView.findViewById(R.id.filter_rule_pattern_textview1);
+            mInfoTextView2 = (TextView)itemView.findViewById(R.id.filter_rule_info_textview2);
+            mPatternTextView2 = (TextView)itemView.findViewById(R.id.filter_rule_pattern_textview2);
         }
     }
 
@@ -51,23 +55,32 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
         final long id = filterData.getId();
         SmsFilterAction action = filterData.getAction();
-        /*SmsFilterPatternData senderPattern = filterData.getSenderPattern();
+        SmsFilterPatternData senderPattern = filterData.getSenderPattern();
         SmsFilterPatternData bodyPattern = filterData.getBodyPattern();
-        SmsFilterField field = filterData.getField();
-        SmsFilterMode mode = filterData.getMode();*/
-        String pattern = ""; //filterData.getPattern();
-        boolean caseSensitive = false; //filterData.isCaseSensitive();
-
-        String actionString = mFragment.getString(getFilterActionStringId(action));
-        String fieldString = ""; //mFragment.getString(getFilterFieldStringId(field));
-        String modeString = ""; //mFragment.getString(getFilterModeStringId(mode));
-        String caseSensitiveString = "";
-        if (caseSensitive) {
-            caseSensitiveString = mFragment.getString(R.string.filter_config_case_sensitive);
+        SmsFilterPatternData pattern1;
+        SmsFilterPatternData pattern2 = null;
+        if (senderPattern == null) {
+            pattern1 = bodyPattern;
+        } else if (bodyPattern == null) {
+            pattern1 = senderPattern;
+        } else {
+            pattern1 = senderPattern;
+            pattern2 = bodyPattern;
         }
-        String configString = mFragment.getString(R.string.format_filter_config, actionString, fieldString, modeString, caseSensitiveString);
-        holder.mConfigTextView.setText(configString);
-        holder.mPatternTextView.setText(pattern);
+
+        holder.mInfoTextView1.setText(buildFilterInfoString(R.string.format_filter_info1, action, pattern1));
+        holder.mPatternTextView1.setText(pattern1.getPattern());
+        if (pattern2 != null) {
+            holder.mInfoTextView2.setText(buildFilterInfoString(R.string.format_filter_info2, action, pattern2));
+            holder.mPatternTextView2.setText(pattern2.getPattern());
+            holder.mInfoTextView2.setVisibility(View.VISIBLE);
+            holder.mPatternTextView2.setVisibility(View.VISIBLE);
+        } else {
+            holder.mInfoTextView2.setText(null);
+            holder.mPatternTextView2.setText(null);
+            holder.mInfoTextView2.setVisibility(View.GONE);
+            holder.mPatternTextView2.setVisibility(View.GONE);
+        }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,12 +90,23 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         });
     }
 
+    private String buildFilterInfoString(int lineId, SmsFilterAction action, SmsFilterPatternData patternData) {
+        String actionString = mFragment.getString(getFilterActionStringId(action));
+        String fieldString = mFragment.getString(getFilterFieldStringId(patternData.getField()));
+        String modeString = mFragment.getString(getFilterModeStringId(patternData.getMode()));
+        String caseSensitiveString = "";
+        if (patternData.isCaseSensitive()) {
+            caseSensitiveString = mFragment.getString(R.string.filter_info_case_sensitive);
+        }
+        return mFragment.getString(lineId, actionString, fieldString, modeString, caseSensitiveString);
+    }
+
     private int getFilterActionStringId(SmsFilterAction action) {
         switch (action) {
         case ALLOW:
-            return R.string.filter_config_action_allow;
+            return R.string.filter_info_action_allow;
         case BLOCK:
-            return R.string.filter_config_action_block;
+            return R.string.filter_info_action_block;
         default:
             return 0;
         }
@@ -91,9 +115,9 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
     private int getFilterFieldStringId(SmsFilterField field) {
         switch (field) {
         case SENDER:
-            return R.string.filter_config_field_sender;
+            return R.string.filter_info_field_sender;
         case BODY:
-            return R.string.filter_config_field_body;
+            return R.string.filter_info_field_body;
         default:
             return 0;
         }
@@ -102,17 +126,17 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
     private int getFilterModeStringId(SmsFilterMode mode) {
         switch (mode) {
         case REGEX:
-            return R.string.filter_config_mode_regex;
+            return R.string.filter_info_mode_regex;
         case WILDCARD:
-            return R.string.filter_config_mode_wildcard;
+            return R.string.filter_info_mode_wildcard;
         case CONTAINS:
-            return R.string.filter_config_mode_contains;
+            return R.string.filter_info_mode_contains;
         case PREFIX:
-            return R.string.filter_config_mode_prefix;
+            return R.string.filter_info_mode_prefix;
         case SUFFIX:
-            return R.string.filter_config_mode_suffix;
+            return R.string.filter_info_mode_suffix;
         case EQUALS:
-            return R.string.filter_config_mode_equals;
+            return R.string.filter_info_mode_equals;
         default:
             return 0;
         }

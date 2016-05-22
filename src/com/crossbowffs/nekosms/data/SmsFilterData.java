@@ -17,7 +17,7 @@ public class SmsFilterData {
     }
 
     public SmsFilterData setSenderPattern(SmsFilterPatternData pattern) {
-        if (pattern.getField() != SmsFilterField.SENDER) {
+        if (pattern != null && pattern.getField() != SmsFilterField.SENDER) {
             throw new IllegalArgumentException("Pattern must have field set to SENDER");
         }
         mSenderPattern = pattern;
@@ -25,7 +25,7 @@ public class SmsFilterData {
     }
 
     public SmsFilterData setBodyPattern(SmsFilterPatternData pattern) {
-        if (pattern.getField() != SmsFilterField.BODY) {
+        if (pattern != null && pattern.getField() != SmsFilterField.BODY) {
             throw new IllegalArgumentException("Pattern must have field set to BODY");
         }
         mBodyPattern = pattern;

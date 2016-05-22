@@ -28,10 +28,9 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     private static final String TAG = BlockedMessagesFragment.class.getSimpleName();
     private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
 
-    private ListRecyclerView mBlockedSmsListView;
+    private ListRecyclerView mRecyclerView;
     private View mEmptyView;
     private BlockedMessagesAdapter mAdapter;
-    private String mMessageDetailsFormatString;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,7 +41,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_blocked_messages, container, false);
-        mBlockedSmsListView = (ListRecyclerView)view.findViewById(R.id.activity_blockedsms_list_recyclerview);
+        mRecyclerView = (ListRecyclerView)view.findViewById(R.id.blocked_messages_recyclerview);
         mEmptyView = view.findViewById(android.R.id.empty);
         return view;
     }
@@ -53,10 +52,9 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         mAdapter = new BlockedMessagesAdapter(this);
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
-        mBlockedSmsListView.setAdapter(mAdapter);
-        mBlockedSmsListView.setEmptyView(mEmptyView);
-        mBlockedSmsListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mMessageDetailsFormatString = getString(R.string.format_message_details);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setEmptyView(mEmptyView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         setFabVisible(false);
         setFabCallback(null);
         setTitle(R.string.blocked_messages);
@@ -168,10 +166,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         String body = messageData.getBody();
         long timeSent = messageData.getTimeSent();
         String escapedBody = Html.escapeHtml(body).replace("&#10;", "<br>");
-        String timeSentString = DateUtils.getRelativeDateTimeString(
-            context, timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
-        Spanned html = Html.fromHtml(String.format(
-            mMessageDetailsFormatString, sender, timeSentString, escapedBody));
+        String timeSentString = DateUtils.getRelativeDateTimeString(context, timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
+        Spanned html = Html.fromHtml(getString(R.string.format_message_details, sender, timeSentString, escapedBody));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
             .setMessage(html)

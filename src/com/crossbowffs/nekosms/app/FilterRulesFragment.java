@@ -43,7 +43,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
 
     private static final String TAG = FilterRulesFragment.class.getSimpleName();
 
-    private ListRecyclerView mFilterListView;
+    private ListRecyclerView mRecyclerView;
     private View mEmptyView;
     private FilterRulesAdapter mAdapter;
 
@@ -58,7 +58,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         Context darkTheme = new ContextThemeWrapper(getActivity(), R.style.AppTheme);
         LayoutInflater localInflater = inflater.cloneInContext(darkTheme);
         View view = localInflater.inflate(R.layout.fragment_filter_rules, container, false);
-        mFilterListView = (ListRecyclerView)view.findViewById(R.id.activity_filter_list_recyclerview);
+        mRecyclerView = (ListRecyclerView)view.findViewById(R.id.filter_rules_recyclerview);
         mEmptyView = view.findViewById(android.R.id.empty);
         return view;
     }
@@ -70,11 +70,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mAdapter = adapter;
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
-        mFilterListView.setAdapter(adapter);
-        mFilterListView.setEmptyView(mEmptyView);
-        mFilterListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mFilterListView.addOnScrollListener(new ScrollListener());
-        registerForContextMenu(mFilterListView);
+        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setEmptyView(mEmptyView);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.addOnScrollListener(new ScrollListener());
+        registerForContextMenu(mRecyclerView);
         setFabVisible(true);
         setFabIcon(R.drawable.ic_create_white_24dp);
         setFabCallback(new View.OnClickListener() {
