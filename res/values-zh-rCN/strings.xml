@@ -131,5 +131,6 @@
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s（已拦截）</string>
     <string name="format_notification_multi_count">%d条已拦截信息</string>
-    <string name="format_notification_multi_item">%1$s：%2$s</string>
+    <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
+    <string name="view_in_nekosms">打开NekoSMS查看</string>
 </resources>

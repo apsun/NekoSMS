@@ -155,17 +155,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onNewIntent(intent);
         setIntent(intent);
         if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            setContentSection(intent.getStringExtra(EXTRA_SECTION));
-        } else {
-            if (mContentFragment instanceof MainFragment) {
-                ((MainFragment)mContentFragment).onNewIntent(intent);
+            if (setContentSection(intent.getStringExtra(EXTRA_SECTION))) {
+                return;
             }
+        }
+        if (mContentFragment instanceof MainFragment) {
+            ((MainFragment)mContentFragment).onNewIntent(intent);
         }
     }
 
-    private void setContentSection(String key) {
+    private boolean setContentSection(String key) {
         if (key.equals(mContentSection)) {
-            return;
+            return false;
         }
 
         Fragment fragment;
@@ -195,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mContentFragment = fragment;
         mContentSection = key;
         mNavigationView.setCheckedItem(navId);
+        return true;
     }
 
     public void setFabVisible(boolean visible) {

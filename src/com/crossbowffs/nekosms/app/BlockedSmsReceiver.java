@@ -9,12 +9,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.loader.CursorWrapper;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.loader.*;
+import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
+import com.crossbowffs.nekosms.loader.CursorWrapper;
+import com.crossbowffs.nekosms.loader.DatabaseException;
+import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.preferences.PrefConsts;
 import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
@@ -81,16 +85,18 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         SmsMessageData data = new SmsMessageData();
-        String firstLine = null;
+        Spanned firstLine = null;
         while (messages.moveToNext()) {
             data = messages.get(data);
-            String line = context.getString(R.string.format_notification_multi_item, data.getSender(), data.getBody());
+            String escapedSender = Html.escapeHtml(data.getSender());
+            String escapedBody = Html.escapeHtml(data.getBody());
+            Spanned line = Html.fromHtml(context.getString(R.string.format_notification_multi_item, escapedSender, escapedBody));
             if (firstLine == null) {
                 firstLine = line;
             }
             inboxStyle.addLine(line);
         }
-        inboxStyle.setSummaryText("View in NekoSMS"); // TODO
+        inboxStyle.setSummaryText(context.getString(R.string.view_in_nekosms));
 
         Notification notification = new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
