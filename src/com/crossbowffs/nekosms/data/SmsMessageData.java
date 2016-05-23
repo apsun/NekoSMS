@@ -1,13 +1,27 @@
 package com.crossbowffs.nekosms.data;
 
 public class SmsMessageData {
-    private long mId = -1;
+    private long mId;
     private String mSender;
     private String mBody;
     private long mTimeSent;
     private long mTimeReceived;
     private boolean mRead;
     private boolean mSeen;
+
+    public SmsMessageData() {
+        reset();
+    }
+
+    public void reset() {
+        mId = -1;
+        mSender = null;
+        mBody = null;
+        mTimeSent = 0;
+        mTimeReceived = 0;
+        mRead = false;
+        mSeen = false;
+    }
 
     public SmsMessageData setId(long id) {
         mId = id;

@@ -27,6 +27,8 @@ public abstract class AutoContentLoader<T> {
     public T getData(Cursor cursor, int[] columns, T data) {
         if (data == null) {
             data = newData();
+        } else {
+            clearData(data);
         }
         for (int i = 0; i < columns.length; ++i) {
             if (columns[i] >= 0) {
@@ -133,6 +135,8 @@ public abstract class AutoContentLoader<T> {
     }
 
     protected abstract T newData();
+
+    protected abstract void clearData(T data);
 
     protected abstract void bindData(Cursor cursor, int column, String columnName, T data);
 

@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
-import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
 /* package */ class FilterRulesAdapter extends RecyclerCursorAdapter<FilterRulesAdapter.UserFiltersItemHolder> {
@@ -59,9 +58,9 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         SmsFilterPatternData bodyPattern = filterData.getBodyPattern();
         SmsFilterPatternData pattern1;
         SmsFilterPatternData pattern2 = null;
-        if (senderPattern == null) {
+        if (!senderPattern.hasData()) {
             pattern1 = bodyPattern;
-        } else if (bodyPattern == null) {
+        } else if (!bodyPattern.hasData()) {
             pattern1 = senderPattern;
         } else {
             pattern1 = senderPattern;

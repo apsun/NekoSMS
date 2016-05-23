@@ -1,14 +1,26 @@
 package com.crossbowffs.nekosms.data;
 
+import android.text.TextUtils;
+
 public class SmsFilterPatternData {
-    private SmsFilterField mField;
+    private final SmsFilterField mField;
     private SmsFilterMode mMode;
     private String mPattern;
     private boolean mCaseSensitive;
 
-    public SmsFilterPatternData setField(SmsFilterField field) {
+    public SmsFilterPatternData(SmsFilterField field) {
+        reset();
         mField = field;
-        return this;
+    }
+
+    public boolean hasData() {
+        return !TextUtils.isEmpty(mPattern);
+    }
+
+    public void reset() {
+        mMode = null;
+        mPattern = null;
+        mCaseSensitive = false;
     }
 
     public SmsFilterPatternData setMode(SmsFilterMode mode) {

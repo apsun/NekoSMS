@@ -4,8 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.text.TextUtils;
-import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
@@ -31,6 +33,11 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
     }
 
     @Override
+    protected void clearData(SmsFilterData data) {
+        data.reset();
+    }
+
+    @Override
     protected void bindData(Cursor cursor, int column, String columnName, SmsFilterData data) {
         switch (columnName) {
         case FilterRules._ID:
@@ -40,40 +47,24 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             data.setAction(cursor.getInt(column) == 0 ? SmsFilterAction.ALLOW : SmsFilterAction.BLOCK);
             break;
         case FilterRules.SENDER_MODE:
-            if (!cursor.isNull(column))
-                ensureSenderPattern(data).setMode(SmsFilterMode.parse(cursor.getString(column)));
-            else
-                data.setSenderPattern(null);
+            data.getSenderPattern().setMode(SmsFilterMode.parse(cursor.getString(column)));
             break;
         case FilterRules.SENDER_PATTERN:
-            if (!cursor.isNull(column))
-                ensureSenderPattern(data).setPattern(cursor.getString(column));
-            else
-                data.setSenderPattern(null);
+            data.getSenderPattern().setPattern(cursor.getString(column));
             break;
         case FilterRules.SENDER_CASE_SENSITIVE:
             if (!cursor.isNull(column))
-                ensureSenderPattern(data).setCaseSensitive(cursor.getInt(column) != 0);
-            else
-                data.setSenderPattern(null);
+                data.getSenderPattern().setCaseSensitive(cursor.getInt(column) != 0);
             break;
         case FilterRules.BODY_MODE:
-            if (!cursor.isNull(column))
-                ensureBodyPattern(data).setMode(SmsFilterMode.parse(cursor.getString(column)));
-            else
-                data.setBodyPattern(null);
+            data.getBodyPattern().setMode(SmsFilterMode.parse(cursor.getString(column)));
             break;
         case FilterRules.BODY_PATTERN:
-            if (!cursor.isNull(column))
-                ensureBodyPattern(data).setPattern(cursor.getString(column));
-            else
-                data.setBodyPattern(null);
+            data.getBodyPattern().setPattern(cursor.getString(column));
             break;
         case FilterRules.BODY_CASE_SENSITIVE:
             if (!cursor.isNull(column))
-                ensureBodyPattern(data).setCaseSensitive(cursor.getInt(column) != 0);
-            else
-                data.setBodyPattern(null);
+                data.getBodyPattern().setCaseSensitive(cursor.getInt(column) != 0);
             break;
         }
     }
@@ -86,7 +77,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         }
         values.put(FilterRules.ACTION, data.getAction() == SmsFilterAction.BLOCK ? 1 : 0);
         SmsFilterPatternData senderPattern = data.getSenderPattern();
-        if (senderPattern != null && !TextUtils.isEmpty(senderPattern.getPattern())) {
+        if (senderPattern.hasData()) {
             values.put(FilterRules.SENDER_MODE, senderPattern.getMode().name());
             values.put(FilterRules.SENDER_PATTERN, senderPattern.getPattern());
             values.put(FilterRules.SENDER_CASE_SENSITIVE, senderPattern.isCaseSensitive() ? 1 : 0);
@@ -96,7 +87,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             values.putNull(FilterRules.SENDER_CASE_SENSITIVE);
         }
         SmsFilterPatternData bodyPattern = data.getBodyPattern();
-        if (bodyPattern != null && !TextUtils.isEmpty(bodyPattern.getPattern())) {
+        if (bodyPattern.hasData()) {
             values.put(FilterRules.BODY_MODE, bodyPattern.getMode().name());
             values.put(FilterRules.BODY_PATTERN, bodyPattern.getPattern());
             values.put(FilterRules.BODY_CASE_SENSITIVE, bodyPattern.isCaseSensitive() ? 1 : 0);
@@ -137,25 +128,5 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             delete(context, filterUri);
         }
         return filterData;
-    }
-
-    private SmsFilterPatternData ensureSenderPattern(SmsFilterData data) {
-        SmsFilterPatternData pattern = data.getSenderPattern();
-        if (pattern == null) {
-            pattern = new SmsFilterPatternData();
-            pattern.setField(SmsFilterField.SENDER);
-            data.setSenderPattern(pattern);
-        }
-        return pattern;
-    }
-
-    private SmsFilterPatternData ensureBodyPattern(SmsFilterData data) {
-        SmsFilterPatternData pattern = data.getBodyPattern();
-        if (pattern == null) {
-            pattern = new SmsFilterPatternData();
-            pattern.setField(SmsFilterField.BODY);
-            data.setBodyPattern(pattern);
-        }
-        return pattern;
     }
 }

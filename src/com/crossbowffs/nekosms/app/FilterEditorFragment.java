@@ -44,7 +44,7 @@ public class FilterEditorFragment extends Fragment {
     private Spinner mCaseSpinner;
     private EnumAdapter<SmsFilterMode> mModeAdapter;
     private EnumAdapter<CaseSensitivity> mCaseAdapter;
-    private SmsFilterPatternData mPatternData = new SmsFilterPatternData();
+    private SmsFilterPatternData mPatternData;
 
     private FilterEditorActivity getEditorActivity() {
         return (FilterEditorActivity)getActivity();

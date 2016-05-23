@@ -29,6 +29,11 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     }
 
     @Override
+    protected void clearData(SmsMessageData data) {
+        data.reset();
+    }
+
+    @Override
     protected void bindData(Cursor cursor, int column, String columnName, SmsMessageData data) {
         switch (columnName) {
         case BlockedMessages._ID:

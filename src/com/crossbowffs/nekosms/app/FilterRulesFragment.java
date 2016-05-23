@@ -113,7 +113,8 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getContext(),
             DatabaseContract.FilterRules.CONTENT_URI,
-            DatabaseContract.FilterRules.ALL, null, null, null);
+            DatabaseContract.FilterRules.ALL, null, null,
+            DatabaseContract.FilterRules.ACTION + " ASC");
     }
 
     @Override

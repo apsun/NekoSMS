@@ -12,7 +12,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -126,21 +125,18 @@ public class FilterEditorActivity extends AppCompatActivity {
             mFilter = new SmsFilterData().setAction(SmsFilterAction.BLOCK);
         }
 
-        // Ensure sender and body pattern fields are not null
-        if (mFilter.getSenderPattern() == null) {
-            mFilter.setSenderPattern(new SmsFilterPatternData()
-                .setField(SmsFilterField.SENDER)
+        if (!mFilter.getSenderPattern().hasData()) {
+            mFilter.getSenderPattern()
                 .setPattern("")
                 .setMode(SmsFilterMode.CONTAINS)
-                .setCaseSensitive(false));
+                .setCaseSensitive(false);
         }
 
-        if (mFilter.getBodyPattern() == null) {
-            mFilter.setBodyPattern(new SmsFilterPatternData()
-                .setField(SmsFilterField.BODY)
+        if (!mFilter.getBodyPattern().hasData()) {
+            mFilter.getBodyPattern()
                 .setPattern("")
                 .setMode(SmsFilterMode.CONTAINS)
-                .setCaseSensitive(false));
+                .setCaseSensitive(false);
         }
 
         mActionSpinner.setSelection(mActionAdapter.getPosition(mFilter.getAction()));
@@ -209,11 +205,20 @@ public class FilterEditorActivity extends AppCompatActivity {
     }
 
     private boolean shouldSaveFilter() {
-        if (TextUtils.isEmpty(mFilter.getSenderPattern().getPattern()) &&
-            TextUtils.isEmpty(mFilter.getBodyPattern().getPattern())) {
-            return false;
+        return mFilter.getSenderPattern().hasData() || mFilter.getBodyPattern().hasData();
+    }
+
+    private boolean validatePattern(SmsFilterPatternData patternData, int fieldNameId, int tabIndex) {
+        if (!patternData.hasData()) {
+            return true;
         }
-        return true;
+        String patternError = validatePatternString(patternData, fieldNameId);
+        if (patternError == null) {
+            return true;
+        }
+        mTabLayout.getTabAt(tabIndex).select();
+        showInvalidPatternDialog(patternError);
+        return false;
     }
 
     private void saveIfValid() {
@@ -221,25 +226,12 @@ public class FilterEditorActivity extends AppCompatActivity {
             discardAndFinish();
             return;
         }
-
-        if (!TextUtils.isEmpty(mFilter.getSenderPattern().getPattern())) {
-            String senderPatternError = validatePatternString(mFilter.getSenderPattern(), R.string.invalid_pattern_field_sender);
-            if (senderPatternError != null) {
-                mTabLayout.getTabAt(0).select();
-                showInvalidPatternDialog(senderPatternError);
-                return;
-            }
+        if (!validatePattern(mFilter.getSenderPattern(), R.string.invalid_pattern_field_sender, 0)) {
+            return;
         }
-
-        if (!TextUtils.isEmpty(mFilter.getBodyPattern().getPattern())) {
-            String bodyPatternError = validatePatternString(mFilter.getBodyPattern(), R.string.invalid_pattern_field_body);
-            if (bodyPatternError != null) {
-                mTabLayout.getTabAt(1).select();
-                showInvalidPatternDialog(bodyPatternError);
-                return;
-            }
+        if (!validatePattern(mFilter.getBodyPattern(), R.string.invalid_pattern_field_body, 1)) {
+            return;
         }
-
         saveAndFinish();
     }
 
@@ -264,7 +256,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     private void showInvalidPatternDialog(String errorMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this)
-            .setTitle(R.string.format_invalid_pattern_title)
+            .setTitle(R.string.invalid_pattern_title)
             .setMessage(errorMessage)
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setPositiveButton(R.string.ok, null);
