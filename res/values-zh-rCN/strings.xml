@@ -22,8 +22,8 @@
     <!-- Filter rules -->
     <string name="filter_rules">过滤规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
-    <string name="format_filter_info1">%1$s%2$s%3$s%4$s…</string>
-    <string name="format_filter_info2">并%2$s%3$s%4$s…</string>
+    <string name="format_filter_info1">%1$s%2$s%3$s%4$s</string>
+    <string name="format_filter_info2">并%2$s%3$s%4$s</string>
     <string name="filter_info_action_allow">允许：</string>
     <string name="filter_info_action_block">拦截：</string>
     <string name="filter_info_field_sender">发送者</string>

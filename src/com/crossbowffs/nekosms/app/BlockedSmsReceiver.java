@@ -123,29 +123,23 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             return;
         }
 
-        CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context);
         Notification notification;
-        if (messages == null || messages.getCount() == 0) {
-            Xlog.e(TAG, "Failed to load read messages, falling back to intent URI");
-            Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-            SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
-            if (messageData == null) {
-                Xlog.e(TAG, "Failed to load message from intent URI");
-                if (messages != null) {
-                    messages.close();
+        try (CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context)) {
+            if (messages == null || messages.getCount() == 0) {
+                Xlog.e(TAG, "Failed to load read messages, falling back to intent URI");
+                Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+                SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
+                if (messageData == null) {
+                    Xlog.e(TAG, "Failed to load message from intent URI");
+                    return;
                 }
-                return;
+                notification = buildNotificationSingle(context, messageData);
+            } else if (messages.getCount() == 1) {
+                messages.moveToNext();
+                notification = buildNotificationSingle(context, messages.get());
+            } else {
+                notification = buildNotificationMulti(context, messages);
             }
-            notification = buildNotificationSingle(context, messageData);
-        } else if (messages.getCount() == 1) {
-            messages.moveToNext();
-            notification = buildNotificationSingle(context, messages.get());
-        } else {
-            notification = buildNotificationMulti(context, messages);
-        }
-
-        if (messages != null) {
-            messages.close();
         }
 
         NotificationManager notificationManager = getNotificationManager(context);

@@ -22,8 +22,8 @@
     <!-- Filter rules -->
     <string name="filter_rules">Filter rules</string>
     <string name="filter_rules_empty_text">Go ahead, create a filter rule! Nyaa~</string>
-    <string name="format_filter_info1">%1$s %2$s %3$s%4$s…</string>
-    <string name="format_filter_info2">and %2$s %3$s%4$s…</string>
+    <string name="format_filter_info1">%1$s %2$s %3$s%4$s</string>
+    <string name="format_filter_info2">and %2$s %3$s%4$s</string>
     <string name="filter_info_action_allow">Allow if</string>
     <string name="filter_info_action_block">Block if</string>
     <string name="filter_info_field_sender">sender</string>
