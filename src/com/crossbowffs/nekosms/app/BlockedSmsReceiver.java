@@ -88,8 +88,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         Spanned firstLine = null;
         while (messages.moveToNext()) {
             data = messages.get(data);
-            String escapedSender = Html.escapeHtml(data.getSender());
-            String escapedBody = Html.escapeHtml(data.getBody());
+            String escapedSender = Html.escapeHtml(data.getSender().replace('\n', ' '));
+            String escapedBody = Html.escapeHtml(data.getBody().replace('\n', ' '));
             Spanned line = Html.fromHtml(context.getString(R.string.format_notification_multi_item, escapedSender, escapedBody));
             if (firstLine == null) {
                 firstLine = line;
@@ -131,6 +131,9 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
             if (messageData == null) {
                 Xlog.e(TAG, "Failed to load message from intent URI");
+                if (messages != null) {
+                    messages.close();
+                }
                 return;
             }
             notification = buildNotificationSingle(context, messageData);
@@ -139,6 +142,10 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             notification = buildNotificationSingle(context, messages.get());
         } else {
             notification = buildNotificationMulti(context, messages);
+        }
+
+        if (messages != null) {
+            messages.close();
         }
 
         NotificationManager notificationManager = getNotificationManager(context);

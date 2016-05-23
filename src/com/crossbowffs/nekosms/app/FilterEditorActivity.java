@@ -265,7 +265,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public static Map<SmsFilterAction, String> getActionMap(Context context) {
+    private static Map<SmsFilterAction, String> getActionMap(Context context) {
         Resources resources = context.getResources();
         Map<SmsFilterAction, String> fieldMap = new HashMap<>(2);
         fieldMap.put(SmsFilterAction.ALLOW, resources.getString(R.string.filter_action_allow));

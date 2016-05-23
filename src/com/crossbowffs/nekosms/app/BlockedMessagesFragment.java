@@ -271,6 +271,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         SmsMessageData message = new SmsMessageData();
         message.setSender("+12345678900");
         message.setBody(
+            "First line\n" +
             "This is a test message with " +
             "loooooooooooooooooooooooooooooooooooooooooooo" +
             "ooooooooooooooooooooooooong content\n\n" +
