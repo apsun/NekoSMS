@@ -38,7 +38,7 @@ public class SmsFilter {
     }
 
     private static SmsFilterPattern createPattern(SmsFilterPatternData data) {
-        if (data == null) {
+        if (!data.hasData()) {
             return null;
         }
         switch (data.getMode()) {
