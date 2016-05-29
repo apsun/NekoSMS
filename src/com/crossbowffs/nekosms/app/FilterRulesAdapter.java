@@ -53,7 +53,6 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         holder.mFilterData = filterData;
 
         final long id = filterData.getId();
-        SmsFilterAction action = filterData.getAction();
         SmsFilterPatternData senderPattern = filterData.getSenderPattern();
         SmsFilterPatternData bodyPattern = filterData.getBodyPattern();
         SmsFilterPatternData pattern1;
@@ -67,10 +66,10 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
             pattern2 = bodyPattern;
         }
 
-        holder.mInfoTextView1.setText(buildFilterInfoString(R.string.format_filter_info1, action, pattern1));
+        holder.mInfoTextView1.setText(buildFilterInfoString(R.string.format_filter_info, pattern1));
         holder.mPatternTextView1.setText(pattern1.getPattern());
         if (pattern2 != null) {
-            holder.mInfoTextView2.setText(buildFilterInfoString(R.string.format_filter_info2, action, pattern2));
+            holder.mInfoTextView2.setText(buildFilterInfoString(R.string.format_filter_info, pattern2));
             holder.mPatternTextView2.setText(pattern2.getPattern());
             holder.mInfoTextView2.setVisibility(View.VISIBLE);
             holder.mPatternTextView2.setVisibility(View.VISIBLE);
@@ -89,26 +88,14 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         });
     }
 
-    private String buildFilterInfoString(int lineId, SmsFilterAction action, SmsFilterPatternData patternData) {
-        String actionString = mFragment.getString(getFilterActionStringId(action));
+    private String buildFilterInfoString(int lineId, SmsFilterPatternData patternData) {
         String fieldString = mFragment.getString(getFilterFieldStringId(patternData.getField()));
         String modeString = mFragment.getString(getFilterModeStringId(patternData.getMode()));
         String caseSensitiveString = "";
         if (patternData.isCaseSensitive()) {
             caseSensitiveString = mFragment.getString(R.string.filter_info_case_sensitive);
         }
-        return mFragment.getString(lineId, actionString, fieldString, modeString, caseSensitiveString);
-    }
-
-    private int getFilterActionStringId(SmsFilterAction action) {
-        switch (action) {
-        case ALLOW:
-            return R.string.filter_info_action_allow;
-        case BLOCK:
-            return R.string.filter_info_action_block;
-        default:
-            return 0;
-        }
+        return mFragment.getString(lineId, fieldString, modeString, caseSensitiveString);
     }
 
     private int getFilterFieldStringId(SmsFilterField field) {

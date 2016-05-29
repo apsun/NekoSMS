@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -32,7 +31,6 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     private static final String CREATE_FILTER_RULES_TABLE =
         "CREATE TABLE " + FilterRules.TABLE + "(" +
             FilterRules._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            FilterRules.ACTION                  + " INTEGER NOT NULL, " +
             FilterRules.SENDER_MODE             + " TEXT, " +
             FilterRules.SENDER_PATTERN          + " TEXT, " +
             FilterRules.SENDER_CASE_SENSITIVE   + " INTEGER, " +
@@ -93,8 +91,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         // Copy filters to new table
         if (filtersCursor != null) {
             while (filtersCursor.moveToNext()) {
-                ContentValues values = new ContentValues(7);
-                values.put(FilterRules.ACTION, SmsFilterAction.BLOCK.name());
+                ContentValues values = new ContentValues(6);
                 if (filtersCursor.getString(0).equals(SmsFilterField.SENDER.name())) {
                     values.put(FilterRules.SENDER_MODE, filtersCursor.getString(1));
                     values.put(FilterRules.SENDER_PATTERN, filtersCursor.getString(2));

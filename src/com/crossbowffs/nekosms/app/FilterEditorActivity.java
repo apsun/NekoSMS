@@ -1,9 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -15,38 +13,19 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
-import com.crossbowffs.nekosms.widget.EnumAdapter;
 import com.crossbowffs.nekosms.widget.FragmentPagerAdapter;
-import com.crossbowffs.nekosms.widget.OnItemSelectedListenerAdapter;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class FilterEditorActivity extends AppCompatActivity {
-    private static class TitleSpinnerAdapter extends EnumAdapter<SmsFilterAction> {
-        public TitleSpinnerAdapter(Context context) {
-            super(context, R.layout.spinner_item_with_subtitle, android.R.layout.simple_spinner_dropdown_item, SmsFilterAction.class);
-            setStringMap(getActionMap(context));
-        }
-
-        @Override
-        protected void bindMainView(View view, SmsFilterAction item) {
-            TextView titleView = (TextView)view.findViewById(R.id.spinner_item_title);
-            titleView.setText(getContext().getText(R.string.filter_editor));
-            super.bindMainView(view.findViewById(R.id.spinner_item_subtitle), item);
-        }
-    }
-
     private class FilterEditorPageAdapter extends FragmentPagerAdapter {
         public FilterEditorPageAdapter() {
             super(getFragmentManager());
@@ -89,8 +68,6 @@ public class FilterEditorActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
-    private Spinner mActionSpinner;
-    private TitleSpinnerAdapter mActionAdapter;
     private Uri mFilterUri;
     private SmsFilterData mFilter;
 
@@ -101,15 +78,12 @@ public class FilterEditorActivity extends AppCompatActivity {
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mTabLayout = (TabLayout)findViewById(R.id.filter_editor_tablayout);
         mViewPager = (ViewPager)findViewById(R.id.filter_editor_viewpager);
-        mActionSpinner = (Spinner)findViewById(R.id.filter_editor_action_spinner);
 
-        // Set up toolbar with spinner
+        // Set up toolbar
+        mToolbar.setTitle(R.string.save_filter);
         mToolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        mActionAdapter = new TitleSpinnerAdapter(this);
-        mActionSpinner.setAdapter(mActionAdapter);
 
         // Set up tab pages
         mViewPager.setAdapter(new FilterEditorPageAdapter());
@@ -120,7 +94,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         if (mFilterUri != null) {
             mFilter = FilterRuleLoader.get().query(this, mFilterUri);
         } else {
-            mFilter = new SmsFilterData().setAction(SmsFilterAction.BLOCK);
+            mFilter = new SmsFilterData();
         }
 
         // Select a tab based on which pattern has data
@@ -145,14 +119,6 @@ public class FilterEditorActivity extends AppCompatActivity {
                 .setMode(SmsFilterMode.CONTAINS)
                 .setCaseSensitive(false);
         }
-
-        mActionSpinner.setSelection(mActionAdapter.getPosition(mFilter.getAction()));
-        mActionSpinner.setOnItemSelectedListener(new OnItemSelectedListenerAdapter() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mFilter.setAction(mActionAdapter.getItem(position));
-            }
-        });
     }
 
     @Override
@@ -270,13 +236,5 @@ public class FilterEditorActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    private static Map<SmsFilterAction, String> getActionMap(Context context) {
-        Resources resources = context.getResources();
-        Map<SmsFilterAction, String> fieldMap = new HashMap<>(2);
-        fieldMap.put(SmsFilterAction.ALLOW, resources.getString(R.string.filter_action_allow));
-        fieldMap.put(SmsFilterAction.BLOCK, resources.getString(R.string.filter_action_block));
-        return fieldMap;
     }
 }

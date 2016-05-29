@@ -180,10 +180,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static boolean fillSmsFilters(ArrayList<SmsFilter> filters, Context context, FilterRuleLoader loader) {
-        try (CursorWrapper<SmsFilterData> filterCursor = loader.queryAllWhitelistFirst(context)) {
+        try (CursorWrapper<SmsFilterData> filterCursor = loader.queryAll(context)) {
             if (filterCursor == null) {
                 // Can occur if NekoSMS has been uninstalled
-                Xlog.e(TAG, "Failed to load SMS filters (loadAllFilters returned null)");
+                Xlog.e(TAG, "Failed to load SMS filters (queryAll returned null)");
                 return false;
             }
             filters.ensureCapacity(filters.size() + filterCursor.getCount());
@@ -227,12 +227,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         for (SmsFilter filter : filters) {
             if (filter.match(sender, body)) {
-                switch (filter.getAction()) {
-                case ALLOW:
-                    return false;
-                case BLOCK:
-                    return true;
-                }
+                return true;
             }
         }
         return false;

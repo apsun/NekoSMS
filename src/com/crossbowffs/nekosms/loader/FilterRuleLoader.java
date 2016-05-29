@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
@@ -43,9 +42,6 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         case FilterRules._ID:
             data.setId(cursor.getLong(column));
             break;
-        case FilterRules.ACTION:
-            data.setAction(cursor.getInt(column) == 0 ? SmsFilterAction.ALLOW : SmsFilterAction.BLOCK);
-            break;
         case FilterRules.SENDER_MODE:
             data.getSenderPattern().setMode(SmsFilterMode.parse(cursor.getString(column)));
             break;
@@ -71,11 +67,10 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
 
     @Override
     protected ContentValues serialize(SmsFilterData data) {
-        ContentValues values = new ContentValues(8);
+        ContentValues values = new ContentValues(7);
         if (data.getId() >= 0) {
             values.put(FilterRules._ID, data.getId());
         }
-        values.put(FilterRules.ACTION, data.getAction() == SmsFilterAction.BLOCK ? 1 : 0);
         SmsFilterPatternData senderPattern = data.getSenderPattern();
         if (senderPattern.hasData()) {
             values.put(FilterRules.SENDER_MODE, senderPattern.getMode().name());
@@ -97,10 +92,6 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             values.putNull(FilterRules.BODY_CASE_SENSITIVE);
         }
         return values;
-    }
-
-    public CursorWrapper<SmsFilterData> queryAllWhitelistFirst(Context context) {
-        return queryAll(context, null, null, FilterRules.ACTION + " ASC");
     }
 
     public Uri update(Context context, Uri filterUri, SmsFilterData filterData, boolean insertIfError) {

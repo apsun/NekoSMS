@@ -9,16 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="4dp">
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
-            <Spinner
-                android:id="@+id/filter_editor_action_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </android.support.v7.widget.Toolbar>
+        <include layout="@layout/toolbar"/>
         <android.support.design.widget.TabLayout
             android:id="@+id/filter_editor_tablayout"
             android:layout_width="match_parent"

@@ -22,10 +22,7 @@
     <!-- Filter rules -->
     <string name="filter_rules">过滤规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
-    <string name="format_filter_info1">%1$s%2$s%3$s%4$s</string>
-    <string name="format_filter_info2">并%2$s%3$s%4$s</string>
-    <string name="filter_info_action_allow">允许：</string>
-    <string name="filter_info_action_block">拦截：</string>
+    <string name="format_filter_info">%1$s%2$s%3$s</string>
     <string name="filter_info_field_sender">发送者</string>
     <string name="filter_info_field_body">文本</string>
     <string name="filter_info_mode_regex">匹配正则表达式</string>
@@ -57,10 +54,11 @@
 
     <!-- Filter editor -->
     <string name="filter_editor">过滤规则编辑器</string>
+    <string name="save_filter">保存过滤规则</string>
     <string name="discard_changes">舍弃更改</string>
     <string name="filter_saved">过滤规则已保存</string>
     <string name="filter_save_failed">无法保存过滤规则</string>
-    <string name="format_invalid_pattern_title">表达式不合法</string>
+    <string name="invalid_pattern_title">表达式不合法</string>
     <string name="format_invalid_pattern_message">您输入%1$s的表达式不是合法的正则表达式！\n\n原因：%2$s</string>
     <string name="invalid_pattern_field_sender">发送者</string>
     <string name="invalid_pattern_field_body">文本</string>

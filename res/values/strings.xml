@@ -22,12 +22,9 @@
     <!-- Filter rules -->
     <string name="filter_rules">Filter rules</string>
     <string name="filter_rules_empty_text">Go ahead, create a filter rule! Nyaa~</string>
-    <string name="format_filter_info1">%1$s %2$s %3$s%4$s</string>
-    <string name="format_filter_info2">and %2$s %3$s%4$s</string>
-    <string name="filter_info_action_allow">Allow if</string>
-    <string name="filter_info_action_block">Block if</string>
-    <string name="filter_info_field_sender">sender</string>
-    <string name="filter_info_field_body">body</string>
+    <string name="format_filter_info">%1$s %2$s%3$s</string>
+    <string name="filter_info_field_sender">Sender</string>
+    <string name="filter_info_field_body">Body</string>
     <string name="filter_info_mode_regex">matches regex</string>
     <string name="filter_info_mode_wildcard">matches wildcard</string>
     <string name="filter_info_mode_contains">contains</string>
@@ -58,6 +55,7 @@
 
     <!-- Filter editor -->
     <string name="filter_editor">Filter editor</string>
+    <string name="save_filter">Save filter</string>
     <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter saved</string>
     <string name="filter_save_failed">Unable to save filter</string>

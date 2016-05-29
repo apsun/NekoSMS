@@ -6,18 +6,12 @@ import com.crossbowffs.nekosms.utils.Xlog;
 public class SmsFilter {
     private static final String TAG = SmsFilter.class.getSimpleName();
 
-    private final SmsFilterAction mAction;
     private final SmsFilterPattern mSenderPattern;
     private final SmsFilterPattern mBodyPattern;
 
     public SmsFilter(SmsFilterData data) {
-        mAction = data.getAction();
         mSenderPattern = createPattern(data.getSenderPattern());
         mBodyPattern = createPattern(data.getBodyPattern());
-    }
-
-    public SmsFilterAction getAction() {
-        return mAction;
     }
 
     public boolean match(String sender, String body) {
