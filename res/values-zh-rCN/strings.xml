@@ -11,7 +11,7 @@
     <string name="about">关于</string>
     <string name="ignore">忽略</string>
     <string name="close">关闭</string>
-    <string name="restore">恢复</string>
+    <string name="restore">还原</string>
     <string name="undo">撤消</string>
     <string name="cancel">取消</string>
 
@@ -22,7 +22,7 @@
     <!-- Filter rules -->
     <string name="filter_rules">过滤规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
-    <string name="format_filter_info">%1$s%2$s%3$s</string>
+    <string name="format_filter_info">%1$s %2$s%3$s</string>
     <string name="filter_info_field_sender">发送者</string>
     <string name="filter_info_field_body">文本</string>
     <string name="filter_info_mode_regex">匹配正则表达式</string>
@@ -34,10 +34,10 @@
     <string name="filter_info_case_sensitive">（区分大小写）</string>
     <string name="filter_deleted">过滤规则已删除</string>
     <string name="filter_actions">过滤规则操作</string>
-    <string name="enable_xposed_module_title">请启用Xposed模块</string>
+    <string name="enable_xposed_module_title">启用Xposed模块</string>
     <string name="enable_xposed_module_message">
-        由于Android不允许非默认的短信应用拦截信息或写入信息收件箱，
-        您先必须启用此应用自带的Xposed模块。否则，此应用将无法工作。
+        由于Android 4.4以上不允许非默认的短信应用拦截信息或写入信息收件箱，
+        您必须先启用NekoSMS的Xposed模块。否则，此应用将无法工作。
     </string>
     <string name="module_outdated_title">Xposed模块已更新</string>
     <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
@@ -59,7 +59,7 @@
     <string name="filter_saved">过滤规则已保存</string>
     <string name="filter_save_failed">无法保存过滤规则</string>
     <string name="invalid_pattern_title">表达式不合法</string>
-    <string name="format_invalid_pattern_message">您输入%1$s的表达式不是合法的正则表达式！\n\n原因：%2$s</string>
+    <string name="format_invalid_pattern_message">您输入的%1$s表达式不是合法的正则表达式！\n\n原因：%2$s</string>
     <string name="invalid_pattern_field_sender">发送者</string>
     <string name="invalid_pattern_field_body">文本</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
@@ -92,12 +92,9 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">表达式</string>
-    <string name="filter_action">操作</string>
     <string name="filter_field">匹配字段</string>
-    <string name="filter_mode">匹配方法</string>
+    <string name="filter_mode">匹配方式</string>
     <string name="filter_case">大小写</string>
-    <string name="filter_action_allow">白名单模式</string>
-    <string name="filter_action_block">黑名单模式</string>
     <string name="filter_mode_regex">正则表达式</string>
     <string name="filter_mode_wildcard">通配符</string>
     <string name="filter_mode_contains">包含</string>
@@ -117,18 +114,18 @@
     <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_enable">启用通知</string>
-    <string name="pref_notifications_enable_summary">信息被拦截时显示通知</string>
+    <string name="pref_notifications_enable_summary">当信息被拦截显示通知</string>
     <string name="pref_notifications_ringtone">铃声</string>
     <string name="pref_notifications_ringtone_none">无</string>
     <string name="pref_notifications_vibrate">震动</string>
     <string name="pref_notifications_lights">灯光</string>
-
-    <!-- Debug stuff -->
-    <string name="create_test_message">创建测试信息</string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s（已拦截）</string>
     <string name="format_notification_multi_count">%d条已拦截信息</string>
     <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
     <string name="view_in_nekosms">打开NekoSMS查看</string>
+
+    <!-- Debug stuff -->
+    <string name="create_test_message">创建测试信息</string>
 </resources>

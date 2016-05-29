@@ -36,7 +36,7 @@
     <string name="filter_actions">Filter actions</string>
     <string name="enable_xposed_module_title">Enable Xposed module</string>
     <string name="enable_xposed_module_message">
-        Android does not allow apps other than the default SMS app to intercept
+        Android 4.4+ does not allow apps other than the default SMS app to intercept
         SMS messages or write to the SMS inbox.\n\nTo bypass this restriction,
         you must enable the Xposed module. Until you do so, this app will not work.
     </string>
@@ -93,12 +93,9 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">Pattern</string>
-    <string name="filter_action">Action</string>
     <string name="filter_field">Field</string>
     <string name="filter_mode">Mode</string>
     <string name="filter_case">Case</string>
-    <string name="filter_action_allow">Whitelist mode</string>
-    <string name="filter_action_block">Blacklist mode</string>
     <string name="filter_mode_regex">Regular expression</string>
     <string name="filter_mode_wildcard">Wildcard</string>
     <string name="filter_mode_contains">Contains</string>
@@ -124,12 +121,12 @@
     <string name="pref_notifications_vibrate">Vibration</string>
     <string name="pref_notifications_lights">Lights</string>
 
-    <!-- Debug stuff -->
-    <string name="create_test_message">Create test message</string>
-
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s (blocked)</string>
     <string name="format_notification_multi_count">%d blocked messages</string>
     <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
     <string name="view_in_nekosms">View in NekoSMS</string>
+
+    <!-- Debug stuff -->
+    <string name="create_test_message">Create test message</string>
 </resources>
