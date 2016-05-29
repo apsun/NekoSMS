@@ -9,17 +9,10 @@
         android:id="@+id/spinner_item_title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="16dp"
-        android:textColor="?android:textColorPrimary"
-        android:singleLine="true"/>
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"/>
     <TextView
         android:id="@+id/spinner_item_subtitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="10dp"
-        android:textStyle="bold"
-        android:ellipsize="marquee"
-        android:singleLine="true"
-        android:textAllCaps="true"
-        android:textColor="?android:textColorPrimary"/>
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"/>
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.crossbowffs.nekosms.app;
 import android.app.Fragment;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,7 @@ public class FilterEditorFragment extends Fragment {
     public static final int EXTRA_MODE_SENDER = 0;
     public static final int EXTRA_MODE_BODY = 1;
 
+    private TextInputLayout mPatternTextInputLayout;
     private EditText mPatternEditText;
     private Spinner mModeSpinner;
     private Spinner mCaseSpinner;
@@ -65,6 +67,7 @@ public class FilterEditorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pattern_editor, container, false);
+        mPatternTextInputLayout = (TextInputLayout)view.findViewById(R.id.filter_editor_pattern_inputlayout);
         mPatternEditText = (EditText)view.findViewById(R.id.filter_editor_pattern_edittext);
         mModeSpinner = (Spinner)view.findViewById(R.id.filter_editor_mode_spinner);
         mCaseSpinner = (Spinner)view.findViewById(R.id.filter_editor_case_spinner);
@@ -87,8 +90,11 @@ public class FilterEditorFragment extends Fragment {
         // Load pattern data corresponding to the current tab
         mPatternData = getEditorActivity().getPatternData(getFilterField());
 
-        // Bind controls to pattern fields
+        // Disable hint animation as workaround for drawing issue during activity creation
+        // See https://code.google.com/p/android/issues/detail?id=179776
+        mPatternTextInputLayout.setHintAnimationEnabled(false);
         mPatternEditText.setText(mPatternData.getPattern());
+        mPatternTextInputLayout.setHintAnimationEnabled(true);
         mPatternEditText.addTextChangedListener(new TextWatcherAdapter() {
             @Override
             public void afterTextChanged(Editable s) {

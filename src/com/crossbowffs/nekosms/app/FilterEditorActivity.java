@@ -114,10 +114,8 @@ public class FilterEditorActivity extends AppCompatActivity {
         // Set up tab pages
         mViewPager.setAdapter(new FilterEditorPageAdapter());
         mTabLayout.setupWithViewPager(mViewPager);
-        mTabLayout.getTabAt(0).select();
 
         // Process intent for modifying existing filter if it exists
-        // Otherwise, default to some reasonable values.
         mFilterUri = getIntent().getData();
         if (mFilterUri != null) {
             mFilter = FilterRuleLoader.get().query(this, mFilterUri);
@@ -125,6 +123,15 @@ public class FilterEditorActivity extends AppCompatActivity {
             mFilter = new SmsFilterData().setAction(SmsFilterAction.BLOCK);
         }
 
+        // Select a tab based on which pattern has data
+        // Default to the sender tab if neither has data
+        if (!mFilter.getSenderPattern().hasData() && mFilter.getBodyPattern().hasData()) {
+            mTabLayout.getTabAt(1).select();
+        } else {
+            mTabLayout.getTabAt(0).select();
+        }
+
+        // Initialize empty patterns with some reasonable default values
         if (!mFilter.getSenderPattern().hasData()) {
             mFilter.getSenderPattern()
                 .setPattern("")
