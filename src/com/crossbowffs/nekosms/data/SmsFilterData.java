@@ -2,8 +2,8 @@ package com.crossbowffs.nekosms.data;
 
 public class SmsFilterData {
     private long mId = -1;
-    private SmsFilterPatternData mSenderPattern = new SmsFilterPatternData(SmsFilterField.SENDER);
-    private SmsFilterPatternData mBodyPattern = new SmsFilterPatternData(SmsFilterField.BODY);
+    private final SmsFilterPatternData mSenderPattern = new SmsFilterPatternData(SmsFilterField.SENDER);
+    private final SmsFilterPatternData mBodyPattern = new SmsFilterPatternData(SmsFilterField.BODY);
 
     public void reset() {
         mId = -1;

@@ -93,7 +93,6 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">Pattern</string>
-    <string name="filter_field">Field</string>
     <string name="filter_mode">Mode</string>
     <string name="filter_case">Case</string>
     <string name="filter_mode_regex">Regular expression</string>

@@ -5,10 +5,10 @@ import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 
 /* package */ abstract class SmsFilterPattern {
-    private SmsFilterField mField;
-    private SmsFilterMode mMode;
-    private String mPattern;
-    private boolean mCaseSensitive;
+    private final SmsFilterField mField;
+    private final SmsFilterMode mMode;
+    private final String mPattern;
+    private final boolean mCaseSensitive;
 
     public SmsFilterPattern(SmsFilterPatternData data) {
         mField = data.getField();

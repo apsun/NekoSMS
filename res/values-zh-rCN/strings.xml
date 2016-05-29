@@ -92,7 +92,6 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">表达式</string>
-    <string name="filter_field">匹配字段</string>
     <string name="filter_mode">匹配方式</string>
     <string name="filter_case">大小写</string>
     <string name="filter_mode_regex">正则表达式</string>
