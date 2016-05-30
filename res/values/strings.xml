@@ -32,7 +32,7 @@
     <string name="filter_info_mode_suffix">ends with</string>
     <string name="filter_info_mode_equals">equals</string>
     <string name="filter_info_case_sensitive">\u0020(case sensitive)</string>
-    <string name="filter_deleted">Filter deleted</string>
+    <string name="filter_deleted">Filter rule deleted</string>
     <string name="filter_actions">Filter actions</string>
     <string name="enable_xposed_module_title">Enable Xposed module</string>
     <string name="enable_xposed_module_message">
@@ -53,12 +53,12 @@
         ]]>
     </string>
 
-    <!-- Filter editor -->
-    <string name="filter_editor">Filter editor</string>
-    <string name="save_filter">Save filter</string>
+    <!-- Filter rule editor -->
+    <string name="filter_editor">Filter rule editor</string>
+    <string name="save_filter">Save filter rule</string>
     <string name="discard_changes">Discard changes</string>
-    <string name="filter_saved">Filter saved</string>
-    <string name="filter_save_failed">Unable to save filter</string>
+    <string name="filter_saved">Filter rule saved</string>
+    <string name="filter_save_failed">Unable to save filter rule</string>
     <string name="invalid_pattern_title">Invalid pattern</string>
     <string name="format_invalid_pattern_message">The %1$s pattern you have entered is not a legal regular expression!\n\nReason: %2$s</string>
     <string name="invalid_pattern_field_sender">sender</string>
@@ -71,7 +71,7 @@
     <string name="must_enable_xposed_module">Xposed module must be enabled</string>
     <string name="clear_blocked_messages">Clear blocked messages</string>
     <string name="confirm_clear_messages_title">Delete all messages?</string>
-    <string name="confirm_clear_messages_message">Your messages will be gone forever (a very long time)!</string>
+    <string name="confirm_clear_messages_message">Your messages will be gone forever! (A very long time!)</string>
     <string name="cleared_blocked_messages">Deleted all blocked messages</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
@@ -114,7 +114,7 @@
     <string name="pref_enable_summary_alt">You must enable the Xposed module first!</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_enable">Enable notifications</string>
-    <string name="pref_notifications_enable_summary">When a message is blocked, display a notification</string>
+    <string name="pref_notifications_enable_summary">Display a notification when a message is blocked</string>
     <string name="pref_notifications_ringtone">Ringtone</string>
     <string name="pref_notifications_ringtone_none">None</string>
     <string name="pref_notifications_vibrate">Vibration</string>

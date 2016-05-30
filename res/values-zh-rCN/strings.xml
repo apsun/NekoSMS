@@ -11,7 +11,7 @@
     <string name="about">关于</string>
     <string name="ignore">忽略</string>
     <string name="close">关闭</string>
-    <string name="restore">还原</string>
+    <string name="restore">恢复</string>
     <string name="undo">撤消</string>
     <string name="cancel">取消</string>
 
@@ -22,7 +22,7 @@
     <!-- Filter rules -->
     <string name="filter_rules">过滤规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
-    <string name="format_filter_info">%1$s %2$s%3$s</string>
+    <string name="format_filter_info">%1$s%2$s%3$s</string>
     <string name="filter_info_field_sender">发送者</string>
     <string name="filter_info_field_body">文本</string>
     <string name="filter_info_mode_regex">匹配正则表达式</string>
@@ -70,7 +70,7 @@
     <string name="must_enable_xposed_module">需要启用Xposed模块</string>
     <string name="clear_blocked_messages">清空拦截信息</string>
     <string name="confirm_clear_messages_title">删除所有信息？</string>
-    <string name="confirm_clear_messages_message">信息被删除后永远无法恢复哦！</string>
+    <string name="confirm_clear_messages_message">信息被删除后永远无法恢复！</string>
     <string name="cleared_blocked_messages">已删除所有信息</string>
     <string name="message_deleted">信息已删除</string>
     <string name="message_restored">信息已恢复到收件箱</string>
@@ -113,7 +113,7 @@
     <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_enable">启用通知</string>
-    <string name="pref_notifications_enable_summary">当信息被拦截显示通知</string>
+    <string name="pref_notifications_enable_summary">当信息被拦截时显示通知</string>
     <string name="pref_notifications_ringtone">铃声</string>
     <string name="pref_notifications_ringtone_none">无</string>
     <string name="pref_notifications_vibrate">震动</string>
