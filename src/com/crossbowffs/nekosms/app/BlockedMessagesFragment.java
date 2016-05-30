@@ -65,6 +65,11 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     @Override
     protected void onNewIntent(Intent intent) {
         showMessageDetailsDialog(intent);
+
+        // Also make sure we mark all messages seen if we open a notification
+        // while the fragment is open. Ideally we should check the action,
+        // but since there's only one entry point we can ignore it.
+        BlockedSmsLoader.get().markAllSeen(getContext());
     }
 
     @Override
