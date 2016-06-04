@@ -5,19 +5,16 @@ A pattern-based text message blocker for Android.
 ## Example configuration
 
 Block all messages that contain the word `spam`:
-> Pattern: `spam`  
-> Field: `Body`  
-> Mode: `Contains`
+`Body` `Contains` `spam`
 
 Block all messages coming from numbers that start with `12345`:
-> Pattern: `12345`  
-> Field: `Sender`  
-> Mode: `Starts with`
+`Sender` `Starts with` `12345`
 
-Block all messages starting with `the` and ending with `game`:
-> Pattern: `^the.*game$`  
-> Field: `Body`  
-> Mode: `Regular expression`
+Block all messages starting with `the` and ending with `game` (case sensitive):
+`Body` `Regular expression` `Case sensitive` `^the.*game$`
+
+Block all messages coming from `10001` matching the wildcard pattern `megane*poi`:
+`Sender` `Equals` `10001`, `Body` `Wildcard` `megane*poi`
 
 ## Requirements
 
@@ -56,7 +53,6 @@ In order to bypass this restriction, code must be modified at the OS level.
 ### What are the permissions used for?
 
 - `android.permission.{READ, WRITE}_SMS` for obvious reasons
-- `android.permission.{READ, WRITE}_EXTERNAL_STORAGE` for importing/exporting backups
 - `android.permission.VIBRATE` for notifications
 
 ### Does NekoSMS work with (insert SMS app here)?

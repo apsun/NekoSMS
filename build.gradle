@@ -28,8 +28,8 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        versionCode 16
-        versionName "0.10.0-dev"
+        versionCode 17
+        versionName "0.10.0"
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"
