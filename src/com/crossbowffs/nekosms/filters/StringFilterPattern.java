@@ -15,7 +15,7 @@ import com.crossbowffs.nekosms.data.SmsFilterPatternData;
     }
 
     @Override
-    public boolean match(String sender, String body) {
+    protected boolean matchInternal(String sender, String body) {
         String testString;
         switch (getField()) {
         case SENDER:

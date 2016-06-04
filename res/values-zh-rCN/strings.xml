@@ -52,7 +52,7 @@
         ]]>
     </string>
 
-    <!-- Filter editor -->
+    <!-- Filter rule editor -->
     <string name="filter_editor">过滤规则编辑器</string>
     <string name="save_filter">保存过滤规则</string>
     <string name="discard_changes">舍弃更改</string>

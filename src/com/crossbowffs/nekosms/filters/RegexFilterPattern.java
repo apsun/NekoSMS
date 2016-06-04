@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
     }
 
     @Override
-    public boolean match(String sender, String body) {
+    protected boolean matchInternal(String sender, String body) {
         switch (getField()) {
         case SENDER:
             mMatcher.reset(sender);
