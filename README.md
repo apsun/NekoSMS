@@ -4,16 +4,16 @@ A pattern-based text message blocker for Android.
 
 ## Example configuration
 
-Block all messages that contain the word `spam`:
+Block all messages that contain the word `spam`:  
 `Body` `Contains` `spam`
 
-Block all messages coming from numbers that start with `12345`:
+Block all messages coming from numbers that start with `12345`:  
 `Sender` `Starts with` `12345`
 
-Block all messages starting with `the` and ending with `game` (case sensitive):
+Block all messages starting with `the` and ending with `game` (case sensitive):  
 `Body` `Regular expression` `Case sensitive` `^the.*game$`
 
-Block all messages coming from `10001` matching the wildcard pattern `megane*poi`:
+Block all messages coming from `10001` matching the wildcard pattern `megane*poi`:  
 `Sender` `Equals` `10001`, `Body` `Wildcard` `megane*poi`
 
 ## Requirements
