@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
                 sb.append(".*");
             } else if (c == '?') {
                 sb.append('.');
-            } else if ("\\[]{}()+?^$|".indexOf(c) >= 0) {
+            } else if ("\\.[]{}()+-^$|".indexOf(c) >= 0) {
                 sb.append('\\');
                 sb.append(c);
             } else {
