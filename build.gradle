@@ -28,13 +28,14 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        versionCode 17
-        versionName "0.10.0"
+        versionCode 18
+        versionName "0.11.0-dev"
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"
         buildConfigField("int", "MODULE_VERSION", "9")
         buildConfigField("int", "DATABASE_VERSION", "9")
+        buildConfigField("int", "BACKUP_VERSION", "2")
     }
 
     sourceSets {

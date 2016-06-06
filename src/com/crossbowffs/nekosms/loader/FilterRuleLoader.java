@@ -1,13 +1,20 @@
 package com.crossbowffs.nekosms.loader;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
@@ -119,5 +126,22 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             delete(context, filterUri);
         }
         return filterData;
+    }
+
+    public boolean replaceAll(Context context, List<SmsFilterData> filters) {
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>(filters.size() + 1);
+        ops.add(ContentProviderOperation.newDelete(FilterRules.CONTENT_URI).build());
+        for (SmsFilterData filter : filters) {
+            ContentValues values = serialize(filter);
+            ops.add(ContentProviderOperation.newInsert(FilterRules.CONTENT_URI).withValues(values).build());
+        }
+        try {
+            context.getContentResolver().applyBatch(DatabaseContract.AUTHORITY, ops);
+            return true;
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        } catch (OperationApplicationException e) {
+            return false;
+        }
     }
 }

@@ -9,7 +9,6 @@ public class SmsFilterPatternData {
     private boolean mCaseSensitive;
 
     public SmsFilterPatternData(SmsFilterField field) {
-        reset();
         mField = field;
     }
 

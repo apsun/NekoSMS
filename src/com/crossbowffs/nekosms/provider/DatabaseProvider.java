@@ -3,7 +3,8 @@ package com.crossbowffs.nekosms.provider;
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static com.crossbowffs.nekosms.provider.DatabaseContract.*;
+import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
+import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
 public class DatabaseProvider extends AutoContentProvider {
     public DatabaseProvider() {
@@ -14,7 +15,7 @@ public class DatabaseProvider extends AutoContentProvider {
     }
 
     @Override
-    protected SQLiteOpenHelper getDatabase(Context context) {
+    protected SQLiteOpenHelper createDatabaseHelper(Context context) {
         return new DatabaseHelper(context);
     }
 }

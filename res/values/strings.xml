@@ -19,6 +19,26 @@
     <string name="open_drawer">Open navigation drawer</string>
     <string name="close_drawer">Close navigation drawer</string>
 
+    <!-- Import/export -->
+    <string name="import_export">Import/export</string>
+    <string name="import_from_storage">Import from storage</string>
+    <string name="export_to_storage">Export to storage</string>
+    <string name="import_choose_file">Choose backup file</string>
+    <string name="export_file_name">Backup file name</string>
+    <string name="import_success">Import successful</string>
+    <string name="import_no_backup">No backup files found</string>
+    <string name="import_invalid_backup">Invalid backup file</string>
+    <string name="import_read_failed">Could not read backup file</string>
+    <string name="import_cannot_read_storage">External storage is not readable</string>
+    <string name="export_success">Export successful</string>
+    <string name="export_write_failed">Could not write backup file</string>
+    <string name="export_cannot_write_storage">External storage is not writable</string>
+    <string name="need_storage_permission">Storage permissions required</string>
+    <string name="backup_button_import">Import</string>
+    <string name="backup_button_export">Export</string>
+    <string name="progress_importing">Importing data from storage…</string>
+    <string name="progress_exporting">Exporting data to storage…</string>
+
     <!-- Filter rules -->
     <string name="filter_rules">Filter rules</string>
     <string name="filter_rules_empty_text">Go ahead, create a filter rule! Nyaa~</string>

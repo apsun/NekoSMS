@@ -17,7 +17,7 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.loader.*;
-import com.crossbowffs.nekosms.preferences.PrefConsts;
+import com.crossbowffs.nekosms.app.PreferenceConsts;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -170,7 +170,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private RemotePreferences createRemotePreferences(Context context) {
-        return new RemotePreferences(context, PrefConsts.REMOTE_PREFS_AUTHORITY, PrefConsts.FILE_MAIN);
+        return new RemotePreferences(context, PreferenceConsts.REMOTE_PREFS_AUTHORITY, PreferenceConsts.FILE_MAIN);
     }
 
     private void broadcastBlockedSms(Context context, Uri messageUri) {
@@ -266,7 +266,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         Xlog.d(TAG, "Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
-            new Class<?>[] {int.class}, 3);
+            new Class<?>[] {int.class}, 3 /* EVENT_BROADCAST_COMPLETE */);
     }
 
     private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
@@ -291,7 +291,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        boolean enable = mPreferences.getBoolean(PrefConsts.KEY_ENABLE, false);
+        boolean enable = mPreferences.getBoolean(PreferenceConsts.KEY_ENABLE, PreferenceConsts.KEY_ENABLE_DEFAULT);
         if (!enable) {
             Xlog.i(TAG, "SMS blocking disabled in app preferences");
             return;

@@ -10,6 +10,8 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+
 public abstract class AutoContentProvider extends ContentProvider {
     protected static class ProviderTable {
         private final String mTableName;
@@ -25,7 +27,7 @@ public abstract class AutoContentProvider extends ContentProvider {
 
     private final ProviderTable[] mTables;
     private final UriMatcher mUriMatcher;
-    private SQLiteOpenHelper mDatabase;
+    private SQLiteOpenHelper mDatabaseHelper;
 
     public AutoContentProvider(String authority, ProviderTable[] tables) {
         mTables = tables;
@@ -39,7 +41,7 @@ public abstract class AutoContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        mDatabase = getDatabase(getContext());
+        mDatabaseHelper = createDatabaseHelper(getContext());
         return true;
     }
 
@@ -54,7 +56,7 @@ public abstract class AutoContentProvider extends ContentProvider {
             queryBuilder.appendWhere(BaseColumns._ID + "=" + uri.getLastPathSegment());
         }
         queryBuilder.setTables(getTableName(matchCode));
-        SQLiteDatabase db = mDatabase.getReadableDatabase();
+        SQLiteDatabase db = getDatabase(false);
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
@@ -75,7 +77,7 @@ public abstract class AutoContentProvider extends ContentProvider {
         if (matchCode < 0 || isItemUri(matchCode)) {
             throw new IllegalArgumentException("Invalid insert URI: " + uri);
         }
-        SQLiteDatabase db = mDatabase.getWritableDatabase();
+        SQLiteDatabase db = getDatabase(true);
         long row = db.insert(getTableName(matchCode), null, values);
         Uri newUri = ContentUris.withAppendedId(uri, row);
         if (row >= 0) {
@@ -94,7 +96,7 @@ public abstract class AutoContentProvider extends ContentProvider {
         String tableName = getTableName(matchCode);
         int successCount = 0;
         ContentResolver contentResolver = getContext().getContentResolver();
-        SQLiteDatabase db = mDatabase.getWritableDatabase();
+        SQLiteDatabase db = getDatabase(true);
         for (ContentValues values : bulkValues) {
             long row = db.insert(tableName, null, values);
             if (row >= 0) {
@@ -116,7 +118,7 @@ public abstract class AutoContentProvider extends ContentProvider {
         if (isItemUri(matchCode)) {
             selection = getCombinedSelectionString(BaseColumns._ID, uri, selection);
         }
-        SQLiteDatabase db = mDatabase.getWritableDatabase();
+        SQLiteDatabase db = getDatabase(true);
         int deletedRows = db.delete(getTableName(matchCode), selection, selectionArgs);
         if (selection == null || deletedRows > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
@@ -133,12 +135,34 @@ public abstract class AutoContentProvider extends ContentProvider {
         if (isItemUri(matchCode)) {
             selection = getCombinedSelectionString(BaseColumns._ID, uri, selection);
         }
-        SQLiteDatabase db = mDatabase.getWritableDatabase();
+        SQLiteDatabase db = getDatabase(true);
         int updatedRows = db.update(getTableName(matchCode), values, selection, selectionArgs);
         if (updatedRows > 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
         return updatedRows;
+    }
+
+    @NonNull
+    @Override
+    public ContentProviderResult[] applyBatch(@NonNull ArrayList<ContentProviderOperation> operations) throws OperationApplicationException {
+        // Since we opened the database as writable, each call to the
+        // content provider operations will reuse the same database instance.
+        // This is technically taking advantage of an implementation detail -
+        // it may be cleaner to create an overloaded version of the operation
+        // methods that take the database as a parameter.
+        SQLiteDatabase db = getDatabase(true);
+        ContentProviderResult[] results = new ContentProviderResult[operations.size()];
+        db.beginTransaction();
+        try {
+            for (int i = 0; i < results.length; ++i) {
+                results[i] = operations.get(i).apply(this, results, i);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return results;
     }
 
     private boolean isItemUri(int matchCode) {
@@ -158,7 +182,15 @@ public abstract class AutoContentProvider extends ContentProvider {
         }
     }
 
-    protected abstract SQLiteOpenHelper getDatabase(Context context);
+    protected abstract SQLiteOpenHelper createDatabaseHelper(Context context);
+
+    protected SQLiteDatabase getDatabase(boolean write) {
+        if (write) {
+            return mDatabaseHelper.getWritableDatabase();
+        } else {
+            return mDatabaseHelper.getReadableDatabase();
+        }
+    }
 
     private static String getCombinedSelectionString(String idColumnName, Uri uri, String selection) {
         String profileWhere = idColumnName + "=" + uri.getLastPathSegment();

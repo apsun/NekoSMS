@@ -19,6 +19,26 @@
     <string name="open_drawer">扩展导航抽屉</string>
     <string name="close_drawer">隐藏导航抽屉</string>
 
+    <!-- Import/export -->
+    <string name="import_export">导入/导出</string>
+    <string name="import_from_storage">从储存导入</string>
+    <string name="export_to_storage">导出到储存</string>
+    <string name="import_choose_file">选择备份文件</string>
+    <string name="export_file_name">备份文件名</string>
+    <string name="import_success">导入成功</string>
+    <string name="import_no_backup">未找到备份文件</string>
+    <string name="import_invalid_backup">备份文件已损坏</string>
+    <string name="import_read_failed">无法读取备份文件</string>
+    <string name="import_cannot_read_storage">无法读取储存</string>
+    <string name="export_success">导出成功</string>
+    <string name="export_write_failed">无法写入备份文件</string>
+    <string name="export_cannot_write_storage">无法写入储存</string>
+    <string name="need_storage_permission">此功能需要储存续写权限</string>
+    <string name="backup_button_import">导入</string>
+    <string name="backup_button_export">导出</string>
+    <string name="progress_importing">正在导入数据…</string>
+    <string name="progress_exporting">正在导出数据…</string>
+
     <!-- Filter rules -->
     <string name="filter_rules">过滤规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>

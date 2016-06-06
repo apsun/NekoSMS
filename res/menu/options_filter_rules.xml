@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_item_import_export_filters"
+        android:title="@string/import_export"
+        android:icon="@drawable/ic_import_export_file_white_24dp"
+        app:showAsAction="ifRoom"/>
+</menu>

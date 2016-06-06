@@ -124,7 +124,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         Context context = getContext();
         if (context == null) return;
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+        new AlertDialog.Builder(context)
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.confirm_clear_messages_title)
             .setMessage(R.string.confirm_clear_messages_message)
@@ -134,10 +134,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
                     clearAllMessages();
                 }
             })
-            .setNegativeButton(R.string.cancel, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            .setNegativeButton(R.string.cancel, null)
+            .show();
     }
 
     private void showMessageDetailsDialog(Intent intent) {
@@ -174,7 +172,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         String timeSentString = DateUtils.getRelativeDateTimeString(context, timeSent, 0, DateUtils.WEEK_IN_MILLIS, 0).toString();
         Spanned html = Html.fromHtml(getString(R.string.format_message_details, sender, timeSentString, escapedBody));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+        new AlertDialog.Builder(context)
             .setMessage(html)
             .setNeutralButton(R.string.close, null)
             .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
@@ -188,10 +186,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
                 public void onClick(DialogInterface dialog, int which) {
                     deleteSms(smsId);
                 }
-            });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            })
+            .show();
 
         BlockedSmsLoader.get().setReadStatus(context, messageData.getId(), true);
     }

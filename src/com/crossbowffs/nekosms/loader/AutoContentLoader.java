@@ -16,6 +16,10 @@ public abstract class AutoContentLoader<T> {
         mAllColumns = allColumns;
     }
 
+    protected Uri getContentUri() {
+        return mContentUri;
+    }
+
     public int[] getColumns(Cursor cursor) {
         int[] columns = new int[mAllColumns.length];
         for (int i = 0; i < columns.length; ++i) {
@@ -56,7 +60,7 @@ public abstract class AutoContentLoader<T> {
 
     protected CursorWrapper<T> queryAll(Context context, String where, String[] whereArgs, String orderBy) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(mContentUri, mAllColumns, where, whereArgs, orderBy);
+        Cursor cursor = contentResolver.query(getContentUri(), mAllColumns, where, whereArgs, orderBy);
         return wrapCursor(cursor);
     }
 
@@ -83,7 +87,7 @@ public abstract class AutoContentLoader<T> {
     public Uri insert(Context context, T data) {
         ContentResolver contentResolver = context.getContentResolver();
         ContentValues values = serialize(data);
-        Uri uri = contentResolver.insert(mContentUri, values);
+        Uri uri = contentResolver.insert(getContentUri(), values);
         long id = ContentUris.parseId(uri);
         if (id < 0) {
             return null;
@@ -98,7 +102,7 @@ public abstract class AutoContentLoader<T> {
 
     protected void deleteAll(Context context, String where, String[] whereArgs) {
         ContentResolver contentResolver = context.getContentResolver();
-        contentResolver.delete(mContentUri, where, whereArgs);
+        contentResolver.delete(getContentUri(), where, whereArgs);
     }
 
     public boolean delete(Context context, long id) {
@@ -117,7 +121,7 @@ public abstract class AutoContentLoader<T> {
 
     protected void updateAll(Context context, ContentValues values, String where, String[] whereArgs) {
         ContentResolver contentResolver = context.getContentResolver();
-        contentResolver.update(mContentUri, values, where, whereArgs);
+        contentResolver.update(getContentUri(), values, where, whereArgs);
     }
 
     protected boolean update(Context context, long id, ContentValues values) {
@@ -131,7 +135,7 @@ public abstract class AutoContentLoader<T> {
     }
 
     protected Uri convertIdToUri(long id) {
-        return ContentUris.withAppendedId(mContentUri, id);
+        return ContentUris.withAppendedId(getContentUri(), id);
     }
 
     protected abstract T newData();

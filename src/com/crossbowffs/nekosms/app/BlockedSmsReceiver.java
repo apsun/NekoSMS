@@ -3,10 +3,7 @@ package com.crossbowffs.nekosms.app;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.ContentUris;
-import android.content.Context;
-import android.content.Intent;
+import android.content.*;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.text.Html;
@@ -19,8 +16,6 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.loader.CursorWrapper;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
-import com.crossbowffs.nekosms.preferences.PrefConsts;
-import com.crossbowffs.nekosms.preferences.PrefManager;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -115,8 +110,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void displayNotification(Context context, Intent intent) {
-        PrefManager preferences = PrefManager.fromContext(context, PrefConsts.FILE_MAIN);
-        if (!preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_ENABLE)) {
+        SharedPreferences preferences = context.getSharedPreferences(PreferenceConsts.FILE_MAIN, Context.MODE_PRIVATE);
+        if (!preferences.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_ENABLE, PreferenceConsts.KEY_NOTIFICATIONS_ENABLE_DEFAULT)) {
             // Just mark the message as seen and return
             Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
             BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
@@ -143,14 +138,14 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         }
 
         NotificationManager notificationManager = getNotificationManager(context);
-        String ringtone = preferences.getString(PrefManager.PREF_NOTIFICATIONS_RINGTONE);
+        String ringtone = preferences.getString(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE, PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE_DEFAULT);
         if (!TextUtils.isEmpty(ringtone)) {
             notification.sound = Uri.parse(ringtone);
         }
-        if (preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_VIBRATE)) {
+        if (preferences.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_VIBRATE, PreferenceConsts.KEY_NOTIFICATIONS_VIBRATE_DEFAULT)) {
             notification.defaults |= Notification.DEFAULT_VIBRATE;
         }
-        if (preferences.getBoolean(PrefManager.PREF_NOTIFICATIONS_LIGHTS)) {
+        if (preferences.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS, PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS_DEFAULT)) {
             notification.defaults |= Notification.DEFAULT_LIGHTS;
         }
         notificationManager.notify(NOTIFICATION_ID, notification);

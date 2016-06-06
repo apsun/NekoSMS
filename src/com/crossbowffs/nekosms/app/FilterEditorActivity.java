@@ -148,14 +148,7 @@ public class FilterEditorActivity extends AppCompatActivity {
     }
 
     public SmsFilterPatternData getPatternData(SmsFilterField field) {
-        switch (field) {
-        case SENDER:
-            return mFilter.getSenderPattern();
-        case BODY:
-            return mFilter.getBodyPattern();
-        default:
-            throw new AssertionError("Invalid filter field: " + field);
-        }
+        return mFilter.getPatternForField(field);
     }
 
     private String validatePatternString(SmsFilterPatternData patternData, int fieldNameId) {
@@ -228,13 +221,11 @@ public class FilterEditorActivity extends AppCompatActivity {
     }
 
     private void showInvalidPatternDialog(String errorMessage) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
             .setTitle(R.string.invalid_pattern_title)
             .setMessage(errorMessage)
             .setIcon(R.drawable.ic_warning_white_24dp)
-            .setPositiveButton(R.string.ok, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            .setPositiveButton(R.string.ok, null)
+            .show();
     }
 }

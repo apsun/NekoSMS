@@ -27,4 +27,15 @@ public class SmsFilterData {
     public SmsFilterPatternData getBodyPattern() {
         return mBodyPattern;
     }
+
+    public SmsFilterPatternData getPatternForField(SmsFilterField field) {
+        switch (field) {
+        case SENDER:
+            return getSenderPattern();
+        case BODY:
+            return getBodyPattern();
+        default:
+            throw new AssertionError("Invalid filter field: " + field);
+        }
+    }
 }

@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void showEnableModuleDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
             .setIcon(R.drawable.ic_warning_white_24dp)
@@ -275,14 +275,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startBrowserActivity(ISSUES_URL);
                 }
             })
-            .setNegativeButton(R.string.ignore, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            .setNegativeButton(R.string.ignore, null)
+            .show();
     }
 
     private void showModuleUpdatedDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)
             .setIcon(R.drawable.ic_warning_white_24dp)
@@ -292,23 +290,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     startXposedActivity(XposedUtils.XPOSED_SECTION_INSTALL);
                 }
             })
-            .setNegativeButton(R.string.ignore, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            .setNegativeButton(R.string.ignore, null)
+            .show();
     }
 
     private void showAboutDialog() {
         Spanned html = Html.fromHtml(getString(R.string.format_about_message,
             TWITTER_URL, GITHUB_URL, ISSUES_URL));
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        AlertDialog dialog = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)
             .setMessage(html)
-            .setPositiveButton(R.string.ok, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+            .setPositiveButton(R.string.ok, null)
+            .show();
 
         TextView textView = (TextView)dialog.findViewById(android.R.id.message);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
