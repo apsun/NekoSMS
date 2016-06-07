@@ -45,7 +45,7 @@ import java.util.List;
     private void readFilterPatternData(SmsFilterPatternData pattern, JSONObject patternJson) throws JSONException, InvalidBackupException {
         String modeString = patternJson.getString(BackupConsts.KEY_FILTER_MODE);
         String patternString = patternJson.getString(BackupConsts.KEY_FILTER_PATTERN);
-        boolean caseSensitive = patternJson.optBoolean(BackupConsts.KEY_FILTER_CASE_SENSITIVE, false);
+        boolean caseSensitive = patternJson.getBoolean(BackupConsts.KEY_FILTER_CASE_SENSITIVE);
         SmsFilterMode mode;
         try {
             mode = SmsFilterMode.parse(modeString);

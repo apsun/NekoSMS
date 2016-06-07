@@ -40,7 +40,7 @@ import java.util.List;
         String fieldString = filterJson.getString("field");
         String modeString = filterJson.getString("mode");
         String patternString = filterJson.getString("pattern");
-        boolean caseSensitive = filterJson.optBoolean("case_sensitive", false);
+        boolean caseSensitive = filterJson.getBoolean("case_sensitive");
         SmsFilterField field;
         SmsFilterMode mode;
         try {
