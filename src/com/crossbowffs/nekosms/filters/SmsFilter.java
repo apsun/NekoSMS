@@ -22,10 +22,10 @@ public class SmsFilter {
         }
         boolean matches = true;
         if (mSenderPattern != null) {
-            matches &= mSenderPattern.match(sender, body);
+            matches = mSenderPattern.match(sender, body);
         }
         if (mBodyPattern != null) {
-            matches &= mBodyPattern.match(sender, body);
+            matches = matches && mBodyPattern.match(sender, body);
         }
         Xlog.v(TAG, "  Matches: %s", matches);
         return matches;
