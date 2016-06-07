@@ -7,6 +7,7 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public final class BackupLoader {
@@ -41,7 +42,11 @@ public final class BackupLoader {
 
     public static String[] enumerateBackupFileNames() {
         File backupDir = getBackupDirectory();
-        return backupDir.list();
+        String[] fileList = backupDir.list();
+        // Currently file names are sorted purely lexicographically,
+        // maybe we should use an alphanumeric sorting algorithm instead?
+        Arrays.sort(fileList);
+        return fileList;
     }
 
     public static ImportResult importFromStorage(Context context, String fileName) {
