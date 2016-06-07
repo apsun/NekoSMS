@@ -24,8 +24,7 @@ import java.util.List;
 
     private List<SmsFilterData> readFilters(JSONObject json) throws JSONException, InvalidBackupException {
         // In version 1 it was possible to export a backup w/o a filters field.
-        // In that case, we just treat the backup file as invalid, since
-        // there's no usable data in it anyways.
+        // In that case, we just ignore the data and return success.
         JSONArray filterListJson = json.optJSONArray("filters");
         if (filterListJson == null) {
             return null;
@@ -41,7 +40,7 @@ import java.util.List;
         String fieldString = filterJson.getString("field");
         String modeString = filterJson.getString("mode");
         String patternString = filterJson.getString("pattern");
-        boolean caseSensitive = filterJson.getBoolean("case_sensitive");
+        boolean caseSensitive = filterJson.optBoolean("case_sensitive", false);
         SmsFilterField field;
         SmsFilterMode mode;
         try {
