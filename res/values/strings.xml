@@ -24,6 +24,8 @@
     <string name="import_from_storage">Import from storage</string>
     <string name="export_to_storage">Export to storage</string>
     <string name="import_choose_file">Choose backup file</string>
+    <string name="import_confirm_title">Import backup?</string>
+    <string name="import_confirm_message">This will overwrite your existing filter rules!</string>
     <string name="export_file_name">Backup file name</string>
     <string name="import_success">Import successful</string>
     <string name="import_no_backup">No backup files found</string>

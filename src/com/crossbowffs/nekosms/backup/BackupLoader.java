@@ -32,7 +32,7 @@ public final class BackupLoader {
         File backupDir = getBackupDirectory();
         String baseName = String.format(BACKUP_FILE_NAME_FORMAT, dateStr);
         String testName = baseName + BACKUP_FILE_EXTENSION;
-        int i = 1;
+        int i = 0;
         while (new File(backupDir, testName).exists()) {
             testName = baseName + "-" + (++i) + BACKUP_FILE_EXTENSION;
         }

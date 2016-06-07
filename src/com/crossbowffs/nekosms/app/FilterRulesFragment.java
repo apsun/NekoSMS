@@ -11,7 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +21,7 @@ import com.crossbowffs.nekosms.backup.ImportResult;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
@@ -174,9 +174,9 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
-                        requestPermissionsCompat(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, IMPORT_BACKUP_REQUEST);
+                        requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_REQUEST);
                     } else if (which == 1) {
-                        requestPermissionsCompat(new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXPORT_BACKUP_REQUEST);
+                        requestPermissionsCompat(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXPORT_BACKUP_REQUEST);
                     }
                 }
             })
@@ -194,7 +194,22 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .setItems(files, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    importFromStorage(files[which]);
+                    showConfirmImportDialog(files[which]);
+                }
+            })
+            .setNegativeButton(R.string.cancel, null)
+            .show();
+    }
+
+    private void showConfirmImportDialog(final String fileName) {
+        new AlertDialog.Builder(getContext())
+            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setTitle(R.string.import_confirm_title)
+            .setMessage(R.string.import_confirm_message)
+            .setPositiveButton(R.string.backup_button_import, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    importFromStorage(fileName);
                 }
             })
             .setNegativeButton(R.string.cancel, null)
@@ -225,7 +240,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             @Override
             public void afterTextChanged(Editable s) {
                 Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                button.setEnabled(!TextUtils.isEmpty(s));
+                button.setEnabled(IOUtils.isValidFileName(s));
             }
         });
     }

@@ -73,6 +73,10 @@ public class MainFragment extends Fragment {
         getMainActivity().scrollFabOut();
     }
 
+    public void requestPermissionsCompat(String permission, int requestCode) {
+        requestPermissionsCompat(new String[] {permission}, requestCode);
+    }
+
     public void requestPermissionsCompat(String[] permissions, int requestCode) {
         // Unlike requestPermissions(), this will not display the request dialog
         // on Android 23+ if the permissions have already been granted.

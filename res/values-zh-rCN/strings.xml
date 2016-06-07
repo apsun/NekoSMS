@@ -24,6 +24,8 @@
     <string name="import_from_storage">从储存导入</string>
     <string name="export_to_storage">导出到储存</string>
     <string name="import_choose_file">选择备份文件</string>
+    <string name="import_confirm_title">导入备份？</string>
+    <string name="import_confirm_message">此操作会覆盖当前所有的过滤规则！</string>
     <string name="export_file_name">备份文件名</string>
     <string name="import_success">导入成功</string>
     <string name="import_no_backup">未找到备份文件</string>
