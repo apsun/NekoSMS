@@ -21,8 +21,8 @@
 
     <!-- Import/export -->
     <string name="import_export">Import/export</string>
-    <string name="import_from_storage">Import from storage</string>
-    <string name="export_to_storage">Export to storage</string>
+    <string name="import_from_storage">Import from external storage</string>
+    <string name="export_to_storage">Export to external storage</string>
     <string name="import_choose_file">Choose backup file</string>
     <string name="import_confirm_title">Import backup?</string>
     <string name="import_confirm_message">This will overwrite your existing filter rules!</string>

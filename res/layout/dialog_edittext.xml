@@ -7,7 +7,7 @@
     android:paddingLeft="20dp"
     android:paddingRight="20dp">
     <EditText
-        android:id="@+id/edittext_dialog_textbox"
+        android:id="@+id/dialog_edittext_textbox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textNoSuggestions"

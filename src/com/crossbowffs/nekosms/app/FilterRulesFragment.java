@@ -219,8 +219,8 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private void showExportFileNameDialog() {
         String defaultName = BackupLoader.getDefaultBackupFileName();
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View dialogView = layoutInflater.inflate(R.layout.edittext_dialog, null);
-        final EditText editText = (EditText)dialogView.findViewById(R.id.edittext_dialog_textbox);
+        View dialogView = layoutInflater.inflate(R.layout.dialog_edittext, null);
+        final EditText editText = (EditText)dialogView.findViewById(R.id.dialog_edittext_textbox);
         final AlertDialog dialog = new AlertDialog.Builder(getContext())
             .setTitle(R.string.export_file_name)
             .setView(dialogView)
