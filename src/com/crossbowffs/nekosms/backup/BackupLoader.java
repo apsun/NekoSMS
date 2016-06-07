@@ -43,9 +43,11 @@ public final class BackupLoader {
     public static String[] enumerateBackupFileNames() {
         File backupDir = getBackupDirectory();
         String[] fileList = backupDir.list();
-        // Currently file names are sorted purely lexicographically,
-        // maybe we should use an alphanumeric sorting algorithm instead?
-        Arrays.sort(fileList);
+        if (fileList != null) {
+            // Currently file names are sorted purely lexicographically,
+            // maybe we should use an alphanumeric sorting algorithm instead?
+            Arrays.sort(fileList);
+        }
         return fileList;
     }
 

@@ -9,9 +9,18 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/* package */ class BackupImporterDelegate2 implements BackupImporterDelegate {
+/* package */ class BackupImporterDelegate2 extends BackupImporterDelegate {
+    public BackupImporterDelegate2(Context context) {
+        super(context);
+    }
+
     @Override
-    public List<SmsFilterData> readFilters(Context context, JSONObject json) throws JSONException, InvalidBackupException {
+    public void performImport(JSONObject json) throws JSONException, InvalidBackupException {
+        List<SmsFilterData> filters = readFilters(json);
+        writeFiltersToDatabase(filters);
+    }
+
+    private List<SmsFilterData> readFilters(JSONObject json) throws JSONException, InvalidBackupException {
         JSONArray filterListJson = json.getJSONArray(BackupConsts.KEY_FILTERS);
         ArrayList<SmsFilterData> filters = new ArrayList<>(filterListJson.length());
         for (int i = 0; i < filterListJson.length(); ++i) {

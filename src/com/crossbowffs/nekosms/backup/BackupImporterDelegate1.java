@@ -9,13 +9,27 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-/* package */ class BackupImporterDelegate1 implements BackupImporterDelegate {
+/* package */ class BackupImporterDelegate1 extends BackupImporterDelegate {
+    public BackupImporterDelegate1(Context context) {
+        super(context);
+    }
+
     @Override
-    public List<SmsFilterData> readFilters(Context context, JSONObject json) throws JSONException, InvalidBackupException {
+    public void performImport(JSONObject json) throws JSONException, InvalidBackupException {
+        List<SmsFilterData> filters = readFilters(json);
+        if (filters != null) {
+            writeFiltersToDatabase(filters);
+        }
+    }
+
+    private List<SmsFilterData> readFilters(JSONObject json) throws JSONException, InvalidBackupException {
         // In version 1 it was possible to export a backup w/o a filters field.
         // In that case, we just treat the backup file as invalid, since
         // there's no usable data in it anyways.
-        JSONArray filterListJson = json.getJSONArray("filters");
+        JSONArray filterListJson = json.optJSONArray("filters");
+        if (filterListJson == null) {
+            return null;
+        }
         ArrayList<SmsFilterData> filters = new ArrayList<>(filterListJson.length());
         for (int i = 0; i < filterListJson.length(); ++i) {
             filters.add(readFilterData(filterListJson.getJSONObject(i)));

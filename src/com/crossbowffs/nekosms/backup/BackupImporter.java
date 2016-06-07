@@ -1,15 +1,12 @@
 package com.crossbowffs.nekosms.backup;
 
 import android.content.Context;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.util.List;
 
 /* package */ class BackupImporter implements Closeable {
     private static final String TAG = BackupImporter.class.getSimpleName();
@@ -44,23 +41,15 @@ import java.util.List;
         int version = json.getInt(BackupConsts.KEY_VERSION);
         BackupImporterDelegate delegate;
         if (version == 1) {
-            delegate = new BackupImporterDelegate1();
+            delegate = new BackupImporterDelegate1(context);
         } else if (version == 2) {
-            delegate = new BackupImporterDelegate2();
+            delegate = new BackupImporterDelegate2(context);
         } else {
             throw new InvalidBackupException("Unknown backup file version: " + version);
         }
         Xlog.i(TAG, "Importing data from backup (version: %d)", version);
-        importFilters(delegate, context, json);
+        delegate.performImport(json);
     }
-
-    private void importFilters(BackupImporterDelegate delegate, Context context, JSONObject json) throws JSONException, InvalidBackupException {
-        List<SmsFilterData> filters = delegate.readFilters(context, json);
-        if (!FilterRuleLoader.get().replaceAll(context, filters)) {
-            throw new InvalidBackupException("Unknown error occurred while importing filters into database");
-        }
-    }
-
     @Override
     public void close() throws IOException {
         mJsonStream.close();
