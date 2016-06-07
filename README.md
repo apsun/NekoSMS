@@ -20,6 +20,12 @@ Block all messages...
 ...coming from `12345`, and containing either `megane` or `poi`:  
 \[`Sender`\] \[`Equals`\] \[`12345`\] + \[`Body`\] \[`Regular expression`\] \[`megane|poi`\]
 
+## Importing/exporting data
+
+Your exported filter rules are saved under `/sdcard/NekoSMS`. To import a
+backup file, simply place it in the same directory and select it within the
+app.
+
 ## Notes
 
 NekoSMS was designed for devices running stock Android. If your ROM has made
