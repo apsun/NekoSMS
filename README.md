@@ -2,24 +2,23 @@
 
 A pattern-based text message blocker for Android.
 
-## Example configuration
-
-Block all messages that contain the word `spam`:  
-`Body` `Contains` `spam`
-
-Block all messages coming from numbers that start with `12345`:  
-`Sender` `Starts with` `12345`
-
-Block all messages starting with `the` and ending with `game` (case sensitive):  
-`Body` `Regular expression` `Case sensitive` `^the.*game$`
-
-Block all messages coming from `10001` matching the wildcard pattern `megane*poi`:  
-`Sender` `Equals` `10001`, `Body` `Wildcard` `megane*poi`
-
 ## Requirements
 
 - A rooted phone running Android 4.4 KitKat or newer
 - [Xposed framework](http://forum.xda-developers.com/xposed)
+
+## Example filter rules
+
+Block all messages...
+
+...containing the word `spam`:  
+\[`Body`\] \[`Contains`\] \[`spam`\]
+
+...coming from numbers in the format `100XX`:  
+\[`Sender`\] \[`Wildcard`\] \[`100??`\]
+
+...coming from `12345`, and containing either `megane` or `poi`:  
+\[`Sender`\] \[`Equals`\] \[`12345`\] + \[`Body`\] \[`Regular expression`\] \[`megane|poi`\]
 
 ## Notes
 
@@ -31,11 +30,6 @@ Additionally, when matching against the sender field, you must use the
 *unformatted* sender number. In most SMS apps, this info can be obtained by
 viewing the extended message info. If the value begins with a `+`, you must
 include the `+` in your filter pattern.
-
-## License
-
-All code is licensed under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt).
-Icons are from Google's [material icons library](https://design.google.com/icons/).
 
 ## Q&A
 
@@ -52,8 +46,9 @@ In order to bypass this restriction, code must be modified at the OS level.
 
 ### What are the permissions used for?
 
-- `android.permission.{READ, WRITE}_SMS` for obvious reasons
-- `android.permission.VIBRATE` for notifications
+- `READ_SMS`, `WRITE_SMS` for obvious reasons
+- `VIBRATE` for notifications
+- `WRITE_EXTERNAL_STORAGE` for importing/exporting backups
 
 ### Does NekoSMS work with (insert SMS app here)?
 
@@ -85,3 +80,8 @@ The code is fully open source, so feel free to check for yourself! :-)
 ### Nyaa?
 
 [Nyaa!](http://i.imgur.com/EUkvvOl.jpg)
+
+## License
+
+All code is licensed under [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt).
+Icons are from Google's [material icons library](https://design.google.com/icons/).
