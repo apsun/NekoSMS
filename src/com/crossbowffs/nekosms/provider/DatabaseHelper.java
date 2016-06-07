@@ -19,12 +19,12 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
     private static final String CREATE_BLOCKED_MESSAGES_TABLE =
         "CREATE TABLE " + BlockedMessages.TABLE + "(" +
-            BlockedMessages._ID                 + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-            BlockedMessages.SENDER              + " TEXT NOT NULL," +
-            BlockedMessages.BODY                + " TEXT NOT NULL," +
-            BlockedMessages.TIME_SENT           + " INTEGER NOT NULL," +
-            BlockedMessages.TIME_RECEIVED       + " INTEGER NOT NULL," +
-            BlockedMessages.READ                + " INTEGER NOT NULL," +
+            BlockedMessages._ID                 + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            BlockedMessages.SENDER              + " TEXT NOT NULL, " +
+            BlockedMessages.BODY                + " TEXT NOT NULL, " +
+            BlockedMessages.TIME_SENT           + " INTEGER NOT NULL, " +
+            BlockedMessages.TIME_RECEIVED       + " INTEGER NOT NULL, " +
+            BlockedMessages.READ                + " INTEGER NOT NULL, " +
             BlockedMessages.SEEN                + " INTEGER NOT NULL" +
         ");";
 
