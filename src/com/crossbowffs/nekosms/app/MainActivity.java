@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mFloatingActionButton = (FloatingActionButton)findViewById(R.id.main_fab);
 
+        // Load preferences
+        mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
+
         // Setup toolbar
         setSupportActionBar(mToolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -91,16 +94,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return;
         }
 
-        // Restore saved state. Note that the Xposed dialog stuff
-        // is only displayed on initial activity creation, to prevent
-        // it from being re-displayed when the screen rotates.
-        if (savedInstanceState != null) {
-            String sectionKey = savedInstanceState.getString(EXTRA_SECTION);
-            if (sectionKey != null) {
-                setContentSection(sectionKey);
-                return;
-            }
-        } else {
+        // Xposed dialog stuff is only displayed on initial activity creation,
+        // to prevent it from being re-displayed when the screen rotates.
+        if (savedInstanceState == null) {
             if (!XposedUtils.isModuleEnabled()) {
                 showEnableModuleDialog();
             } else if (XposedUtils.isModuleUpdated()) {
@@ -109,15 +105,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         // Set the section that was selected previously
-        mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
         String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_BLACKLIST_RULES);
         setContentSection(section);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_SECTION, mContentSection);
     }
 
     @Override
