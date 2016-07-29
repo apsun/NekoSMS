@@ -265,6 +265,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
                 showToast(messageId);
+                setFabVisible(true); // In case it was invisible and now the user can't scroll
             }
         }.execute();
     }

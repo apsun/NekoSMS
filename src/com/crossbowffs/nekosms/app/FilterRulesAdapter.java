@@ -13,18 +13,18 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
 /* package */ class FilterRulesAdapter extends RecyclerCursorAdapter<FilterRulesAdapter.UserFiltersItemHolder> {
     public static class UserFiltersItemHolder extends RecyclerView.ViewHolder {
-        public final TextView mInfoTextView1;
-        public final TextView mPatternTextView1;
-        public final TextView mInfoTextView2;
-        public final TextView mPatternTextView2;
+        public final TextView mSenderInfoTextView;
+        public final TextView mSenderPatternTextView;
+        public final TextView mBodyInfoTextView;
+        public final TextView mBodyPatternTextView;
         public SmsFilterData mFilterData;
 
         public UserFiltersItemHolder(View itemView) {
             super(itemView);
-            mInfoTextView1 = (TextView)itemView.findViewById(R.id.filter_rule_info_textview1);
-            mPatternTextView1 = (TextView)itemView.findViewById(R.id.filter_rule_pattern_textview1);
-            mInfoTextView2 = (TextView)itemView.findViewById(R.id.filter_rule_info_textview2);
-            mPatternTextView2 = (TextView)itemView.findViewById(R.id.filter_rule_pattern_textview2);
+            mSenderInfoTextView = (TextView)itemView.findViewById(R.id.filter_rule_sender_info_textview);
+            mSenderPatternTextView = (TextView)itemView.findViewById(R.id.filter_rule_sender_pattern_textview);
+            mBodyInfoTextView = (TextView)itemView.findViewById(R.id.filter_rule_body_info_textview);
+            mBodyPatternTextView = (TextView)itemView.findViewById(R.id.filter_rule_body_pattern_textview);
         }
     }
 
@@ -51,41 +51,29 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
     public void onBindViewHolder(UserFiltersItemHolder holder, Cursor cursor) {
         SmsFilterData filterData = FilterRuleLoader.get().getData(cursor, getColumns(), holder.mFilterData);
         holder.mFilterData = filterData;
-
         final long id = filterData.getId();
         SmsFilterPatternData senderPattern = filterData.getSenderPattern();
         SmsFilterPatternData bodyPattern = filterData.getBodyPattern();
-        SmsFilterPatternData pattern1;
-        SmsFilterPatternData pattern2 = null;
-        if (!senderPattern.hasData()) {
-            pattern1 = bodyPattern;
-        } else if (!bodyPattern.hasData()) {
-            pattern1 = senderPattern;
-        } else {
-            pattern1 = senderPattern;
-            pattern2 = bodyPattern;
-        }
-
-        holder.mInfoTextView1.setText(buildFilterInfoString(R.string.format_filter_info, pattern1));
-        holder.mPatternTextView1.setText(pattern1.getPattern());
-        if (pattern2 != null) {
-            holder.mInfoTextView2.setText(buildFilterInfoString(R.string.format_filter_info, pattern2));
-            holder.mPatternTextView2.setText(pattern2.getPattern());
-            holder.mInfoTextView2.setVisibility(View.VISIBLE);
-            holder.mPatternTextView2.setVisibility(View.VISIBLE);
-        } else {
-            holder.mInfoTextView2.setText(null);
-            holder.mPatternTextView2.setText(null);
-            holder.mInfoTextView2.setVisibility(View.GONE);
-            holder.mPatternTextView2.setVisibility(View.GONE);
-        }
-
+        bindTextViews(senderPattern, holder.mSenderInfoTextView, holder.mSenderPatternTextView);
+        bindTextViews(bodyPattern, holder.mBodyInfoTextView, holder.mBodyPatternTextView);
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mFragment.startFilterEditorActivity(id);
             }
         });
+    }
+
+    private void bindTextViews(SmsFilterPatternData pattern, TextView infoView, TextView patternView) {
+        if (pattern.hasData()) {
+            infoView.setText(buildFilterInfoString(R.string.format_filter_info, pattern));
+            patternView.setText(pattern.getPattern());
+            infoView.setVisibility(View.VISIBLE);
+            patternView.setVisibility(View.VISIBLE);
+        } else {
+            infoView.setVisibility(View.GONE);
+            patternView.setVisibility(View.GONE);
+        }
     }
 
     private String buildFilterInfoString(int lineId, SmsFilterPatternData patternData) {

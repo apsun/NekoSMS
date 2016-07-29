@@ -297,13 +297,17 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        boolean enable = mPreferences.getBoolean(PreferenceConsts.KEY_ENABLE, PreferenceConsts.KEY_ENABLE_DEFAULT);
+        boolean enable = mPreferences.getBoolean(
+            PreferenceConsts.KEY_ENABLE,
+            PreferenceConsts.KEY_ENABLE_DEFAULT);
         if (!enable) {
             Xlog.i(TAG, "SMS blocking disabled in app preferences");
             return;
         }
 
-        boolean allowContacts = mPreferences.getBoolean(PreferenceConsts.KEY_WHITELIST_CONTACTS, PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
+        boolean allowContacts = mPreferences.getBoolean(
+            PreferenceConsts.KEY_WHITELIST_CONTACTS,
+            PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
 
         Object smsHandler = param.thisObject;
         Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");
