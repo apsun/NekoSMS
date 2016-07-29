@@ -9,6 +9,8 @@ public final class PreferenceConsts {
 
     public static final String KEY_ENABLE = "pref_enable";
     public static final boolean KEY_ENABLE_DEFAULT = true;
+    public static final String KEY_WHITELIST_CONTACTS = "pref_whitelist_contacts";
+    public static final boolean KEY_WHITELIST_CONTACTS_DEFAULT = false;
     public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";
     public static final boolean KEY_NOTIFICATIONS_ENABLE_DEFAULT = false;
     public static final String KEY_NOTIFICATIONS_RINGTONE = "pref_notifications_ringtone";

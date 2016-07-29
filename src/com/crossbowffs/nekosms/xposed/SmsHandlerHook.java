@@ -4,11 +4,13 @@ import android.content.*;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.UserHandle;
+import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
@@ -207,6 +209,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         return filters;
     }
 
+    private boolean isMessageFromContact(Context context, String sender) {
+        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(sender));
+        ContentResolver contentResolver = context.getContentResolver();
+        try (Cursor cursor = contentResolver.query(uri, new String[0], null, null, null)) {
+            return cursor != null && cursor.getCount() > 0;
+        }
+    }
+
     private boolean shouldFilterMessage(Context context, String sender, String body) {
         ArrayList<SmsFilter> filters = mSmsFilters;
         if (filters == null) {
@@ -293,6 +303,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
+        boolean allowContacts = mPreferences.getBoolean(PreferenceConsts.KEY_WHITELIST_CONTACTS, PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
+
         Object smsHandler = param.thisObject;
         Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");
 
@@ -304,7 +316,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Xlog.v(TAG, "  Sender: %s", sender);
         Xlog.v(TAG, "  Body: %s", body);
 
-        if (shouldFilterMessage(context, sender, body)) {
+        if (allowContacts && isMessageFromContact(context, sender)) {
+            Xlog.i(TAG, "  Result: Allowed (contact whitelist)");
+        } else if (shouldFilterMessage(context, sender, body)) {
             Xlog.i(TAG, "  Result: Blocked");
             Uri messageUri = BlockedSmsLoader.get().insert(context, message);
             broadcastBlockedSms(context, messageUri);

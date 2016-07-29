@@ -9,6 +9,12 @@
             android:summary="@string/pref_enable_summary"
             android:defaultValue="true"
             android:widgetLayout="@layout/switch_compat"/>
+        <CheckBoxPreference
+            android:key="pref_whitelist_contacts"
+            android:title="@string/pref_whitelist_contacts"
+            android:summary="@string/pref_whitelist_contacts_summary"
+            android:defaultValue="false"
+            android:widgetLayout="@layout/switch_compat"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/pref_notifications">
         <CheckBoxPreference

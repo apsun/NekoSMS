@@ -136,6 +136,8 @@
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">Block those annoying SMS messages!</string>
     <string name="pref_enable_summary_alt">You must enable the Xposed module first!</string>
+    <string name="pref_whitelist_contacts">Whitelist contacts</string>
+    <string name="pref_whitelist_contacts_summary">Do not block messages from contacts</string>
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_enable">Enable notifications</string>
     <string name="pref_notifications_enable_summary">Display a notification when a message is blocked</string>
