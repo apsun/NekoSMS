@@ -47,9 +47,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Context darkTheme = new ContextThemeWrapper(getActivity(), R.style.AppTheme);
-        LayoutInflater localInflater = inflater.cloneInContext(darkTheme);
-        View view = localInflater.inflate(R.layout.fragment_filter_rules, container, false);
+        View view = inflater.inflate(R.layout.fragment_filter_rules, container, false);
         mRecyclerView = (ListRecyclerView)view.findViewById(R.id.filter_rules_recyclerview);
         mEmptyView = view.findViewById(android.R.id.empty);
         return view;
@@ -86,7 +84,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.context_filter_list, menu);
+        inflater.inflate(R.menu.context_filter_rules, menu);
         menu.setHeaderTitle(R.string.filter_actions);
     }
 

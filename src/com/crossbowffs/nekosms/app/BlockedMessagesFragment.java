@@ -55,6 +55,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        registerForContextMenu(mRecyclerView);
         setFabVisible(false);
         setFabCallback(null);
         setTitle(R.string.blocked_messages);
@@ -70,6 +71,28 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         // while the fragment is open. Ideally we should check the action,
         // but since there's only one entry point we can ignore it.
         BlockedSmsLoader.get().markAllSeen(getContext());
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.context_blocked_messages, menu);
+        menu.setHeaderTitle(R.string.message_actions);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        ListRecyclerView.ContextMenuInfo info = (ListRecyclerView.ContextMenuInfo)item.getMenuInfo();
+        switch (item.getItemId()) {
+        case R.id.menu_item_restore_message:
+            restoreSms(info.mId);
+            return true;
+        case R.id.menu_item_delete_message:
+            deleteSms(info.mId);
+            return true;
+        default:
+            return super.onContextItemSelected(item);
+        }
     }
 
     @Override

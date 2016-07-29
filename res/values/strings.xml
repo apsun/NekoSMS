@@ -102,6 +102,7 @@
     <string name="message_delete_failed">Message could not be deleted</string>
     <string name="message_restore_failed">Message could not be restored</string>
     <string name="load_blocked_message_failed">Could not load blocked message</string>
+    <string name="message_actions">Message actions</string>
     <string name="format_message_details">
         <![CDATA[
             <b>Sender</b><br>
