@@ -15,6 +15,7 @@
         android:scrollHorizontally="true"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
         android:textStyle="bold"/>
     <TextView
@@ -24,6 +25,7 @@
         android:scrollHorizontally="true"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"/>
     <TextView
         android:id="@+id/filter_rule_info_textview2"
@@ -32,6 +34,7 @@
         android:scrollHorizontally="true"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
         android:textStyle="bold"/>
     <TextView
@@ -41,5 +44,6 @@
         android:scrollHorizontally="true"
         android:ellipsize="end"
         android:singleLine="true"
+        android:textColor="?android:textColorPrimary"
         android:textSize="16sp"/>
 </LinearLayout>

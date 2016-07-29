@@ -2,11 +2,13 @@ package com.crossbowffs.nekosms.data;
 
 public class SmsFilterData {
     private long mId = -1;
+    private SmsFilterAction mAction;
     private final SmsFilterPatternData mSenderPattern = new SmsFilterPatternData(SmsFilterField.SENDER);
     private final SmsFilterPatternData mBodyPattern = new SmsFilterPatternData(SmsFilterField.BODY);
 
     public void reset() {
         mId = -1;
+        mAction = null;
         mSenderPattern.reset();
         mBodyPattern.reset();
     }
@@ -18,6 +20,15 @@ public class SmsFilterData {
 
     public long getId() {
         return mId;
+    }
+
+    public SmsFilterData setAction(SmsFilterAction action) {
+        mAction = action;
+        return this;
+    }
+
+    public SmsFilterAction getAction() {
+        return mAction;
     }
 
     public SmsFilterPatternData getSenderPattern() {

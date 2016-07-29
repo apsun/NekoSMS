@@ -7,10 +7,12 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.util.ArrayList;
@@ -49,6 +51,9 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         case FilterRules._ID:
             data.setId(cursor.getLong(column));
             break;
+        case FilterRules.ACTION:
+            data.setAction(SmsFilterAction.parse(cursor.getString(column)));
+            break;
         case FilterRules.SENDER_MODE:
             data.getSenderPattern().setMode(SmsFilterMode.parse(cursor.getString(column)));
             break;
@@ -74,10 +79,11 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
 
     @Override
     protected ContentValues serialize(SmsFilterData data) {
-        ContentValues values = new ContentValues(7);
+        ContentValues values = MapUtils.contentValuesForSize(8);
         if (data.getId() >= 0) {
             values.put(FilterRules._ID, data.getId());
         }
+        values.put(FilterRules.ACTION, data.getAction().name());
         SmsFilterPatternData senderPattern = data.getSenderPattern();
         if (senderPattern.hasData()) {
             values.put(FilterRules.SENDER_MODE, senderPattern.getMode().name());

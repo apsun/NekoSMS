@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.utils.MapUtils;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
 
@@ -62,7 +63,7 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
 
     @Override
     protected ContentValues serialize(SmsMessageData data) {
-        ContentValues values = new ContentValues(7);
+        ContentValues values = MapUtils.contentValuesForSize(7);
         if (data.getId() >= 0) {
             values.put(DatabaseContract.BlockedMessages._ID, data.getId());
         }
@@ -96,7 +97,7 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     }
 
     public boolean setReadStatus(Context context, Uri messageUri, boolean read) {
-        ContentValues values = new ContentValues(2);
+        ContentValues values = MapUtils.contentValuesForSize(2);
         values.put(BlockedMessages.READ, read ? 1 : 0);
         if (read) {
             values.put(BlockedMessages.SEEN, 1);
@@ -109,13 +110,13 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     }
 
     public boolean setSeenStatus(Context context, Uri messageUri, boolean seen) {
-        ContentValues values = new ContentValues(1);
+        ContentValues values = MapUtils.contentValuesForSize(1);
         values.put(BlockedMessages.SEEN, seen ? 1 : 0);
         return update(context, messageUri, values);
     }
 
     public void markAllSeen(Context context) {
-        ContentValues values = new ContentValues(1);
+        ContentValues values = MapUtils.contentValuesForSize(1);
         values.put(BlockedMessages.SEEN, 1);
         updateAll(context, values, BlockedMessages.SEEN + "=?", new String[] {"0"});
     }

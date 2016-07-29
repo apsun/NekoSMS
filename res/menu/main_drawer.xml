@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/main_drawer_filter_rules"
-        android:icon="@drawable/ic_code_white_24dp"
+        android:id="@+id/main_drawer_blacklist_rules"
+        android:icon="@drawable/ic_cancel_white_24dp"
         android:checkable="true"
-        android:title="@string/filter_rules"/>
+        android:title="@string/blacklist_rules"/>
+    <item
+        android:id="@+id/main_drawer_whitelist_rules"
+        android:icon="@drawable/ic_check_circle_white_24dp"
+        android:checkable="true"
+        android:title="@string/whitelist_rules"/>
     <item
         android:id="@+id/main_drawer_blocked_messages"
-        android:icon="@drawable/ic_message_blocked_white_24dp"
+        android:icon="@drawable/ic_message_white_24dp"
         android:checkable="true"
         android:title="@string/blocked_messages"/>
     <item

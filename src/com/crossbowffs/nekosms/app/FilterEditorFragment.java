@@ -3,6 +3,7 @@ package com.crossbowffs.nekosms.app;
 import android.app.Fragment;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
+import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.widget.EnumAdapter;
 import com.crossbowffs.nekosms.widget.OnItemSelectedListenerAdapter;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
@@ -36,10 +38,9 @@ public class FilterEditorFragment extends Fragment {
         }
     }
 
-    public static final String EXTRA_MODE = "mode";
-    public static final int EXTRA_MODE_SENDER = 0;
-    public static final int EXTRA_MODE_BODY = 1;
+    public static final String EXTRA_FIELD = "field";
 
+    private SmsFilterField mField;
     private TextInputLayout mPatternTextInputLayout;
     private EditText mPatternEditText;
     private Spinner mModeSpinner;
@@ -52,16 +53,10 @@ public class FilterEditorFragment extends Fragment {
         return (FilterEditorActivity)getActivity();
     }
 
-    private SmsFilterField getFilterField() {
-        int modeCode = getArguments().getInt(EXTRA_MODE);
-        switch (modeCode) {
-        case EXTRA_MODE_SENDER:
-            return SmsFilterField.SENDER;
-        case EXTRA_MODE_BODY:
-            return SmsFilterField.BODY;
-        default:
-            return null;
-        }
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mField = (SmsFilterField)getArguments().getSerializable(EXTRA_FIELD);
     }
 
     @Override
@@ -88,7 +83,7 @@ public class FilterEditorFragment extends Fragment {
         mCaseSpinner.setAdapter(mCaseAdapter);
 
         // Load pattern data corresponding to the current tab
-        mPatternData = getEditorActivity().getPatternData(getFilterField());
+        mPatternData = getEditorActivity().getPatternData(mField);
 
         // Disable hint animation as workaround for drawing issue during activity creation
         // See https://code.google.com/p/android/issues/detail?id=179776
@@ -121,7 +116,7 @@ public class FilterEditorFragment extends Fragment {
 
     public Map<SmsFilterMode, String> getModeMap() {
         Resources resources = getResources();
-        HashMap<SmsFilterMode, String> modeMap = new HashMap<>(6);
+        HashMap<SmsFilterMode, String> modeMap = MapUtils.hashMapForSize(6);
         modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
         modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
         modeMap.put(SmsFilterMode.CONTAINS, resources.getString(R.string.filter_mode_contains));
@@ -133,7 +128,7 @@ public class FilterEditorFragment extends Fragment {
 
     public Map<CaseSensitivity, String> getCaseMap() {
         Resources resources = getResources();
-        HashMap<CaseSensitivity, String> caseMap = new HashMap<>(2);
+        HashMap<CaseSensitivity, String> caseMap = MapUtils.hashMapForSize(2);
         caseMap.put(CaseSensitivity.INSENSITIVE, resources.getString(R.string.filter_case_insensitive));
         caseMap.put(CaseSensitivity.SENSITIVE, resources.getString(R.string.filter_case_sensitive));
         return caseMap;

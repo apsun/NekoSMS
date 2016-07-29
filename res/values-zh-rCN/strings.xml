@@ -42,7 +42,8 @@
     <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter rules -->
-    <string name="filter_rules">过滤规则</string>
+    <string name="blacklist_rules">黑名单规则</string>
+    <string name="whitelist_rules">白名单规则</string>
     <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
     <string name="format_filter_info">%1$s%2$s%3$s</string>
     <string name="filter_info_field_sender">发送者</string>
@@ -64,19 +65,20 @@
     <string name="module_outdated_title">Xposed模块已更新</string>
     <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
     <string name="xposed_not_installed">未安装Xposed</string>
-    <string name="report_bug">报告BUG</string>
+    <string name="report_bug">提交BUG</string>
     <string name="format_about_message">
         <![CDATA[
             基于表达式的Android短信拦截器<br><br>
             开发者：<a href="%1$s">Andrew Sun</a><br><br>
             项目首页：<a href="%2$s">GitHub</a><br><br>
-            找到了BUG？<a href="%3$s">请在这里报告</a>
+            找到了BUG？<a href="%3$s">请在这里提交</a>
         ]]>
     </string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">过滤规则编辑器</string>
-    <string name="save_filter">保存过滤规则</string>
+    <string name="save_blacklist_rule">保存黑名单规则</string>
+    <string name="save_whitelist_rule">保存白名单规则</string>
     <string name="discard_changes">舍弃更改</string>
     <string name="filter_saved">过滤规则已保存</string>
     <string name="filter_save_failed">无法保存过滤规则</string>

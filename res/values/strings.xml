@@ -42,8 +42,9 @@
     <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter rules -->
-    <string name="filter_rules">Filter rules</string>
-    <string name="filter_rules_empty_text">Go ahead, create a filter rule! Nyaa~</string>
+    <string name="blacklist_rules">Blacklist rules</string>
+    <string name="whitelist_rules">Whitelist rules</string>
+    <string name="filter_rules_empty_text">Go ahead, create a new rule! Nyan~</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
     <string name="filter_info_field_sender">Sender</string>
     <string name="filter_info_field_body">Body</string>
@@ -77,7 +78,8 @@
 
     <!-- Filter rule editor -->
     <string name="filter_editor">Filter rule editor</string>
-    <string name="save_filter">Save filter rule</string>
+    <string name="save_blacklist_rule">Save blacklist rule</string>
+    <string name="save_whitelist_rule">Save whitelist rule</string>
     <string name="discard_changes">Discard changes</string>
     <string name="filter_saved">Filter rule saved</string>
     <string name="filter_save_failed">Unable to save filter rule</string>

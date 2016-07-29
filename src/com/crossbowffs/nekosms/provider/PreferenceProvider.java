@@ -15,6 +15,11 @@ public class PreferenceProvider extends RemotePreferenceProvider {
             return false;
         }
 
+        // Only allow access to main (user) preferences
+        if (!PreferenceConsts.FILE_MAIN.equals(prefName)) {
+            return false;
+        }
+
         // Only allow access to enable preference
         if (!PreferenceConsts.KEY_ENABLE.equals(prefKey)) {
             return false;

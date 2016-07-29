@@ -52,6 +52,7 @@ import java.io.*;
 
     private void writeFilter(SmsFilterData filterData) throws IOException {
         mJsonWriter.beginObject();
+        mJsonWriter.name(BackupConsts.KEY_FILTER_ACTION).value(filterData.getAction().name().toLowerCase());
         SmsFilterPatternData senderPattern = filterData.getSenderPattern();
         if (senderPattern.hasData()) {
             mJsonWriter.name(BackupConsts.KEY_FILTER_SENDER);

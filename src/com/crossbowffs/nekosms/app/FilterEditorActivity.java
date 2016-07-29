@@ -15,10 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.data.SmsFilterMode;
-import com.crossbowffs.nekosms.data.SmsFilterPatternData;
+import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.widget.FragmentPagerAdapter;
 
@@ -35,15 +32,15 @@ public class FilterEditorActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             FilterEditorFragment fragment = new FilterEditorFragment();
             Bundle args = new Bundle(1);
-            int mode;
+            SmsFilterField field;
             if (position == 0) {
-                mode = FilterEditorFragment.EXTRA_MODE_SENDER;
+                field = SmsFilterField.SENDER;
             } else if (position == 1) {
-                mode = FilterEditorFragment.EXTRA_MODE_BODY;
+                field = SmsFilterField.BODY;
             } else {
                 throw new AssertionError("Invalid adapter position: " + position);
             }
-            args.putInt(FilterEditorFragment.EXTRA_MODE, mode);
+            args.putSerializable(FilterEditorFragment.EXTRA_FIELD, field);
             fragment.setArguments(args);
             return fragment;
         }
@@ -65,6 +62,8 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
     }
 
+    public static final String EXTRA_ACTION = "action";
+
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
@@ -79,15 +78,11 @@ public class FilterEditorActivity extends AppCompatActivity {
         mTabLayout = (TabLayout)findViewById(R.id.filter_editor_tablayout);
         mViewPager = (ViewPager)findViewById(R.id.filter_editor_viewpager);
 
-        // Set up toolbar
-        mToolbar.setTitle(R.string.save_filter);
-        mToolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         // Set up tab pages
         mViewPager.setAdapter(new FilterEditorPageAdapter());
         mTabLayout.setupWithViewPager(mViewPager);
+        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_person_white_24dp);
+        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_message_white_24dp);
 
         // Process intent for modifying existing filter if it exists
         mFilterUri = getIntent().getData();
@@ -95,6 +90,8 @@ public class FilterEditorActivity extends AppCompatActivity {
             mFilter = FilterRuleLoader.get().query(this, mFilterUri);
         } else {
             mFilter = new SmsFilterData();
+            SmsFilterAction action = (SmsFilterAction)getIntent().getSerializableExtra(EXTRA_ACTION);
+            mFilter.setAction(action);
         }
 
         // Select a tab based on which pattern has data
@@ -119,6 +116,16 @@ public class FilterEditorActivity extends AppCompatActivity {
                 .setMode(SmsFilterMode.CONTAINS)
                 .setCaseSensitive(false);
         }
+
+        // Set up toolbar
+        if (mFilter.getAction() == SmsFilterAction.BLOCK) {
+            mToolbar.setTitle(R.string.save_blacklist_rule);
+        } else if (mFilter.getAction() == SmsFilterAction.ALLOW) {
+            mToolbar.setTitle(R.string.save_whitelist_rule);
+        }
+        mToolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 import java.util.Collections;
@@ -36,7 +37,8 @@ import java.util.WeakHashMap;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String ACTION_OPEN_SECTION = "action_open_section";
     public static final String EXTRA_SECTION = "section";
-    public static final String EXTRA_SECTION_FILTER_RULES = "filter_rules";
+    public static final String EXTRA_SECTION_BLACKLIST_RULES = "blacklist_rules";
+    public static final String EXTRA_SECTION_WHITELIST_RULES = "whitelist_rules";
     public static final String EXTRA_SECTION_BLOCKED_MESSAGES = "blocked_messages";
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showModuleUpdatedDialog();
             }
         }
-        setContentSection(EXTRA_SECTION_FILTER_RULES);
+        setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
     }
 
     @Override
@@ -133,8 +135,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem item) {
         mDrawerLayout.closeDrawer(mNavigationView);
         switch (item.getItemId()) {
-        case R.id.main_drawer_filter_rules:
-            setContentSection(EXTRA_SECTION_FILTER_RULES);
+        case R.id.main_drawer_blacklist_rules:
+            setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
+            return true;
+        case R.id.main_drawer_whitelist_rules:
+            setContentSection(EXTRA_SECTION_WHITELIST_RULES);
             return true;
         case R.id.main_drawer_blocked_messages:
             setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES);
@@ -147,6 +152,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         default:
             return false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
+            mDrawerLayout.closeDrawer(mNavigationView);
+        } else {
+            super.onBackPressed();
         }
     }
 
@@ -172,9 +186,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment;
         int navId;
         switch (key) {
-        case EXTRA_SECTION_FILTER_RULES:
+        case EXTRA_SECTION_BLACKLIST_RULES:
             fragment = new FilterRulesFragment();
-            navId = R.id.main_drawer_filter_rules;
+            Bundle argsB = new Bundle(1);
+            argsB.putSerializable(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK);
+            fragment.setArguments(argsB);
+            navId = R.id.main_drawer_blacklist_rules;
+            break;
+        case EXTRA_SECTION_WHITELIST_RULES:
+            fragment = new FilterRulesFragment();
+            Bundle argsW = new Bundle(1);
+            argsW.putSerializable(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW);
+            fragment.setArguments(argsW);
+            navId = R.id.main_drawer_whitelist_rules;
             break;
         case EXTRA_SECTION_BLOCKED_MESSAGES:
             fragment = new BlockedMessagesFragment();

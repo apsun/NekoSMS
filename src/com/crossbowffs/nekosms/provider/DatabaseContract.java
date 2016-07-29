@@ -38,6 +38,7 @@ public final class DatabaseContract {
         public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.crossbowffs.filter";
         public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd.crossbowffs.filter";
 
+        public static final String ACTION = "action";
         public static final String SENDER_MODE = "sender_mode";
         public static final String SENDER_PATTERN = "sender_pattern";
         public static final String SENDER_CASE_SENSITIVE = "sender_case_sensitive";
@@ -46,6 +47,7 @@ public final class DatabaseContract {
         public static final String BODY_CASE_SENSITIVE = "body_case_sensitive";
         public static final String[] ALL = {
             _ID,
+            ACTION,
             SENDER_MODE,
             SENDER_PATTERN,
             SENDER_CASE_SENSITIVE,

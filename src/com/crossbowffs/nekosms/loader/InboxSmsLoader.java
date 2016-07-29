@@ -7,6 +7,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.provider.Telephony;
 import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public final class InboxSmsLoader {
@@ -15,7 +16,7 @@ public final class InboxSmsLoader {
     private InboxSmsLoader() { }
 
     private static ContentValues serializeMessage(SmsMessageData messageData) {
-        ContentValues values = new ContentValues(6);
+        ContentValues values = MapUtils.contentValuesForSize(6);
         values.put(Telephony.Sms.ADDRESS, messageData.getSender());
         values.put(Telephony.Sms.BODY, messageData.getBody());
         values.put(Telephony.Sms.DATE, messageData.getTimeReceived());

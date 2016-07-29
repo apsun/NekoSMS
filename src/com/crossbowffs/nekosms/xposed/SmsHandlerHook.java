@@ -13,11 +13,14 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.app.BroadcastConsts;
+import com.crossbowffs.nekosms.app.PreferenceConsts;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilter;
-import com.crossbowffs.nekosms.loader.*;
-import com.crossbowffs.nekosms.app.PreferenceConsts;
+import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
+import com.crossbowffs.nekosms.loader.CursorWrapper;
+import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
@@ -66,7 +69,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
     private static final int SMS_CHARACTER_LIMIT = 160;
 
-    private final Object mFiltersLock = new Object();
     private ContentObserver mContentObserver;
     private BroadcastReceiver mBroadcastReceiver;
     private RemotePreferences mPreferences;
@@ -101,9 +103,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void resetFilters() {
-        synchronized (mFiltersLock) {
-            mSmsFilters = null;
-        }
+        mSmsFilters = null;
     }
 
     private ContentObserver registerContentObserver(Context context) {
@@ -208,14 +208,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private boolean shouldFilterMessage(Context context, String sender, String body) {
-        ArrayList<SmsFilter> filters;
-        synchronized (mFiltersLock) {
-            filters = mSmsFilters;
-            if (filters == null) {
-                Xlog.i(TAG, "Cached SMS filters dirty, loading from database");
-                filters = loadSmsFilters(context);
-            }
-            mSmsFilters = filters;
+        ArrayList<SmsFilter> filters = mSmsFilters;
+        if (filters == null) {
+            Xlog.i(TAG, "Cached SMS filters dirty, loading from database");
+            mSmsFilters = filters = loadSmsFilters(context);
         }
 
         if (filters == null) {
@@ -227,7 +223,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         for (SmsFilter filter : filters) {
             if (filter.match(sender, body)) {
-                return true;
+                return filter.getAction() == SmsFilterAction.BLOCK;
             }
         }
         return false;

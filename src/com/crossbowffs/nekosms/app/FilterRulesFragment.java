@@ -18,6 +18,7 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.backup.ExportResult;
 import com.crossbowffs.nekosms.backup.ImportResult;
+import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
@@ -55,15 +56,18 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private static final String TAG = FilterRulesFragment.class.getSimpleName();
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
+    public static final String EXTRA_ACTION = "action";
 
     private ListRecyclerView mRecyclerView;
     private View mEmptyView;
     private FilterRulesAdapter mAdapter;
+    private SmsFilterAction mAction;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        mAction = (SmsFilterAction)getArguments().getSerializable(EXTRA_ACTION);
     }
 
     @Override
@@ -94,10 +98,15 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), FilterEditorActivity.class);
+                intent.putExtra(EXTRA_ACTION, mAction);
                 startActivity(intent);
             }
         });
-        setTitle(R.string.filter_rules);
+        if (mAction == SmsFilterAction.BLOCK) {
+            setTitle(R.string.blacklist_rules);
+        } else if (mAction == SmsFilterAction.ALLOW) {
+            setTitle(R.string.whitelist_rules);
+        }
     }
 
     @Override
@@ -142,7 +151,10 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getContext(),
             DatabaseContract.FilterRules.CONTENT_URI,
-            DatabaseContract.FilterRules.ALL, null, null, null);
+            DatabaseContract.FilterRules.ALL,
+            DatabaseContract.FilterRules.ACTION + "=?",
+            new String[] {mAction.name()},
+            null);
     }
 
     @Override
