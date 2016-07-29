@@ -5,6 +5,7 @@ import com.crossbowffs.nekosms.BuildConfig;
 public final class PreferenceConsts {
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
     public static final String FILE_MAIN = NEKOSMS_PACKAGE + "_preferences";
+    public static final String FILE_INTERNAL = "internal_preferences";
     public static final String REMOTE_PREFS_AUTHORITY = NEKOSMS_PACKAGE + ".preferences";
 
     public static final String KEY_ENABLE = "pref_enable";
@@ -19,6 +20,8 @@ public final class PreferenceConsts {
     public static final boolean KEY_NOTIFICATIONS_VIBRATE_DEFAULT = true;
     public static final String KEY_NOTIFICATIONS_LIGHTS = "pref_notifications_lights";
     public static final boolean KEY_NOTIFICATIONS_LIGHTS_DEFAULT = true;
+
+    public static final String KEY_SELECTED_SECTION = "pref_selected_section";
 
     private PreferenceConsts() { }
 }

@@ -3,6 +3,7 @@ package com.crossbowffs.nekosms.app;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Set<Snackbar> mSnackbars;
     private Fragment mContentFragment;
     private String mContentSection;
+    private SharedPreferences mInternalPrefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,7 +107,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 showModuleUpdatedDialog();
             }
         }
-        setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
+
+        // Set the section that was selected previously
+        mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
+        String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_BLACKLIST_RULES);
+        setContentSection(section);
     }
 
     @Override
@@ -218,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mContentFragment = fragment;
         mContentSection = key;
         mNavigationView.setCheckedItem(navId);
+        mInternalPrefs.edit().putString(PreferenceConsts.KEY_SELECTED_SECTION, key).apply();
         return true;
     }
 
