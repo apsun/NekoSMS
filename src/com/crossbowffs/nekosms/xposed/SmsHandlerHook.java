@@ -181,32 +181,31 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         context.sendBroadcast(intent);
     }
 
-    private static boolean fillSmsFilters(ArrayList<SmsFilter> filters, Context context, FilterRuleLoader loader) {
-        try (CursorWrapper<SmsFilterData> filterCursor = loader.queryAll(context)) {
+    private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
+        ArrayList<SmsFilter> blacklist = new ArrayList<>();
+        ArrayList<SmsFilter> whitelist = new ArrayList<>();
+        try (CursorWrapper<SmsFilterData> filterCursor = FilterRuleLoader.get().queryAll(context)) {
             if (filterCursor == null) {
                 // Can occur if NekoSMS has been uninstalled
                 Xlog.e(TAG, "Failed to load SMS filters (queryAll returned null)");
-                return false;
+                return null;
             }
-            filters.ensureCapacity(filters.size() + filterCursor.getCount());
             SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
                 data = filterCursor.get(data);
-                filters.add(new SmsFilter(data));
+                if (data.getAction() == SmsFilterAction.BLOCK) {
+                    blacklist.add(new SmsFilter(data));
+                } else {
+                    whitelist.add(new SmsFilter(data));
+                }
             }
         } catch (Exception e) {
             Xlog.e(TAG, "Failed to load SMS filters", e);
-            return false;
-        }
-        return true;
-    }
-
-    private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
-        ArrayList<SmsFilter> filters = new ArrayList<>();
-        if (!fillSmsFilters(filters, context, FilterRuleLoader.get())) {
             return null;
         }
-        return filters;
+        // Combine whitelist and blacklist, with whitelist rules first
+        whitelist.addAll(blacklist);
+        return whitelist;
     }
 
     private boolean isMessageFromContact(Context context, String sender) {
