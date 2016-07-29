@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.view.*;
 import android.widget.Button;
@@ -29,30 +28,6 @@ import com.crossbowffs.nekosms.widget.ListRecyclerView;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
 
 public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private class ScrollListener extends RecyclerView.OnScrollListener {
-        private static final int SHOW_THRESHOLD = 50;
-        private static final int HIDE_THRESHOLD = 100;
-        private int mScrollDistance = 0;
-        private boolean mControlsVisible = true;
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            if ((mControlsVisible && dy > 0) || (!mControlsVisible && dy < 0)) {
-                mScrollDistance += dy;
-            }
-
-            if (mControlsVisible && mScrollDistance > HIDE_THRESHOLD) {
-                mControlsVisible = false;
-                mScrollDistance = 0;
-                scrollFabOut();
-            } else if (!mControlsVisible && mScrollDistance < -SHOW_THRESHOLD) {
-                mControlsVisible = true;
-                mScrollDistance = 0;
-                scrollFabIn();
-            }
-        }
-    }
-
     private static final String TAG = FilterRulesFragment.class.getSimpleName();
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
@@ -90,7 +65,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.addOnScrollListener(new ScrollListener());
         registerForContextMenu(mRecyclerView);
         setFabVisible(true);
         setFabIcon(R.drawable.ic_create_white_24dp);
@@ -176,6 +150,12 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         } else if (requestCode == EXPORT_BACKUP_REQUEST) {
             showExportFileNameDialog();
         }
+    }
+
+    @Override
+    public void showSnackbar(int textId, int actionTextId, View.OnClickListener listener) {
+        super.showSnackbar(textId, actionTextId, listener);
+
     }
 
     private void showImportExportDialog() {

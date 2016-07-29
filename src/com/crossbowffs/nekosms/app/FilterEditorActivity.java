@@ -81,8 +81,6 @@ public class FilterEditorActivity extends AppCompatActivity {
         // Set up tab pages
         mViewPager.setAdapter(new FilterEditorPageAdapter());
         mTabLayout.setupWithViewPager(mViewPager);
-        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_person_white_24dp);
-        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_message_white_24dp);
 
         // Process intent for modifying existing filter if it exists
         mFilterUri = getIntent().getData();

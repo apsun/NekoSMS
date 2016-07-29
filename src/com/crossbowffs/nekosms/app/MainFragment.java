@@ -25,11 +25,11 @@ public class MainFragment extends Fragment {
         }
     }
 
-    public Snackbar makeSnackbar(int textId) {
+    private Snackbar makeSnackbar(int textId) {
         return getMainActivity().makeSnackbar(textId);
     }
 
-    public Snackbar makeSnackbar(int textId, int actionTextId, View.OnClickListener listener) {
+    private Snackbar makeSnackbar(int textId, int actionTextId, View.OnClickListener listener) {
         return makeSnackbar(textId).setAction(actionTextId, listener);
     }
 
@@ -37,7 +37,7 @@ public class MainFragment extends Fragment {
         makeSnackbar(textId, actionTextId, listener).show();
     }
 
-    public Toast makeToast(int textId) {
+    private Toast makeToast(int textId) {
         return Toast.makeText(getContext(), textId, Toast.LENGTH_SHORT);
     }
 
@@ -63,14 +63,6 @@ public class MainFragment extends Fragment {
 
     public void setFabCallback(View.OnClickListener listener) {
         getMainActivity().setFabCallback(listener);
-    }
-
-    public void scrollFabIn() {
-        getMainActivity().scrollFabIn();
-    }
-
-    public void scrollFabOut() {
-        getMainActivity().scrollFabOut();
     }
 
     public void requestPermissionsCompat(String permission, int requestCode) {

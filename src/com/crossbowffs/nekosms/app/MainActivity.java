@@ -21,8 +21,6 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.BuildConfig;
@@ -225,9 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setFabVisible(boolean visible) {
         if (visible) {
-            mFloatingActionButton.setTranslationY(0);
             mFloatingActionButton.show();
-            mFloatingActionButton.requestLayout();
         } else {
             mFloatingActionButton.hide();
         }
@@ -239,21 +235,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setFabCallback(View.OnClickListener listener) {
         mFloatingActionButton.setOnClickListener(listener);
-    }
-
-    public void scrollFabIn() {
-        mFloatingActionButton.animate()
-            .translationY(0)
-            .setInterpolator(new DecelerateInterpolator(2))
-            .start();
-    }
-
-    public void scrollFabOut() {
-        CoordinatorLayout.LayoutParams lp = (CoordinatorLayout.LayoutParams)mFloatingActionButton.getLayoutParams();
-        mFloatingActionButton.animate()
-            .translationY(mFloatingActionButton.getHeight() + lp.bottomMargin)
-            .setInterpolator(new AccelerateInterpolator(2))
-            .start();
     }
 
     public Snackbar makeSnackbar(int textId) {
