@@ -56,20 +56,15 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Xlog.i(TAG, "Upgrading database from v%d to v%d", oldVersion, newVersion);
         if (oldVersion < 8) {
-            upgradePre8To8(db);
-            oldVersion = 8;
-        }
-        if (oldVersion == 8) {
-            upgrade8To9(db);
-            oldVersion = 9;
-        }
-        if (oldVersion == 10) {
+            upgradePre8To10(db);
+        } else if (oldVersion == 8) {
+            upgrade8To10(db);
+        } else if (oldVersion == 9) {
             upgrade9To10(db);
-            oldVersion = 11;
         }
     }
 
-    private void upgradePre8To8(SQLiteDatabase db) {
+    private void upgradePre8To10(SQLiteDatabase db) {
         // This version was never released, so it should be fine to just
         // clear all data and start from scratch.
         db.execSQL("DROP TABLE IF EXISTS filters");
@@ -77,7 +72,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         onCreate(db);
     }
 
-    private void upgrade8To9(SQLiteDatabase db) {
+    private void upgrade8To10(SQLiteDatabase db) {
         // Get data from old tables
         Cursor filtersCursor = db.query("filters", new String[] {
             "field",
@@ -102,6 +97,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         if (filtersCursor != null) {
             while (filtersCursor.moveToNext()) {
                 ContentValues values = MapUtils.contentValuesForSize(6);
+                values.put(FilterRules.ACTION, SmsFilterAction.BLOCK.name());
                 if (filtersCursor.getString(0).equals(SmsFilterField.SENDER.name())) {
                     values.put(FilterRules.SENDER_MODE, filtersCursor.getString(1));
                     values.put(FilterRules.SENDER_PATTERN, filtersCursor.getString(2));
@@ -146,6 +142,6 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         db.execSQL(
             "ALTER TABLE " + FilterRules.TABLE +
             " ADD COLUMN " + FilterRules.ACTION + " TEXT NOT NULL " +
-            " DEFAULT " + SmsFilterAction.BLOCK.name());
+            " DEFAULT \"" + SmsFilterAction.BLOCK.name() + "\"");
     }
 }
