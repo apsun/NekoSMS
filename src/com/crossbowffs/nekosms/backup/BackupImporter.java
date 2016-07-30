@@ -44,8 +44,10 @@ import java.io.*;
             delegate = new BackupImporterDelegate1(context);
         } else if (version == 2) {
             delegate = new BackupImporterDelegate2(context);
+        } else if (version == 3) {
+            delegate = new BackupImporterDelegate3(context);
         } else {
-            throw new InvalidBackupException("Unknown backup file version: " + version);
+            throw new BackupVersionException("Unknown backup file version: " + version);
         }
         Xlog.i(TAG, "Importing data from backup (version: %d)", version);
         delegate.performImport(json);

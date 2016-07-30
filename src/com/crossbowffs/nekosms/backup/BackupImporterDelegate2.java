@@ -29,19 +29,8 @@ import java.util.List;
         return filters;
     }
 
-    private SmsFilterData readFilterData(JSONObject filterJson) throws JSONException, InvalidBackupException {
+    protected SmsFilterData readFilterData(JSONObject filterJson) throws JSONException, InvalidBackupException {
         SmsFilterData data = new SmsFilterData();
-        String actionString = filterJson.optString(BackupConsts.KEY_FILTER_ACTION, null);
-        SmsFilterAction action;
-        try {
-            action = SmsFilterAction.parse(actionString);
-        } catch (InvalidFilterException e) {
-            throw new InvalidBackupException(e);
-        }
-        if (action == null) {
-            action = SmsFilterAction.BLOCK;
-        }
-        data.setAction(action);
         JSONObject senderPatternJson = filterJson.optJSONObject(BackupConsts.KEY_FILTER_SENDER);
         if (senderPatternJson != null) {
             readFilterPatternData(data.getSenderPattern(), senderPatternJson);

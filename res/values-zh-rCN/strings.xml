@@ -29,6 +29,7 @@
     <string name="export_file_name">备份文件名</string>
     <string name="import_success">导入成功</string>
     <string name="import_no_backup">未找到备份文件</string>
+    <string name="import_unknown_version">备份版本过新，无法导入</string>
     <string name="import_invalid_backup">备份文件已损坏，无法导入</string>
     <string name="import_read_failed">无法读取备份文件</string>
     <string name="import_cannot_read_storage">无法读取外部存储</string>

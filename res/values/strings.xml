@@ -29,6 +29,7 @@
     <string name="export_file_name">Backup file name</string>
     <string name="import_success">Import successful</string>
     <string name="import_no_backup">No backup files found</string>
+    <string name="import_unknown_version">Backup version too new</string>
     <string name="import_invalid_backup">Invalid backup file</string>
     <string name="import_read_failed">Could not read backup file</string>
     <string name="import_cannot_read_storage">External storage is not readable</string>

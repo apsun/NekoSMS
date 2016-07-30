@@ -67,6 +67,9 @@ public final class BackupLoader {
         } catch (IOException e) {
             Xlog.e(TAG, "Import failed: could not read backup file", e);
             return ImportResult.READ_FAILED;
+        } catch (BackupVersionException e) {
+            Xlog.e(TAG, "Import failed: unknown backup version", e);
+            return ImportResult.UNKNOWN_VERSION;
         } catch (InvalidBackupException e) {
             Xlog.e(TAG, "Import failed: invalid backup file", e);
             return ImportResult.INVALID_BACKUP;

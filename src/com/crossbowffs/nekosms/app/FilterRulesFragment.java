@@ -250,6 +250,9 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 case SUCCESS:
                     messageId = R.string.import_success;
                     break;
+                case UNKNOWN_VERSION:
+                    messageId = R.string.import_unknown_version;
+                    break;
                 case INVALID_BACKUP:
                     messageId = R.string.import_invalid_backup;
                     break;
