@@ -176,6 +176,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void broadcastBlockedSms(Context context, Uri messageUri) {
+        // Permissions are not required here since we are only
+        // broadcasting the URI of the message, not the message
+        // contents. The provider requires permissions to read
+        // the actual message contents.
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
         context.sendBroadcast(intent);
@@ -190,6 +194,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 Xlog.e(TAG, "Failed to load SMS filters (queryAll returned null)");
                 return null;
             }
+            // Blacklist rules are expected to make up the majority
+            // of rules, and we will end up adding all rules to the
+            // whitelist list. Reserve the appropriate capacities.
+            blacklist.ensureCapacity(filterCursor.getCount());
+            whitelist.ensureCapacity(filterCursor.getCount());
             SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
                 data = filterCursor.get(data);

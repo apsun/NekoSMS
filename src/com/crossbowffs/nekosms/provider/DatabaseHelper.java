@@ -95,8 +95,8 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
         // Copy filters to new table
         if (filtersCursor != null) {
+            ContentValues values = MapUtils.contentValuesForSize(7);
             while (filtersCursor.moveToNext()) {
-                ContentValues values = MapUtils.contentValuesForSize(6);
                 values.put(FilterRules.ACTION, SmsFilterAction.BLOCK.name());
                 if (filtersCursor.getString(0).equals(SmsFilterField.SENDER.name())) {
                     values.put(FilterRules.SENDER_MODE, filtersCursor.getString(1));
@@ -120,8 +120,8 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
         // Copy messages to new table
         if (messagesCursor != null) {
+            ContentValues values = MapUtils.contentValuesForSize(6);
             while (messagesCursor.moveToNext()) {
-                ContentValues values = MapUtils.contentValuesForSize(6);
                 values.put(BlockedMessages.SENDER, messagesCursor.getString(0));
                 values.put(BlockedMessages.BODY, messagesCursor.getString(1));
                 values.put(BlockedMessages.TIME_SENT, messagesCursor.getLong(2));
