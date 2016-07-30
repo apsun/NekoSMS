@@ -31,6 +31,7 @@ import java.util.List;
 
     protected SmsFilterData readFilterData(JSONObject filterJson) throws JSONException, InvalidBackupException {
         SmsFilterData data = new SmsFilterData();
+        data.setAction(SmsFilterAction.BLOCK);
         JSONObject senderPatternJson = filterJson.optJSONObject(BackupConsts.KEY_FILTER_SENDER);
         if (senderPatternJson != null) {
             readFilterPatternData(data.getSenderPattern(), senderPatternJson);

@@ -50,6 +50,7 @@ import java.util.List;
             throw new InvalidBackupException(e);
         }
         SmsFilterData data = new SmsFilterData();
+        data.setAction(SmsFilterAction.BLOCK);
         SmsFilterPatternData patternData = data.getPatternForField(field);
         patternData.setMode(mode);
         patternData.setPattern(patternString);

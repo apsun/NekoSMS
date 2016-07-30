@@ -7,7 +7,7 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class BackupImporterDelegate3 extends BackupImporterDelegate2 {
+/* package */ class BackupImporterDelegate3 extends BackupImporterDelegate2 {
     public BackupImporterDelegate3(Context context) {
         super(context);
     }

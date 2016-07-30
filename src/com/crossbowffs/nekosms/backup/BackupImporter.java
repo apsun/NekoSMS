@@ -40,18 +40,21 @@ import java.io.*;
         JSONObject json = new JSONObject(jsonString);
         int version = json.getInt(BackupConsts.KEY_VERSION);
         BackupImporterDelegate delegate;
-        if (version == 1) {
+        if (version <= 0) {
+            throw new InvalidBackupException("Invalid backup version: " + version);
+        } else if (version == 1) {
             delegate = new BackupImporterDelegate1(context);
         } else if (version == 2) {
             delegate = new BackupImporterDelegate2(context);
         } else if (version == 3) {
             delegate = new BackupImporterDelegate3(context);
         } else {
-            throw new BackupVersionException("Unknown backup file version: " + version);
+            throw new BackupVersionException("Unknown backup version: " + version);
         }
         Xlog.i(TAG, "Importing data from backup (version: %d)", version);
         delegate.performImport(json);
     }
+
     @Override
     public void close() throws IOException {
         mJsonStream.close();

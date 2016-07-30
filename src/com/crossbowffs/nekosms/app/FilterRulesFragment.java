@@ -150,12 +150,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         }
     }
 
-    @Override
-    public void showSnackbar(int textId, int actionTextId, View.OnClickListener listener) {
-        super.showSnackbar(textId, actionTextId, listener);
-
-    }
-
     private void showImportExportDialog() {
         CharSequence[] items = {getString(R.string.import_from_storage), getString(R.string.export_to_storage)};
         new AlertDialog.Builder(getContext())
