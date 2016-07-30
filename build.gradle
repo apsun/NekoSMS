@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         versionCode 20
-        versionName "0.12.1-dev"
+        versionName "0.12.1"
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"
