@@ -15,15 +15,12 @@ import org.json.JSONObject;
     @Override
     protected SmsFilterData readFilterData(JSONObject filterJson) throws JSONException, InvalidBackupException {
         SmsFilterData data = super.readFilterData(filterJson);
-        String actionString = filterJson.optString(BackupConsts.KEY_FILTER_ACTION, null);
+        String actionString = filterJson.getString(BackupConsts.KEY_FILTER_ACTION);
         SmsFilterAction action;
         try {
             action = SmsFilterAction.parse(actionString);
         } catch (InvalidFilterException e) {
             throw new InvalidBackupException(e);
-        }
-        if (action == null) {
-            action = SmsFilterAction.BLOCK;
         }
         data.setAction(action);
         return data;
