@@ -26,6 +26,7 @@ import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.remotepreferences.RemotePreferenceAccessException;
 import com.crossbowffs.remotepreferences.RemotePreferences;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -172,7 +173,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private RemotePreferences createRemotePreferences(Context context) {
-        return new RemotePreferences(context, PreferenceConsts.REMOTE_PREFS_AUTHORITY, PreferenceConsts.FILE_MAIN);
+        Xlog.i(TAG, "Initializing remote preferences");
+
+        return new RemotePreferences(context,
+            PreferenceConsts.REMOTE_PREFS_AUTHORITY,
+            PreferenceConsts.FILE_MAIN,
+            true);
     }
 
     private void broadcastBlockedSms(Context context, Uri messageUri) {
@@ -305,17 +311,28 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        boolean enable = mPreferences.getBoolean(
-            PreferenceConsts.KEY_ENABLE,
-            PreferenceConsts.KEY_ENABLE_DEFAULT);
+        boolean enable = false;
+        try {
+            enable = mPreferences.getBoolean(
+                PreferenceConsts.KEY_ENABLE,
+                PreferenceConsts.KEY_ENABLE_DEFAULT);
+        } catch (RemotePreferenceAccessException e) {
+            Xlog.e(TAG, "Failed to read enable preference, defaulting to false");
+        }
+
         if (!enable) {
-            Xlog.i(TAG, "SMS blocking disabled in app preferences");
+            Xlog.i(TAG, "SMS blocking disabled, exiting");
             return;
         }
 
-        boolean allowContacts = mPreferences.getBoolean(
-            PreferenceConsts.KEY_WHITELIST_CONTACTS,
-            PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
+        boolean allowContacts = false;
+        try {
+            allowContacts = mPreferences.getBoolean(
+                PreferenceConsts.KEY_WHITELIST_CONTACTS,
+                PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
+        } catch (RemotePreferenceAccessException e) {
+            Xlog.e(TAG, "Failed to read whitelist contacts preference, defaulting to false");
+        }
 
         Object smsHandler = param.thisObject;
         Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");

@@ -19,7 +19,7 @@ dependencies {
     compile "com.android.support:appcompat-v7:24.1.1"
     compile "com.android.support:recyclerview-v7:24.1.1"
     compile "com.android.support:design:24.1.1"
-    compile "com.crossbowffs.remotepreferences:remotepreferences:0.1"
+    compile "com.crossbowffs.remotepreferences:remotepreferences:0.2"
     provided "de.robv.android.xposed:api:53"
 }
 
