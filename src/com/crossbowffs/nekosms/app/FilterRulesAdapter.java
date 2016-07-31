@@ -71,6 +71,8 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
             infoView.setVisibility(View.VISIBLE);
             patternView.setVisibility(View.VISIBLE);
         } else {
+            infoView.setText("");
+            patternView.setText("");
             infoView.setVisibility(View.GONE);
             patternView.setVisibility(View.GONE);
         }

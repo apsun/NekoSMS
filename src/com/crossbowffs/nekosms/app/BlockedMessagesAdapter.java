@@ -61,14 +61,14 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         holder.mSenderTextView.setText(sender);
         holder.mTimeSentTextView.setText(timeSentString);
         holder.mBodyTextView.setText(body);
-        if (!messageData.isRead()) {
-            holder.mSenderTextView.setTypeface(null, Typeface.BOLD);
-            holder.mTimeSentTextView.setTypeface(null, Typeface.BOLD);
-            holder.mBodyTextView.setTypeface(null, Typeface.BOLD);
-        } else {
+        if (messageData.isRead()) {
             holder.mSenderTextView.setTypeface(null, Typeface.NORMAL);
             holder.mTimeSentTextView.setTypeface(null, Typeface.NORMAL);
             holder.mBodyTextView.setTypeface(null, Typeface.NORMAL);
+        } else {
+            holder.mSenderTextView.setTypeface(null, Typeface.BOLD);
+            holder.mTimeSentTextView.setTypeface(null, Typeface.BOLD);
+            holder.mBodyTextView.setTypeface(null, Typeface.BOLD);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
