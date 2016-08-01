@@ -254,6 +254,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void grantWriteSmsPermissions(Context context) {
+        // We need to grant OP_WRITE_SMS permissions to the
+        // NekoSMS package so it can restore messages to the
+        // SMS inbox. We can do this from the com.android.phone
+        // process since it holds the UPDATE_APP_OPS_STATS
+        // permission.
         PackageManager packageManager = context.getPackageManager();
         PackageInfo packageInfo;
         try {
@@ -311,13 +316,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        boolean enable = false;
+        boolean enable = PreferenceConsts.KEY_ENABLE_DEFAULT;
         try {
-            enable = mPreferences.getBoolean(
-                PreferenceConsts.KEY_ENABLE,
-                PreferenceConsts.KEY_ENABLE_DEFAULT);
+            enable = mPreferences.getBoolean(PreferenceConsts.KEY_ENABLE, enable);
         } catch (RemotePreferenceAccessException e) {
-            Xlog.e(TAG, "Failed to read enable preference, defaulting to false");
+            Xlog.e(TAG, "Failed to read enable preference");
         }
 
         if (!enable) {
@@ -325,13 +328,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        boolean allowContacts = false;
+        boolean allowContacts = PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT;
         try {
-            allowContacts = mPreferences.getBoolean(
-                PreferenceConsts.KEY_WHITELIST_CONTACTS,
-                PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
+            allowContacts = mPreferences.getBoolean(PreferenceConsts.KEY_WHITELIST_CONTACTS, allowContacts);
         } catch (RemotePreferenceAccessException e) {
-            Xlog.e(TAG, "Failed to read whitelist contacts preference, defaulting to false");
+            Xlog.e(TAG, "Failed to read whitelist contacts preference");
         }
 
         Object smsHandler = param.thisObject;
