@@ -9,7 +9,7 @@ A pattern-based text message blocker for Android.
 
 ## Example filter rules
 
-Block all messages...
+Match all messages...
 
 ...containing the word `spam`:  
 \[`Body`\] \[`Contains`\] \[`spam`\]
@@ -20,29 +20,32 @@ Block all messages...
 ...coming from `12345`, and containing either `megane` or `poi`:  
 \[`Sender`\] \[`Equals`\] \[`12345`\] + \[`Body`\] \[`Regular expression`\] \[`megane|poi`\]
 
-## Importing/exporting data
-
-Your exported filter rules are saved under `/sdcard/NekoSMS`. To import a
-backup file, simply place it in the same directory and select it within the
-app.
-
-## Notes
-
-NekoSMS was designed for devices running stock Android. If your ROM has made
-significant changes to the way Android internally handles SMS messages, this
-app might not work.
-
-Additionally, when matching against the sender field, you must use the
+**Note:** when matching against the sender field, you must use the
 *unformatted* sender number. In most SMS apps, this info can be obtained by
 viewing the extended message info. If the value begins with a `+`, you must
 include the `+` in your filter pattern.
+
+## Whitelist mode
+
+All whitelist rules are checked *before* any blacklist rules. There is no
+way to "override" a whitelist rule with a blacklist rule. You may
+whitelist all contacts by enabling the "Whitelist contacts" setting.
+
+## Importing/exporting data
+
+Your exported filter rules are saved under `/sdcard/NekoSMS`. To import a
+backup file, simply place it in this directory and select it within the app.
+
+Backwards compatibility is guaranteed (i.e. you can import backup files from
+older app versions), but not forward compatibility (i.e. there are no
+promises your exported backup can be imported on older app versions). 
 
 ## Q&A
 
 ### Why is it called NekoSMS?
 
-No reason in particular. I wanted a name that had "SMS" in it, and "neko" was the
-first word that popped into my head. Hence, NekoSMS.
+No reason in particular. I wanted a name that had "SMS" in it, and "neko"
+was the first word that popped into my head. Hence, NekoSMS.
 
 ### Why does this app require Xposed?
 
@@ -65,13 +68,13 @@ code, so if it works with one SMS app, it will work with them all.
 
 It hooks the internal Android class, [`com.android.internal.telephony.InboundSmsHandler`]
 (https://android.googlesource.com/platform/frameworks/opt/telephony/+/master/src/java/com/android/internal/telephony/InboundSmsHandler.java).
-This class is responsible for taking the raw SMS data received by the phone and
-dispatching it to the default SMS app, then broadcasting it to all apps capable of
-reading SMS messages.
+This class is responsible for taking the raw SMS data received by the phone
+and dispatching it to the default SMS app, then broadcasting it to all apps
+capable of reading SMS messages.
 
-Essentially, this app intercepts the data right before it is sent to the default
-SMS app, then runs it through the user-defined filters. If the message matches
-a filter, the broadcast is dropped.
+Essentially, this app intercepts the data right before it is sent to the
+default SMS app, then runs it through the user-defined filters. If the
+message matches a blacklist rule, the broadcast is dropped.
 
 ### How does it work? (for non-nerds)
 
