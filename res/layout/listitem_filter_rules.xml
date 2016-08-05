@@ -7,7 +7,7 @@
     android:clickable="true"
     android:longClickable="true"
     android:background="?android:selectableItemBackground"
-    android:padding="8dp">
+    android:padding="10dp">
     <TextView
         android:id="@+id/filter_rule_sender_info_textview"
         android:layout_width="match_parent"

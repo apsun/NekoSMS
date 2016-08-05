@@ -25,18 +25,16 @@ public class FabHideOnScrollBehavior extends FloatingActionButton.Behavior {
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child,
                                        View directTargetChild, View target, int nestedScrollAxes) {
-        return nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
+        return mAutoHide && nestedScrollAxes == ViewCompat.SCROLL_AXIS_VERTICAL;
     }
 
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target,
                                int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        if (mAutoHide) {
-            if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-                child.hide();
-            } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
-                child.show();
-            }
+        if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
+            child.hide();
+        } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
+            child.show();
         }
     }
 }
