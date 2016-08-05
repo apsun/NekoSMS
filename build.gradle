@@ -28,8 +28,8 @@ android {
     buildToolsVersion "24.0.1"
 
     defaultConfig {
-        versionCode 20
-        versionName "0.12.1"
+        versionCode 21
+        versionName "0.12.2"
         minSdkVersion 19
         targetSdkVersion 23
         resConfigs "en", "zh-rCN"

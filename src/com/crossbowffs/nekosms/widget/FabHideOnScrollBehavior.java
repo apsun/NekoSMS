@@ -8,11 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class FabHideOnScrollBehavior extends FloatingActionButton.Behavior {
-    private boolean mAutoHide;
-
-    public FabHideOnScrollBehavior() {
-        super();
-    }
+    private boolean mAutoHide = true;
 
     public FabHideOnScrollBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);

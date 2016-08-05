@@ -45,7 +45,8 @@
     <!-- Filter rules -->
     <string name="blacklist_rules">黑名单规则</string>
     <string name="whitelist_rules">白名单规则</string>
-    <string name="filter_rules_empty_text">快来创建几个过滤规则吧！喵~</string>
+    <string name="blacklist_rules_empty_text">没有黑名单规则，来创建一条吧！</string>
+    <string name="whitelist_rules_empty_text">没有白名单规则，来创建一条吧！</string>
     <string name="format_filter_info">%1$s%2$s%3$s</string>
     <string name="filter_info_field_sender">发送者</string>
     <string name="filter_info_field_body">文本</string>
@@ -72,7 +73,7 @@
             基于表达式的Android短信拦截器<br><br>
             开发者：<a href="%1$s">Andrew Sun</a><br><br>
             项目首页：<a href="%2$s">GitHub</a><br><br>
-            发现BUG？<a href="%3$s">请在这里提交</a>
+            发现了BUG？<a href="%3$s">请在这里提交</a>
         ]]>
     </string>
 
@@ -91,7 +92,7 @@
 
     <!-- Blocked messages -->
     <string name="blocked_messages">已拦截信息</string>
-    <string name="blocked_messages_empty_text">没有已拦截的信息！祝你今天愉快！</string>
+    <string name="blocked_messages_empty_text">没有已拦截的信息！祝您今天愉快！</string>
     <string name="must_enable_xposed_module">需要启用Xposed模块</string>
     <string name="clear_blocked_messages">清空拦截信息</string>
     <string name="confirm_clear_messages_title">删除所有信息？</string>

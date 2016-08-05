@@ -13,7 +13,7 @@
         android:id="@android:id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="16dp"
         android:gravity="center"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/filter_rules_empty_text"/>
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
 </FrameLayout>

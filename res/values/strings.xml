@@ -45,7 +45,8 @@
     <!-- Filter rules -->
     <string name="blacklist_rules">Blacklist rules</string>
     <string name="whitelist_rules">Whitelist rules</string>
-    <string name="filter_rules_empty_text">Go ahead, create a new rule! Nyan~</string>
+    <string name="blacklist_rules_empty_text">No blacklist rules! Go ahead, create one!</string>
+    <string name="whitelist_rules_empty_text">No whitelist rules! Go ahead, create one!</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
     <string name="filter_info_field_sender">Sender</string>
     <string name="filter_info_field_body">Body</string>

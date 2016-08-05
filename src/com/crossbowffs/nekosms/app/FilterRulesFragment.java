@@ -13,6 +13,7 @@ import android.text.Editable;
 import android.view.*;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.backup.ExportResult;
@@ -34,7 +35,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public static final String EXTRA_ACTION = "action";
 
     private ListRecyclerView mRecyclerView;
-    private View mEmptyView;
+    private TextView mEmptyView;
     private FilterRulesAdapter mAdapter;
     private SmsFilterAction mAction;
 
@@ -49,7 +50,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_filter_rules, container, false);
         mRecyclerView = (ListRecyclerView)view.findViewById(R.id.filter_rules_recyclerview);
-        mEmptyView = view.findViewById(android.R.id.empty);
+        mEmptyView = (TextView)view.findViewById(android.R.id.empty);
         return view;
     }
 
@@ -76,8 +77,10 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         });
         if (mAction == SmsFilterAction.BLOCK) {
             setTitle(R.string.blacklist_rules);
+            mEmptyView.setText(R.string.blacklist_rules_empty_text);
         } else if (mAction == SmsFilterAction.ALLOW) {
             setTitle(R.string.whitelist_rules);
+            mEmptyView.setText(R.string.whitelist_rules_empty_text);
         }
     }
 
