@@ -29,6 +29,7 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+import com.crossbowffs.nekosms.widget.FabHideOnScrollBehavior;
 
 import java.util.Collections;
 import java.util.Set;
@@ -227,6 +228,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             mFloatingActionButton.hide();
         }
+
+        // Also make sure the button stops responding to scrolling
+        // if hidden, to prevent it from re-showing itself
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)mFloatingActionButton.getLayoutParams();
+        FabHideOnScrollBehavior behavior = (FabHideOnScrollBehavior)params.getBehavior();
+        behavior.setAutoHideEnabled(visible);
     }
 
     public void setFabIcon(int iconId) {

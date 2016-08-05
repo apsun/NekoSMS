@@ -8,8 +8,18 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class FabHideOnScrollBehavior extends FloatingActionButton.Behavior {
+    private boolean mAutoHide;
+
+    public FabHideOnScrollBehavior() {
+        super();
+    }
+
     public FabHideOnScrollBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public void setAutoHideEnabled(boolean enabled) {
+        mAutoHide = enabled;
     }
 
     @Override
@@ -21,10 +31,12 @@ public class FabHideOnScrollBehavior extends FloatingActionButton.Behavior {
     @Override
     public void onNestedScroll(CoordinatorLayout coordinatorLayout, FloatingActionButton child, View target,
                                int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
-            child.hide();
-        } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
-            child.show();
+        if (mAutoHide) {
+            if (dyConsumed > 0 && child.getVisibility() == View.VISIBLE) {
+                child.hide();
+            } else if (dyConsumed < 0 && child.getVisibility() != View.VISIBLE) {
+                child.show();
+            }
         }
     }
 }
