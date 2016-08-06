@@ -239,7 +239,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void disableFab() {
-        mFloatingActionButton.setImageResource(0);
         mFloatingActionButton.setOnClickListener(null);
         mFloatingActionButton.hide();
         setFabAutoHide(false);
