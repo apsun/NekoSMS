@@ -24,8 +24,7 @@ public class SettingsFragment extends PreferenceFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         MainActivity activity = ((MainActivity)getActivity());
-        activity.setFabVisible(false);
-        activity.setFabCallback(null);
+        activity.disableFab();
         activity.setTitle(R.string.settings);
     }
 }

@@ -14,6 +14,10 @@ public class FabHideOnScrollBehavior extends FloatingActionButton.Behavior {
         super(context, attrs);
     }
 
+    public boolean isAutoHideEnabled() {
+        return mAutoHide;
+    }
+
     public void setAutoHideEnabled(boolean enabled) {
         mAutoHide = enabled;
     }

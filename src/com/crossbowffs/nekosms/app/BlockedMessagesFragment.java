@@ -56,8 +56,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
-        setFabVisible(false);
-        setFabCallback(null);
+        disableFab();
         setTitle(R.string.blocked_messages);
         showMessageDetailsDialog(getIntent());
         BlockedSmsLoader.get().markAllSeen(getContext());

@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment mContentFragment;
     private String mContentSection;
     private SharedPreferences mInternalPrefs;
+    private boolean mFabVisible = true;
+    private boolean mFabAutoHide = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -222,26 +224,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    public void setFabVisible(boolean visible) {
-        if (visible) {
-            mFloatingActionButton.show();
-        } else {
-            mFloatingActionButton.hide();
-        }
-
-        // Also make sure the button stops responding to scrolling
-        // if hidden, to prevent it from re-showing itself
+    private FabHideOnScrollBehavior getFabBehavior() {
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)mFloatingActionButton.getLayoutParams();
-        FabHideOnScrollBehavior behavior = (FabHideOnScrollBehavior)params.getBehavior();
-        behavior.setAutoHideEnabled(visible);
+        return (FabHideOnScrollBehavior)params.getBehavior();
     }
 
-    public void setFabIcon(int iconId) {
+    private void setFabAutoHide(boolean enabled) {
+        getFabBehavior().setAutoHideEnabled(enabled);
+    }
+
+    public void enableFab(int iconId, View.OnClickListener listener) {
         mFloatingActionButton.setImageResource(iconId);
+        mFloatingActionButton.setOnClickListener(listener);
+        mFloatingActionButton.show();
+        setFabAutoHide(true);
     }
 
-    public void setFabCallback(View.OnClickListener listener) {
-        mFloatingActionButton.setOnClickListener(listener);
+    public void disableFab() {
+        mFloatingActionButton.setImageResource(0);
+        mFloatingActionButton.setOnClickListener(null);
+        mFloatingActionButton.hide();
+        setFabAutoHide(false);
+    }
+
+    public void showFabIfAutoHidden() {
+        if (getFabBehavior().isAutoHideEnabled()) {
+            mFloatingActionButton.show();
+        }
     }
 
     public Snackbar makeSnackbar(int textId) {

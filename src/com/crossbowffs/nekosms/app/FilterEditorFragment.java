@@ -114,7 +114,7 @@ public class FilterEditorFragment extends Fragment {
         });
     }
 
-    public Map<SmsFilterMode, String> getModeMap() {
+    private Map<SmsFilterMode, String> getModeMap() {
         Resources resources = getResources();
         HashMap<SmsFilterMode, String> modeMap = MapUtils.hashMapForSize(6);
         modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
@@ -126,7 +126,7 @@ public class FilterEditorFragment extends Fragment {
         return modeMap;
     }
 
-    public Map<CaseSensitivity, String> getCaseMap() {
+    private Map<CaseSensitivity, String> getCaseMap() {
         Resources resources = getResources();
         HashMap<CaseSensitivity, String> caseMap = MapUtils.hashMapForSize(2);
         caseMap.put(CaseSensitivity.INSENSITIVE, resources.getString(R.string.filter_case_insensitive));

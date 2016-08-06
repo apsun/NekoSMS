@@ -65,9 +65,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
-        setFabVisible(true);
-        setFabIcon(R.drawable.ic_create_white_24dp);
-        setFabCallback(new View.OnClickListener() {
+        enableFab(R.drawable.ic_create_white_24dp, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), FilterEditorActivity.class);
@@ -262,6 +260,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 default:
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
+                showFabIfAutoHidden(); // Show FAB in case we can't scroll anymore
                 showToast(messageId);
             }
         }.execute();
@@ -303,6 +302,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             return;
         }
 
+        showFabIfAutoHidden(); // Show FAB in case we can't scroll anymore
         showSnackbar(R.string.filter_deleted, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {

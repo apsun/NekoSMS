@@ -53,16 +53,16 @@ public class MainFragment extends Fragment {
         getMainActivity().setTitle(titleId);
     }
 
-    public void setFabVisible(boolean visible) {
-        getMainActivity().setFabVisible(visible);
+    public void enableFab(int iconId, View.OnClickListener listener) {
+        getMainActivity().enableFab(iconId, listener);
     }
 
-    public void setFabIcon(int iconId) {
-        getMainActivity().setFabIcon(iconId);
+    public void disableFab() {
+        getMainActivity().disableFab();
     }
 
-    public void setFabCallback(View.OnClickListener listener) {
-        getMainActivity().setFabCallback(listener);
+    public void showFabIfAutoHidden() {
+        getMainActivity().showFabIfAutoHidden();
     }
 
     public void requestPermissionsCompat(String permission, int requestCode) {
