@@ -61,8 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment mContentFragment;
     private String mContentSection;
     private SharedPreferences mInternalPrefs;
-    private boolean mFabVisible = true;
-    private boolean mFabAutoHide = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
