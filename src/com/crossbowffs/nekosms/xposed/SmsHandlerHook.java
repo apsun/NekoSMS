@@ -282,43 +282,38 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
-    private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            finishSmsBroadcast24(smsHandler, smsReceiver);
-        } else {
-            finishSmsBroadcast19(smsHandler, smsReceiver);
-        }
-    }
-
-    private void finishSmsBroadcast19(Object smsHandler, Object smsReceiver) {
-        Xlog.i(TAG, "Finishing SMS broadcast for Android v19+");
-
-        Xlog.d(TAG, "Removing raw SMS data from database");
+    private void deleteFromRawTable19(Object smsHandler, Object smsReceiver) {
+        Xlog.d(TAG, "Removing raw SMS data from database for Android v19+");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
-
-        Xlog.d(TAG, "Notifying completion of SMS broadcast");
-        XposedHelpers.callMethod(smsHandler, "sendMessage",
-            new Class<?>[] {int.class},
-            3 /* EVENT_BROADCAST_COMPLETE */);
     }
 
-    private void finishSmsBroadcast24(Object smsHandler, Object smsReceiver) {
-        Xlog.i(TAG, "Finishing SMS broadcast for Android v24+");
-
-        Xlog.d(TAG, "Removing raw SMS data from database");
+    private void deleteFromRawTable24(Object smsHandler, Object smsReceiver) {
+        Xlog.d(TAG, "Removing raw SMS data from database for Android v24+");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class, int.class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
             2 /* MARK_DELETED */);
+    }
 
+    private void sendBroadcastComplete(Object smsHandler) {
         Xlog.d(TAG, "Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
             new Class<?>[] {int.class},
             3 /* EVENT_BROADCAST_COMPLETE */);
+    }
+
+    private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            deleteFromRawTable24(smsHandler, smsReceiver);
+            sendBroadcastComplete(smsHandler);
+        } else {
+            deleteFromRawTable19(smsHandler, smsReceiver);
+            sendBroadcastComplete(smsHandler);
+        }
     }
 
     private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
