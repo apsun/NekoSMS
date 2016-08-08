@@ -24,16 +24,16 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "24.0.1"
 
     defaultConfig {
-        versionCode 21
-        versionName "0.12.2"
+        versionCode 22
+        versionName "0.13.0"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 24
         resConfigs "en", "zh-rCN"
-        buildConfigField("int", "MODULE_VERSION", "10")
+        buildConfigField("int", "MODULE_VERSION", "11")
         buildConfigField("int", "DATABASE_VERSION", "10")
         buildConfigField("int", "BACKUP_VERSION", "3")
     }

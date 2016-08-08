@@ -283,6 +283,31 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            finishSmsBroadcast24(smsHandler, smsReceiver);
+        } else {
+            finishSmsBroadcast19(smsHandler, smsReceiver);
+        }
+    }
+
+    private void finishSmsBroadcast19(Object smsHandler, Object smsReceiver) {
+        Xlog.i(TAG, "Finishing SMS broadcast for Android v19+");
+
+        Xlog.d(TAG, "Removing raw SMS data from database");
+        XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
+            new Class<?>[] {String.class, String[].class, int.class},
+            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
+            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
+            2 /* MARK_DELETED */);
+
+        Xlog.d(TAG, "Notifying completion of SMS broadcast");
+        XposedHelpers.callMethod(smsHandler, "sendMessage",
+            new Class<?>[] {int.class}, 3 /* EVENT_BROADCAST_COMPLETE */);
+    }
+
+    private void finishSmsBroadcast24(Object smsHandler, Object smsReceiver) {
+        Xlog.i(TAG, "Finishing SMS broadcast for Android v24+");
+
         Xlog.d(TAG, "Removing raw SMS data from database");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class},
@@ -359,7 +384,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
-    private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam) {
+    private void hookConstructor19(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = "com.android.internal.telephony.InboundSmsHandler";
         Class<?> param1Type = String.class;
         Class<?> param2Type = Context.class;
@@ -367,7 +392,21 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         String param4Type = "com.android.internal.telephony.PhoneBase";
         String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
 
-        Xlog.i(TAG, "Hooking InboundSmsHandler constructor");
+        Xlog.i(TAG, "Hooking InboundSmsHandler constructor for Android v19+");
+
+        XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
+            param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
+    }
+
+    private void hookConstructor24(XC_LoadPackage.LoadPackageParam lpparam) {
+        String className = "com.android.internal.telephony.InboundSmsHandler";
+        Class<?> param1Type = String.class;
+        Class<?> param2Type = Context.class;
+        String param3Type = "com.android.internal.telephony.SmsStorageMonitor";
+        String param4Type = "com.android.internal.telephony.Phone";
+        String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
+
+        Xlog.i(TAG, "Hooking InboundSmsHandler constructor for Android v24+");
 
         XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
             param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
@@ -419,14 +458,17 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            hookConstructor(lpparam);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            hookConstructor24(lpparam);
+            hookDispatchIntent23(lpparam);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hookConstructor19(lpparam);
             hookDispatchIntent23(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            hookConstructor(lpparam);
+            hookConstructor19(lpparam);
             hookDispatchIntent21(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            hookConstructor(lpparam);
+            hookConstructor19(lpparam);
             hookDispatchIntent19(lpparam);
         } else {
             throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
