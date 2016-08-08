@@ -81,7 +81,7 @@
     <string name="filter_editor">过滤规则编辑器</string>
     <string name="save_blacklist_rule">保存黑名单规则</string>
     <string name="save_whitelist_rule">保存白名单规则</string>
-    <string name="discard_changes">舍弃更改</string>
+    <string name="discard_changes">放弃更改</string>
     <string name="filter_saved">过滤规则已保存</string>
     <string name="filter_save_failed">无法保存过滤规则</string>
     <string name="invalid_pattern_title">表达式不合法</string>
