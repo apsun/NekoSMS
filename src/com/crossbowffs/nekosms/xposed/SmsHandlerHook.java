@@ -34,7 +34,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import java.text.Normalizer;
 import java.util.ArrayList;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
@@ -310,9 +309,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             deleteFromRawTable24(smsHandler, smsReceiver);
             sendBroadcastComplete(smsHandler);
-        } else {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             deleteFromRawTable19(smsHandler, smsReceiver);
             sendBroadcastComplete(smsHandler);
+        } else {
+            throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
         }
     }
 
@@ -362,8 +363,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         SmsMessage[] messageParts = Telephony.Sms.Intents.getMessagesFromIntent(intent);
         SmsMessageData message = createMessageData(messageParts);
-        String sender = Normalizer.normalize(message.getSender(), Normalizer.Form.NFKD);
-        String body = Normalizer.normalize(message.getBody(), Normalizer.Form.NFKD);
+        String sender = message.getSender();
+        String body = message.getBody();
         Xlog.i(TAG, "Received a new SMS message");
         Xlog.v(TAG, "  Sender: %s", sender);
         Xlog.v(TAG, "  Body: %s", body);
