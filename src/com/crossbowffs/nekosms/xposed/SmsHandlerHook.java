@@ -295,14 +295,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         Xlog.d(TAG, "Removing raw SMS data from database");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
-            new Class<?>[] {String.class, String[].class, int.class},
+            new Class<?>[] {String.class, String[].class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
-            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
-            2 /* MARK_DELETED */);
+            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
 
         Xlog.d(TAG, "Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
-            new Class<?>[] {int.class}, 3 /* EVENT_BROADCAST_COMPLETE */);
+            new Class<?>[] {int.class},
+            3 /* EVENT_BROADCAST_COMPLETE */);
     }
 
     private void finishSmsBroadcast24(Object smsHandler, Object smsReceiver) {
@@ -310,13 +310,15 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         Xlog.d(TAG, "Removing raw SMS data from database");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
-            new Class<?>[] {String.class, String[].class},
+            new Class<?>[] {String.class, String[].class, int.class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
-            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
+            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
+            2 /* MARK_DELETED */);
 
         Xlog.d(TAG, "Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
-            new Class<?>[] {int.class}, 3 /* EVENT_BROADCAST_COMPLETE */);
+            new Class<?>[] {int.class},
+            3 /* EVENT_BROADCAST_COMPLETE */);
     }
 
     private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
