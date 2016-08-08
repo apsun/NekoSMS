@@ -34,6 +34,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
@@ -363,8 +364,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
         SmsMessage[] messageParts = Telephony.Sms.Intents.getMessagesFromIntent(intent);
         SmsMessageData message = createMessageData(messageParts);
-        String sender = message.getSender();
-        String body = message.getBody();
+        String sender = Normalizer.normalize(message.getSender(), Normalizer.Form.NFC);
+        String body = Normalizer.normalize(message.getBody(), Normalizer.Form.NFC);
         Xlog.i(TAG, "Received a new SMS message");
         Xlog.v(TAG, "  Sender: %s", sender);
         Xlog.v(TAG, "  Body: %s", body);

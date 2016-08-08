@@ -2,16 +2,22 @@ package com.crossbowffs.nekosms.filters;
 
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 
+import java.text.Normalizer;
+
 /* package */ class StringFilterPattern extends SmsFilterPattern {
     private final String mNormalizedPattern;
 
     public StringFilterPattern(SmsFilterPatternData data) {
         super(data);
+        String pattern = getPattern();
         if (!isCaseSensitive()) {
-            mNormalizedPattern = getPattern().toLowerCase();
-        } else {
-            mNormalizedPattern = getPattern();
+            pattern = pattern.toLowerCase();
         }
+        // Make sure the pattern is normalized, since Java does not
+        // perform Unicode normalization when comparing strings.
+        // The sender and body values are normalized once in the
+        // Xposed module to improve performance.
+        mNormalizedPattern = Normalizer.normalize(pattern, Normalizer.Form.NFC);
     }
 
     @Override
