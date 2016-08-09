@@ -21,19 +21,21 @@ public class SmsFilter {
     }
 
     public boolean match(String sender, String body) {
-        Xlog.v(TAG, "Checking SMS filter");
         if (mSenderPattern == null && mBodyPattern == null) {
-            Xlog.w(TAG, "  No sender or body pattern, ignoring filter");
+            Xlog.v(TAG, "No sender or body pattern, ignoring");
             return false;
         }
+        Xlog.v(TAG, "Action: %s", getAction().name());
         boolean matches = true;
         if (mSenderPattern != null) {
+            mSenderPattern.printToLog();
             matches = mSenderPattern.match(sender, body);
         }
         if (mBodyPattern != null) {
+            mBodyPattern.printToLog();
             matches = matches && mBodyPattern.match(sender, body);
         }
-        Xlog.v(TAG, "  Matches: %s", matches);
+        Xlog.v(TAG, "Matches: %s", matches);
         return matches;
     }
 

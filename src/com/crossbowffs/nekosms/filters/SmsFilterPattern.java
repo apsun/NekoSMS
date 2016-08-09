@@ -36,13 +36,12 @@ import com.crossbowffs.nekosms.utils.Xlog;
         return mCaseSensitive;
     }
 
-    public boolean match(String sender, String body) {
-        Xlog.v(TAG, "  Field: %s", getField().name().toLowerCase());
-        Xlog.v(TAG, "  Mode: %s", getMode().name().toLowerCase());
+    public void printToLog() {
+        Xlog.v(TAG, "Field: %s", getField().name());
+        Xlog.v(TAG, "  Mode: %s", getMode().name());
         Xlog.v(TAG, "  Pattern: %s", getPattern());
         Xlog.v(TAG, "  Case sensitive: %s", isCaseSensitive());
-        return matchInternal(sender, body);
     }
 
-    protected abstract boolean matchInternal(String sender, String body);
+    public abstract boolean match(String sender, String body);
 }

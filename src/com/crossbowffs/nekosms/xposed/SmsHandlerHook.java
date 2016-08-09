@@ -207,11 +207,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             whitelist.ensureCapacity(filterCursor.getCount());
             SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
-                data = filterCursor.get(data);
+                SmsFilter filter = new SmsFilter(filterCursor.get(data));
                 if (data.getAction() == SmsFilterAction.BLOCK) {
-                    blacklist.add(new SmsFilter(data));
-                } else {
-                    whitelist.add(new SmsFilter(data));
+                    blacklist.add(filter);
+                } else if (data.getAction() == SmsFilterAction.ALLOW) {
+                    whitelist.add(filter);
                 }
             }
         } catch (Exception e) {
@@ -245,10 +245,16 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return false;
         }
 
+        Xlog.v(TAG, "----------------------------------------");
         for (SmsFilter filter : filters) {
             if (filter.match(sender, body)) {
-                return filter.getAction() == SmsFilterAction.BLOCK;
+                if (filter.getAction() == SmsFilterAction.BLOCK) {
+                    return true;
+                } else if (filter.getAction() == SmsFilterAction.ALLOW) {
+                    return false;
+                }
             }
+            Xlog.v(TAG, "----------------------------------------");
         }
         return false;
     }
@@ -283,7 +289,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void deleteFromRawTable19(Object smsHandler, Object smsReceiver) {
-        Xlog.d(TAG, "Removing raw SMS data from database for Android v19+");
+        Xlog.i(TAG, "Removing raw SMS data from database for Android v19+");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
@@ -291,7 +297,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void deleteFromRawTable24(Object smsHandler, Object smsReceiver) {
-        Xlog.d(TAG, "Removing raw SMS data from database for Android v24+");
+        Xlog.i(TAG, "Removing raw SMS data from database for Android v24+");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class, int.class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
@@ -300,7 +306,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void sendBroadcastComplete(Object smsHandler) {
-        Xlog.d(TAG, "Notifying completion of SMS broadcast");
+        Xlog.i(TAG, "Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
             new Class<?>[] {int.class},
             3 /* EVENT_BROADCAST_COMPLETE */);

@@ -21,7 +21,7 @@ import java.text.Normalizer;
     }
 
     @Override
-    protected boolean matchInternal(String sender, String body) {
+    public boolean match(String sender, String body) {
         String testString;
         switch (getField()) {
         case SENDER:
