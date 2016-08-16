@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.view.*;
 import android.widget.Button;
@@ -59,17 +58,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         FilterRulesAdapter adapter = new FilterRulesAdapter(this);
-        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                // Show the FAB in case we no longer have enough elements
-                // in the list to scroll. Ideally this only happens when
-                // we actually can't scroll anymore, but we are not guaranteed
-                // that this callback executes before the list recalculates
-                // the item positions.
-                showFabIfAutoHidden();
-            }
-        });
         mAdapter = adapter;
         LoaderManager loaderManager = getLoaderManager();
         loaderManager.initLoader(0, null, this);
@@ -273,6 +261,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
                 showToast(messageId);
+                showFabIfAutoHidden();
             }
         }.execute();
     }
@@ -313,6 +302,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             return;
         }
 
+        showFabIfAutoHidden();
         showSnackbar(R.string.filter_deleted, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
