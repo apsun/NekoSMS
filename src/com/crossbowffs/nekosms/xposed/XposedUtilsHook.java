@@ -9,14 +9,13 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class XposedUtilsHook implements IXposedHookLoadPackage {
-    private static final String TAG = XposedUtilsHook.class.getSimpleName();
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
     private static final int MODULE_VERSION = BuildConfig.MODULE_VERSION;
 
     private static void hookXposedUtils(XC_LoadPackage.LoadPackageParam lpparam) {
         String className = XposedUtils.class.getName();
 
-        Xlog.i(TAG, "Hooking Xposed module status checker");
+        Xlog.i("Hooking Xposed module status checker");
 
         // This is the version as fetched when the *module* is loaded
         // If the app is updated, this value will be changed within the
@@ -32,7 +31,7 @@ public class XposedUtilsHook implements IXposedHookLoadPackage {
             try {
                 hookXposedUtils(lpparam);
             } catch (Throwable e) {
-                Xlog.e(TAG, "Failed to hook Xposed module status checker", e);
+                Xlog.e("Failed to hook Xposed module status checker", e);
                 throw e;
             }
         }

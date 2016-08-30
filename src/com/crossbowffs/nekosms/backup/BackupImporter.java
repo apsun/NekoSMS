@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.io.*;
 
 /* package */ class BackupImporter implements Closeable {
-    private static final String TAG = BackupImporter.class.getSimpleName();
     private final InputStream mJsonStream;
 
     public BackupImporter(InputStream in) {
@@ -51,7 +50,7 @@ import java.io.*;
         } else {
             throw new BackupVersionException("Unknown backup version: " + version);
         }
-        Xlog.i(TAG, "Importing data from backup (version: %d)", version);
+        Xlog.i("Importing data from backup (version: %d)", version);
         delegate.performImport(json);
     }
 

@@ -44,7 +44,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             try {
                 afterConstructorHandler(param);
             } catch (Throwable e) {
-                Xlog.e(TAG, "Error occurred in constructor hook", e);
+                Xlog.e("Error occurred in constructor hook", e);
                 throw e;
             }
         }
@@ -62,13 +62,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             try {
                 beforeDispatchIntentHandler(param, mReceiverIndex);
             } catch (Throwable e) {
-                Xlog.e(TAG, "Error occurred in dispatchIntent() hook", e);
+                Xlog.e("Error occurred in dispatchIntent() hook", e);
                 throw e;
             }
         }
     }
 
-    private static final String TAG = SmsHandlerHook.class.getSimpleName();
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
     private static final int SMS_CHARACTER_LIMIT = 160;
 
@@ -110,12 +109,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private ContentObserver registerContentObserver(Context context) {
-        Xlog.i(TAG, "Registering SMS filter content observer");
+        Xlog.i("Registering SMS filter content observer");
 
         ContentObserver contentObserver = new ContentObserver(new Handler()) {
             @Override
             public void onChange(boolean selfChange) {
-                Xlog.i(TAG, "SMS filter database updated, marking cache as dirty");
+                Xlog.i("SMS filter database updated, marking cache as dirty");
                 resetFilters();
             }
         };
@@ -133,7 +132,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // database file itself, but at that point, it's not worth trying to handle.
         // The only other alternative would be to reload the entire filter list every
         // time a SMS is received, which does not scale well to a large number of filters.
-        Xlog.i(TAG, "Registering NekoSMS package state receiver");
+        Xlog.i("Registering NekoSMS package state receiver");
 
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
@@ -155,10 +154,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 }
 
                 if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-                    Xlog.i(TAG, "NekoSMS uninstalled, resetting filters");
+                    Xlog.i("NekoSMS uninstalled, resetting filters");
                     resetFilters();
                 } else if (Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
-                    Xlog.i(TAG, "NekoSMS data cleared, resetting filters");
+                    Xlog.i("NekoSMS data cleared, resetting filters");
                     resetFilters();
                 }
             }
@@ -173,7 +172,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private RemotePreferences createRemotePreferences(Context context) {
-        Xlog.i(TAG, "Initializing remote preferences");
+        Xlog.i("Initializing remote preferences");
 
         return new RemotePreferences(context,
             PreferenceConsts.REMOTE_PREFS_AUTHORITY,
@@ -197,7 +196,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try (CursorWrapper<SmsFilterData> filterCursor = FilterRuleLoader.get().queryAll(context)) {
             if (filterCursor == null) {
                 // Can occur if NekoSMS has been uninstalled
-                Xlog.e(TAG, "Failed to load SMS filters (queryAll returned null)");
+                Xlog.e("Failed to load SMS filters (queryAll returned null)");
                 return null;
             }
             // Blacklist rules are expected to make up the majority
@@ -215,7 +214,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 }
             }
         } catch (Exception e) {
-            Xlog.e(TAG, "Failed to load SMS filters", e);
+            Xlog.e("Failed to load SMS filters", e);
             return null;
         }
         // Combine whitelist and blacklist, with whitelist rules first
@@ -234,7 +233,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private boolean shouldFilterMessage(Context context, String sender, String body) {
         ArrayList<SmsFilter> filters = mSmsFilters;
         if (filters == null) {
-            Xlog.i(TAG, "Cached SMS filters dirty, loading from database");
+            Xlog.i("Cached SMS filters dirty, loading from database");
             mSmsFilters = filters = loadSmsFilters(context);
         }
 
@@ -245,7 +244,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return false;
         }
 
-        Xlog.v(TAG, "----------------------------------------");
+        Xlog.v("----------------------------------------");
         for (SmsFilter filter : filters) {
             if (filter.match(sender, body)) {
                 if (filter.getAction() == SmsFilterAction.BLOCK) {
@@ -254,7 +253,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                     return false;
                 }
             }
-            Xlog.v(TAG, "----------------------------------------");
+            Xlog.v("----------------------------------------");
         }
         return false;
     }
@@ -273,23 +272,23 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             // This might occur if NekoSMS has been uninstalled.
             // In this case, don't do anything - we can't do anything
             // with the permissions anyways.
-            Xlog.w(TAG, "NekoSMS package not found", e);
+            Xlog.w("NekoSMS package not found", e);
             return;
         }
 
         int uid = packageInfo.applicationInfo.uid;
 
-        Xlog.i(TAG, "Checking if we have OP_WRITE_SMS permission");
+        Xlog.i("Checking if we have OP_WRITE_SMS permission");
         if (AppOpsUtils.checkOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE)) {
-            Xlog.i(TAG, "Already have OP_WRITE_SMS permission");
+            Xlog.i("Already have OP_WRITE_SMS permission");
         } else {
-            Xlog.i(TAG, "Giving our package OP_WRITE_SMS permission");
+            Xlog.i("Giving our package OP_WRITE_SMS permission");
             AppOpsUtils.allowOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE);
         }
     }
 
     private void deleteFromRawTable19(Object smsHandler, Object smsReceiver) {
-        Xlog.i(TAG, "Removing raw SMS data from database for Android v19+");
+        Xlog.i("Removing raw SMS data from database for Android v19+");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
@@ -297,7 +296,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void deleteFromRawTable24(Object smsHandler, Object smsReceiver) {
-        Xlog.i(TAG, "Removing raw SMS data from database for Android v24+");
+        Xlog.i("Removing raw SMS data from database for Android v24+");
         XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
             new Class<?>[] {String.class, String[].class, int.class},
             XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
@@ -306,7 +305,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void sendBroadcastComplete(Object smsHandler) {
-        Xlog.i(TAG, "Notifying completion of SMS broadcast");
+        Xlog.i("Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
             new Class<?>[] {int.class},
             3 /* EVENT_BROADCAST_COMPLETE */);
@@ -350,11 +349,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             enable = mPreferences.getBoolean(PreferenceConsts.KEY_ENABLE, enable);
         } catch (RemotePreferenceAccessException e) {
-            Xlog.e(TAG, "Failed to read enable preference");
+            Xlog.e("Failed to read enable preference");
         }
 
         if (!enable) {
-            Xlog.i(TAG, "SMS blocking disabled, exiting");
+            Xlog.i("SMS blocking disabled, exiting");
             return;
         }
 
@@ -362,7 +361,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             allowContacts = mPreferences.getBoolean(PreferenceConsts.KEY_WHITELIST_CONTACTS, allowContacts);
         } catch (RemotePreferenceAccessException e) {
-            Xlog.e(TAG, "Failed to read whitelist contacts preference");
+            Xlog.e("Failed to read whitelist contacts preference");
         }
 
         Object smsHandler = param.thisObject;
@@ -372,20 +371,20 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         SmsMessageData message = createMessageData(messageParts);
         String sender = Normalizer.normalize(message.getSender(), Normalizer.Form.NFC);
         String body = Normalizer.normalize(message.getBody(), Normalizer.Form.NFC);
-        Xlog.i(TAG, "Received a new SMS message");
-        Xlog.v(TAG, "  Sender: %s", sender);
-        Xlog.v(TAG, "  Body: %s", body);
+        Xlog.i("Received a new SMS message");
+        Xlog.v("  Sender: %s", sender);
+        Xlog.v("  Body: %s", body);
 
         if (allowContacts && isMessageFromContact(context, sender)) {
-            Xlog.i(TAG, "  Result: Allowed (contact whitelist)");
+            Xlog.i("  Result: Allowed (contact whitelist)");
         } else if (shouldFilterMessage(context, sender, body)) {
-            Xlog.i(TAG, "  Result: Blocked");
+            Xlog.i("  Result: Blocked");
             Uri messageUri = BlockedSmsLoader.get().insert(context, message);
             broadcastBlockedSms(context, messageUri);
             param.setResult(null);
             finishSmsBroadcast(smsHandler, param.args[receiverIndex]);
         } else {
-            Xlog.i(TAG, "  Result: Allowed");
+            Xlog.i("  Result: Allowed");
         }
     }
 
@@ -397,7 +396,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         String param4Type = "com.android.internal.telephony.PhoneBase";
         String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
 
-        Xlog.i(TAG, "Hooking InboundSmsHandler constructor for Android v19+");
+        Xlog.i("Hooking InboundSmsHandler constructor for Android v19+");
 
         XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
             param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
@@ -411,7 +410,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         String param4Type = "com.android.internal.telephony.Phone";
         String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
 
-        Xlog.i(TAG, "Hooking InboundSmsHandler constructor for Android v24+");
+        Xlog.i("Hooking InboundSmsHandler constructor for Android v24+");
 
         XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
             param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
@@ -425,7 +424,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param3Type = int.class;
         Class<?> param4Type = BroadcastReceiver.class;
 
-        Xlog.i(TAG, "Hooking dispatchIntent() for Android v19+");
+        Xlog.i("Hooking dispatchIntent() for Android v19+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, new DispatchIntentHook(3));
@@ -440,7 +439,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param4Type = BroadcastReceiver.class;
         Class<?> param5Type = UserHandle.class;
 
-        Xlog.i(TAG, "Hooking dispatchIntent() for Android v21+");
+        Xlog.i("Hooking dispatchIntent() for Android v21+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, param5Type, new DispatchIntentHook(3));
@@ -456,7 +455,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Class<?> param5Type = BroadcastReceiver.class;
         Class<?> param6Type = UserHandle.class;
 
-        Xlog.i(TAG, "Hooking dispatchIntent() for Android v23+");
+        Xlog.i("Hooking dispatchIntent() for Android v23+");
 
         XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
             param1Type, param2Type, param3Type, param4Type, param5Type, param6Type, new DispatchIntentHook(4));
@@ -481,25 +480,25 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static void printDeviceInfo() {
-        Xlog.i(TAG, "Phone manufacturer: %s", Build.MANUFACTURER);
-        Xlog.i(TAG, "Phone model: %s", Build.MODEL);
-        Xlog.i(TAG, "Android version: %s", Build.VERSION.RELEASE);
-        Xlog.i(TAG, "Xposed bridge version: %d", XposedBridge.XPOSED_BRIDGE_VERSION);
-        Xlog.i(TAG, "NekoSMS version: %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        Xlog.i("Phone manufacturer: %s", Build.MANUFACTURER);
+        Xlog.i("Phone model: %s", Build.MODEL);
+        Xlog.i("Android version: %s", Build.VERSION.RELEASE);
+        Xlog.i("Xposed bridge version: %d", XposedBridge.XPOSED_BRIDGE_VERSION);
+        Xlog.i("NekoSMS version: %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
     }
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if ("com.android.phone".equals(lpparam.packageName)) {
-            Xlog.i(TAG, "NekoSMS initializing...");
+            Xlog.i("NekoSMS initializing...");
             printDeviceInfo();
             try {
                 hookSmsHandler(lpparam);
             } catch (Throwable e) {
-                Xlog.e(TAG, "Failed to hook SMS handler", e);
+                Xlog.e("Failed to hook SMS handler", e);
                 throw e;
             }
-            Xlog.i(TAG, "NekoSMS initialization complete!");
+            Xlog.i("NekoSMS initialization complete!");
         }
     }
 }

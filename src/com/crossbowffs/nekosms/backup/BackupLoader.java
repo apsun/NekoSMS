@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Date;
 
 public final class BackupLoader {
-    private static final String TAG = BackupLoader.class.getSimpleName();
     private static final String BACKUP_DIRECTORY = "NekoSMS";
     private static final String BACKUP_FILE_EXTENSION = ".json";
     private static final String BACKUP_FILE_NAME_FORMAT = "backup-%s";
@@ -57,7 +56,7 @@ public final class BackupLoader {
         case Environment.MEDIA_MOUNTED_READ_ONLY:
             break;
         default:
-            Xlog.e(TAG, "Import failed: cannot read from external storage");
+            Xlog.e("Import failed: cannot read from external storage");
             return ImportResult.CANNOT_READ_STORAGE;
         }
 
@@ -65,22 +64,22 @@ public final class BackupLoader {
         try (BackupImporter importer = new BackupImporter(file)) {
             importer.read(context);
         } catch (IOException e) {
-            Xlog.e(TAG, "Import failed: could not read backup file", e);
+            Xlog.e("Import failed: could not read backup file", e);
             return ImportResult.READ_FAILED;
         } catch (BackupVersionException e) {
-            Xlog.e(TAG, "Import failed: unknown backup version", e);
+            Xlog.e("Import failed: unknown backup version", e);
             return ImportResult.UNKNOWN_VERSION;
         } catch (InvalidBackupException e) {
-            Xlog.e(TAG, "Import failed: invalid backup file", e);
+            Xlog.e("Import failed: invalid backup file", e);
             return ImportResult.INVALID_BACKUP;
         }
-        Xlog.i(TAG, "Import succeeded");
+        Xlog.i("Import succeeded");
         return ImportResult.SUCCESS;
     }
 
     public static ExportResult exportToStorage(Context context, String fileName) {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Xlog.e(TAG, "Export failed: cannot write to external storage");
+            Xlog.e("Export failed: cannot write to external storage");
             return ExportResult.CANNOT_WRITE_STORAGE;
         }
 
@@ -95,10 +94,10 @@ public final class BackupLoader {
         try (BackupExporter exporter = new BackupExporter(file)) {
             exporter.write(context);
         } catch (IOException e) {
-            Xlog.e(TAG, "Export failed: could not write backup file", e);
+            Xlog.e("Export failed: could not write backup file", e);
             return ExportResult.WRITE_FAILED;
         }
-        Xlog.i(TAG, "Export succeeded");
+        Xlog.i("Export succeeded");
         return ExportResult.SUCCESS;
     }
 }

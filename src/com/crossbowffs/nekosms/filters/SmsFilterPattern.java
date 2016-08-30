@@ -6,8 +6,6 @@ import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 /* package */ abstract class SmsFilterPattern {
-    private static final String TAG = SmsFilterPattern.class.getSimpleName();
-
     private final SmsFilterField mField;
     private final SmsFilterMode mMode;
     private final String mPattern;
@@ -37,10 +35,10 @@ import com.crossbowffs.nekosms.utils.Xlog;
     }
 
     public void printToLog() {
-        Xlog.v(TAG, "Field: %s", getField().name());
-        Xlog.v(TAG, "  Mode: %s", getMode().name());
-        Xlog.v(TAG, "  Pattern: %s", getPattern());
-        Xlog.v(TAG, "  Case sensitive: %s", isCaseSensitive());
+        Xlog.v("Field: %s", getField().name());
+        Xlog.v("  Mode: %s", getMode().name());
+        Xlog.v("  Pattern: %s", getPattern());
+        Xlog.v("  Case sensitive: %s", isCaseSensitive());
     }
 
     public abstract boolean match(String sender, String body);

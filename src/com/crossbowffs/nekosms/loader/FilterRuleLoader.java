@@ -21,7 +21,6 @@ import java.util.List;
 import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
 public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
-    private static final String TAG = FilterRuleLoader.class.getSimpleName();
     private static FilterRuleLoader sInstance;
 
     public static FilterRuleLoader get() {
@@ -118,7 +117,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         if (!updated && insertIfError) {
             return insert(context, filterData);
         } else if (!updated) {
-            Xlog.w(TAG, "Failed to update filter, possibly already exists");
+            Xlog.w("Failed to update filter, possibly already exists");
             return null;
         } else {
             return filterUri;

@@ -21,7 +21,6 @@ import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
-    private static final String TAG = BlockedSmsReceiver.class.getSimpleName();
     private static final int NOTIFICATION_ID = 1;
 
     private NotificationManager getNotificationManager(Context context) {
@@ -121,11 +120,11 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         Notification notification;
         try (CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context)) {
             if (messages == null || messages.getCount() == 0) {
-                Xlog.e(TAG, "Failed to load read messages, falling back to intent URI");
+                Xlog.e("Failed to load read messages, falling back to intent URI");
                 Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
                 SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
                 if (messageData == null) {
-                    Xlog.e(TAG, "Failed to load message from intent URI");
+                    Xlog.e("Failed to load message from intent URI");
                     return;
                 }
                 notification = buildNotificationSingle(context, messageData);
@@ -162,7 +161,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         Uri messageUri = intent.getData();
         boolean deleted = BlockedSmsLoader.get().delete(context, messageUri);
         if (!deleted) {
-            Xlog.e(TAG, "Failed to delete message: could not load data");
+            Xlog.e("Failed to delete message: could not load data");
             Toast.makeText(context, R.string.message_delete_failed, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, R.string.message_deleted, Toast.LENGTH_SHORT).show();
@@ -174,14 +173,14 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         notificationManager.cancel(NOTIFICATION_ID);
 
         if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
-            Xlog.e(TAG, "Do not have permissions to write SMS");
+            Xlog.e("Do not have permissions to write SMS");
             Toast.makeText(context, R.string.must_enable_xposed_module, Toast.LENGTH_SHORT).show();
             return;
         }
 
         SmsMessageData messageToRestore = BlockedSmsLoader.get().query(context, intent.getData());
         if (messageToRestore == null) {
-            Xlog.e(TAG, "Failed to restore message: could not load data");
+            Xlog.e("Failed to restore message: could not load data");
             Toast.makeText(context, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -189,7 +188,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         try {
             InboxSmsLoader.writeMessage(context, messageToRestore);
         } catch (DatabaseException e) {
-            Xlog.e(TAG, "Failed to restore message: could not write to SMS inbox");
+            Xlog.e("Failed to restore message: could not write to SMS inbox");
             Toast.makeText(context, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
             return;
         }

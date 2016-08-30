@@ -15,7 +15,6 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
 import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
 /* package */ class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String TAG = DatabaseHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "nekosms.db";
     private static final int DATABASE_VERSION = BuildConfig.DATABASE_VERSION;
 
@@ -54,7 +53,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        Xlog.i(TAG, "Upgrading database from v%d to v%d", oldVersion, newVersion);
+        Xlog.i("Upgrading database from v%d to v%d", oldVersion, newVersion);
         if (oldVersion < 8) {
             upgradePre8To10(db);
         } else if (oldVersion == 8) {

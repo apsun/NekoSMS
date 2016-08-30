@@ -25,7 +25,6 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class BlockedMessagesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = BlockedMessagesFragment.class.getSimpleName();
     private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
 
     private ListRecyclerView mRecyclerView;
@@ -227,7 +226,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
-            Xlog.e(TAG, "Do not have permissions to write SMS");
+            Xlog.e("Do not have permissions to write SMS");
             showSnackbar(R.string.must_enable_xposed_module, R.string.enable, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -239,7 +238,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
         final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
         if (messageData == null) {
-            Xlog.e(TAG, "Failed to restore message: could not load data");
+            Xlog.e("Failed to restore message: could not load data");
             showToast(R.string.load_blocked_message_failed);
             return;
         }
@@ -248,7 +247,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         try {
             inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (DatabaseException e) {
-            Xlog.e(TAG, "Failed to restore message: could not write to SMS inbox");
+            Xlog.e("Failed to restore message: could not write to SMS inbox");
             showToast(R.string.message_restore_failed);
             return;
         }
@@ -272,7 +271,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
         final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);
         if (messageData == null) {
-            Xlog.e(TAG, "Failed to delete message: could not load data");
+            Xlog.e("Failed to delete message: could not load data");
             showToast(R.string.load_blocked_message_failed);
             return;
         }

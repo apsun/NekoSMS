@@ -36,8 +36,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     public static final String ACTION_OPEN_SECTION = "action_open_section";
     public static final String EXTRA_SECTION = "section";
     public static final String EXTRA_SECTION_BLACKLIST_RULES = "blacklist_rules";
@@ -206,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navId = R.id.main_drawer_settings;
             break;
         default:
-            Xlog.e(TAG, "Unknown context section: %s", key);
+            Xlog.e("Unknown context section: %s", key);
             return setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
         }
 

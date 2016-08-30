@@ -11,8 +11,6 @@ import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public final class InboxSmsLoader {
-    private static final String TAG = InboxSmsLoader.class.getSimpleName();
-
     private InboxSmsLoader() { }
 
     private static ContentValues serializeMessage(SmsMessageData messageData) {
@@ -37,10 +35,10 @@ public final class InboxSmsLoader {
         // Because we check for permissions before calling this method, we can assume
         // it's the latter case.
         if (id == 0) {
-            Xlog.w(TAG, "Writing to SMS inbox returned row 0");
+            Xlog.w("Writing to SMS inbox returned row 0");
             return uri;
         } else if (id < 0) {
-            Xlog.e(TAG, "Writing to SMS inbox failed (unknown reason)");
+            Xlog.e("Writing to SMS inbox failed (unknown reason)");
             throw new DatabaseException("Failed to write message to SMS inbox");
         } else {
             return uri;
@@ -56,7 +54,7 @@ public final class InboxSmsLoader {
             // 2. The app does not have permission to write to the SMS inbox
             // Note that this method is only called after writeMessage(), which means that
             // if we get here, we can rule out situation (2), and ignore the error.
-            Xlog.e(TAG, "URI does not match any message in SMS inbox");
+            Xlog.e("URI does not match any message in SMS inbox");
         }
     }
 }

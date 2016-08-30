@@ -7,8 +7,6 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class SettingsFragment extends PreferenceFragment {
-    private static final String TAG = SettingsFragment.class.getSimpleName();
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

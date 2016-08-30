@@ -29,7 +29,6 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         }
     }
 
-    private static final String TAG = BlockedMessagesAdapter.class.getSimpleName();
     private final BlockedMessagesFragment mFragment;
 
     public BlockedMessagesAdapter(BlockedMessagesFragment fragment) {

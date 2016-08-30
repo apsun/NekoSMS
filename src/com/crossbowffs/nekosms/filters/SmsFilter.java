@@ -4,8 +4,6 @@ import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class SmsFilter {
-    private static final String TAG = SmsFilter.class.getSimpleName();
-
     private final SmsFilterAction mAction;
     private final SmsFilterPattern mSenderPattern;
     private final SmsFilterPattern mBodyPattern;
@@ -22,10 +20,10 @@ public class SmsFilter {
 
     public boolean match(String sender, String body) {
         if (mSenderPattern == null && mBodyPattern == null) {
-            Xlog.v(TAG, "No sender or body pattern, ignoring");
+            Xlog.v("No sender or body pattern, ignoring");
             return false;
         }
-        Xlog.v(TAG, "Action: %s", getAction().name());
+        Xlog.v("Action: %s", getAction().name());
         boolean matches = true;
         if (mSenderPattern != null) {
             mSenderPattern.printToLog();
@@ -35,7 +33,7 @@ public class SmsFilter {
             mBodyPattern.printToLog();
             matches = matches && mBodyPattern.match(sender, body);
         }
-        Xlog.v(TAG, "Matches: %s", matches);
+        Xlog.v("Matches: %s", matches);
         return matches;
     }
 

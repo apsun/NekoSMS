@@ -29,7 +29,6 @@ import com.crossbowffs.nekosms.widget.ListRecyclerView;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
 
 public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final String TAG = FilterRulesFragment.class.getSimpleName();
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
     public static final String EXTRA_ACTION = "action";
@@ -298,7 +297,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private void deleteFilter(long filterId) {
         final SmsFilterData filterData = FilterRuleLoader.get().queryAndDelete(getContext(), filterId);
         if (filterData == null) {
-            Xlog.e(TAG, "Failed to delete filter: could not load data");
+            Xlog.e("Failed to delete filter: could not load data");
             return;
         }
 

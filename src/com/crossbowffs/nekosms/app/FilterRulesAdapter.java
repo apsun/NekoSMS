@@ -28,7 +28,6 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         }
     }
 
-    private static final String TAG = FilterRulesAdapter.class.getSimpleName();
     private final FilterRulesFragment mFragment;
 
     public FilterRulesAdapter(FilterRulesFragment fragment) {

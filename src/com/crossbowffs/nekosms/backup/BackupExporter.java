@@ -11,7 +11,6 @@ import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import java.io.*;
 
 /* package */ class BackupExporter implements Closeable {
-    private static final String TAG = BackupExporter.class.getSimpleName();
     private static final int BACKUP_VERSION = BuildConfig.BACKUP_VERSION;
     private final JsonWriter mJsonWriter;
 
