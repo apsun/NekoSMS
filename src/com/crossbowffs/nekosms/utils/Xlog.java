@@ -4,8 +4,8 @@ import android.util.Log;
 import com.crossbowffs.nekosms.BuildConfig;
 
 public final class Xlog {
-    private static final int LOG_LEVEL = BuildConfig.LOG_LEVEL;
     private static final String LOG_TAG = BuildConfig.LOG_TAG;
+    private static final int LOG_LEVEL = BuildConfig.LOG_LEVEL;
     private static final boolean LOG_TO_XPOSED = BuildConfig.LOG_TO_XPOSED;
 
     private Xlog() { }
@@ -22,7 +22,7 @@ public final class Xlog {
         }
         Log.println(priority, LOG_TAG, message);
         if (LOG_TO_XPOSED) {
-            Log.println(priority, "Xposed", "[" + LOG_TAG + "] " + message);
+            Log.println(priority, "Xposed", LOG_TAG + ": " + message);
         }
     }
 

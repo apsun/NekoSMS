@@ -15,11 +15,6 @@ public class PreferenceProvider extends RemotePreferenceProvider {
             return false;
         }
 
-        // Only allow access to main (user) preferences
-        if (!PreferenceConsts.FILE_MAIN.equals(prefName)) {
-            return false;
-        }
-
         // Only allow access to enable/whitelist contacts preferences
         if (!PreferenceConsts.KEY_ENABLE.equals(prefKey) &&
             !PreferenceConsts.KEY_WHITELIST_CONTACTS.equals(prefKey)) {
@@ -27,7 +22,6 @@ public class PreferenceProvider extends RemotePreferenceProvider {
         }
 
         // Only allow access from telephony process
-        String callerPackage = getCallingPackage();
-        return "com.android.phone".equals(callerPackage);
+        return "com.android.phone".equals(getCallingPackage());
     }
 }
