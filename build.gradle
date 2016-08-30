@@ -38,6 +38,8 @@ android {
         buildConfigField("int", "MODULE_VERSION", "11")
         buildConfigField("int", "DATABASE_VERSION", "10")
         buildConfigField("int", "BACKUP_VERSION", "3")
+        buildConfigField("String", "LOG_TAG", "\"NekoSMS\"")
+        buildConfigField("boolean", "LOG_TO_XPOSED", "true")
     }
 
     sourceSets {
@@ -52,7 +54,6 @@ android {
     buildTypes {
         debug {
             buildConfigField("int", "LOG_LEVEL", "2")
-            buildConfigField("String", "LOG_TAG", "\"NekoSMS\"")
         }
 
         release {
@@ -60,7 +61,6 @@ android {
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             buildConfigField("int", "LOG_LEVEL", "4")
-            buildConfigField("String", "LOG_TAG", "\"Xposed\"")
         }
     }
 }
