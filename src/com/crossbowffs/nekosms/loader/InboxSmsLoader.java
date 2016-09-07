@@ -19,7 +19,7 @@ public final class InboxSmsLoader {
         values.put(Telephony.Sms.BODY, messageData.getBody());
         values.put(Telephony.Sms.DATE, messageData.getTimeReceived());
         values.put(Telephony.Sms.DATE_SENT, messageData.getTimeSent());
-        values.put(Telephony.Sms.READ, messageData.isRead());
+        values.put(Telephony.Sms.READ, messageData.isRead() ? 1 : 0);
         values.put(Telephony.Sms.SEEN, 1); // Always mark messages as seen
         return values;
     }

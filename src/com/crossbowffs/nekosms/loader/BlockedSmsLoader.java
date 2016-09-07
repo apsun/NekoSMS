@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.MapUtils;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
@@ -65,14 +64,14 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
     protected ContentValues serialize(SmsMessageData data) {
         ContentValues values = MapUtils.contentValuesForSize(7);
         if (data.getId() >= 0) {
-            values.put(DatabaseContract.BlockedMessages._ID, data.getId());
+            values.put(BlockedMessages._ID, data.getId());
         }
-        values.put(DatabaseContract.BlockedMessages.SENDER, data.getSender());
-        values.put(DatabaseContract.BlockedMessages.BODY, data.getBody());
-        values.put(DatabaseContract.BlockedMessages.TIME_SENT, data.getTimeSent());
-        values.put(DatabaseContract.BlockedMessages.TIME_RECEIVED, data.getTimeReceived());
-        values.put(DatabaseContract.BlockedMessages.READ, data.isRead());
-        values.put(DatabaseContract.BlockedMessages.SEEN, data.isSeen());
+        values.put(BlockedMessages.SENDER, data.getSender());
+        values.put(BlockedMessages.BODY, data.getBody());
+        values.put(BlockedMessages.TIME_SENT, data.getTimeSent());
+        values.put(BlockedMessages.TIME_RECEIVED, data.getTimeReceived());
+        values.put(BlockedMessages.READ, data.isRead() ? 1 : 0);
+        values.put(BlockedMessages.SEEN, data.isSeen() ? 1 : 0);
         return values;
     }
 
