@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Telephony;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.utils.MapUtils;
@@ -14,13 +15,19 @@ public final class InboxSmsLoader {
     private InboxSmsLoader() { }
 
     private static ContentValues serializeMessage(SmsMessageData messageData) {
-        ContentValues values = MapUtils.contentValuesForSize(6);
+        ContentValues values = MapUtils.contentValuesForSize(7);
         values.put(Telephony.Sms.ADDRESS, messageData.getSender());
         values.put(Telephony.Sms.BODY, messageData.getBody());
         values.put(Telephony.Sms.DATE, messageData.getTimeReceived());
         values.put(Telephony.Sms.DATE_SENT, messageData.getTimeSent());
         values.put(Telephony.Sms.READ, messageData.isRead() ? 1 : 0);
         values.put(Telephony.Sms.SEEN, 1); // Always mark messages as seen
+
+        // Also write subscription ID (aka SIM card number) on Android 5.1+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            values.put(Telephony.Sms.SUBSCRIPTION_ID, messageData.getSubId());
+        }
+
         return values;
     }
 

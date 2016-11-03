@@ -81,6 +81,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         String body = mergeMessageBodies(messageParts);
         long timeSent = messageParts[0].getTimestampMillis();
         long timeReceived = System.currentTimeMillis();
+        int subId = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            try {
+                subId = (Integer)XposedHelpers.callMethod(messageParts[0], "getSubId");
+            } catch (Throwable e) {
+                Xlog.e("Failed to get SMS subscription ID", e);
+            }
+        }
 
         SmsMessageData message = new SmsMessageData();
         message.setSender(sender);
@@ -89,6 +97,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         message.setTimeReceived(timeReceived);
         message.setRead(false);
         message.setSeen(false);
+        message.setSubId(subId);
         return message;
     }
 

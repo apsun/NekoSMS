@@ -8,6 +8,7 @@ public class SmsMessageData {
     private long mTimeReceived;
     private boolean mRead;
     private boolean mSeen;
+    private int mSubId;
 
     public void reset() {
         mId = -1;
@@ -17,6 +18,7 @@ public class SmsMessageData {
         mTimeReceived = 0;
         mRead = false;
         mSeen = false;
+        mSubId = 0;
     }
 
     public SmsMessageData setId(long id) {
@@ -54,6 +56,11 @@ public class SmsMessageData {
         return this;
     }
 
+    public SmsMessageData setSubId(int subId) {
+        mSubId = subId;
+        return this;
+    }
+
     public long getId() {
         return mId;
     }
@@ -80,5 +87,9 @@ public class SmsMessageData {
 
     public boolean isSeen() {
         return mSeen;
+    }
+
+    public int getSubId() {
+        return mSubId;
     }
 }

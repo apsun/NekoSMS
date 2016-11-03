@@ -26,7 +26,8 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
             BlockedMessages.TIME_SENT           + " INTEGER NOT NULL, " +
             BlockedMessages.TIME_RECEIVED       + " INTEGER NOT NULL, " +
             BlockedMessages.READ                + " INTEGER NOT NULL, " +
-            BlockedMessages.SEEN                + " INTEGER NOT NULL" +
+            BlockedMessages.SEEN                + " INTEGER NOT NULL, " +
+            BlockedMessages.SUB_ID              + " INTEGER NOT NULL" +
         ");";
 
     private static final String CREATE_FILTER_RULES_TABLE =
@@ -55,15 +56,17 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Xlog.i("Upgrading database from v%d to v%d", oldVersion, newVersion);
         if (oldVersion < 8) {
-            upgradePre8To10(db);
+            upgradePre8(db);
         } else if (oldVersion == 8) {
-            upgrade8To10(db);
+            upgrade8To11(db);
         } else if (oldVersion == 9) {
-            upgrade9To10(db);
+            upgrade9To11(db);
+        } else if (oldVersion == 10) {
+            upgrade10To11(db);
         }
     }
 
-    private void upgradePre8To10(SQLiteDatabase db) {
+    private void upgradePre8(SQLiteDatabase db) {
         // This version was never released, so it should be fine to just
         // clear all data and start from scratch.
         db.execSQL("DROP TABLE IF EXISTS filters");
@@ -71,7 +74,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         onCreate(db);
     }
 
-    private void upgrade8To10(SQLiteDatabase db) {
+    private void upgrade8To11(SQLiteDatabase db) {
         // Get data from old tables
         Cursor filtersCursor = db.query("filters", new String[] {
             "field",
@@ -119,7 +122,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
         // Copy messages to new table
         if (messagesCursor != null) {
-            ContentValues values = MapUtils.contentValuesForSize(6);
+            ContentValues values = MapUtils.contentValuesForSize(7);
             while (messagesCursor.moveToNext()) {
                 values.put(BlockedMessages.SENDER, messagesCursor.getString(0));
                 values.put(BlockedMessages.BODY, messagesCursor.getString(1));
@@ -127,6 +130,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
                 values.put(BlockedMessages.TIME_RECEIVED, messagesCursor.getLong(3));
                 values.put(BlockedMessages.READ, 1);
                 values.put(BlockedMessages.SEEN, 1);
+                values.put(BlockedMessages.SUB_ID, 0);
                 db.insert(BlockedMessages.TABLE, null, values);
             }
             messagesCursor.close();
@@ -137,10 +141,18 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         db.execSQL("DROP TABLE IF EXISTS blocked");
     }
 
-    private void upgrade9To10(SQLiteDatabase db) {
+    private void upgrade9To11(SQLiteDatabase db) {
         db.execSQL(
             "ALTER TABLE " + FilterRules.TABLE +
             " ADD COLUMN " + FilterRules.ACTION + " TEXT NOT NULL " +
             " DEFAULT \"" + SmsFilterAction.BLOCK.name() + "\"");
+        upgrade10To11(db);
+    }
+
+    private void upgrade10To11(SQLiteDatabase db) {
+        db.execSQL(
+            "ALTER TABLE " + BlockedMessages.TABLE +
+            " ADD COLUMN " + BlockedMessages.SUB_ID + " INTEGER NOT NULL " +
+            " DEFAULT 0");
     }
 }

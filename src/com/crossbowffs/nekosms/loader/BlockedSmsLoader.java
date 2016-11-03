@@ -57,12 +57,15 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
         case BlockedMessages.SEEN:
             data.setSeen(cursor.getInt(column) != 0);
             break;
+        case BlockedMessages.SUB_ID:
+            data.setSubId(cursor.getInt(column));
+            break;
         }
     }
 
     @Override
     protected ContentValues serialize(SmsMessageData data) {
-        ContentValues values = MapUtils.contentValuesForSize(7);
+        ContentValues values = MapUtils.contentValuesForSize(8);
         if (data.getId() >= 0) {
             values.put(BlockedMessages._ID, data.getId());
         }
@@ -72,6 +75,7 @@ public class BlockedSmsLoader extends AutoContentLoader<SmsMessageData> {
         values.put(BlockedMessages.TIME_RECEIVED, data.getTimeReceived());
         values.put(BlockedMessages.READ, data.isRead() ? 1 : 0);
         values.put(BlockedMessages.SEEN, data.isSeen() ? 1 : 0);
+        values.put(BlockedMessages.SUB_ID, data.getSubId());
         return values;
     }
 

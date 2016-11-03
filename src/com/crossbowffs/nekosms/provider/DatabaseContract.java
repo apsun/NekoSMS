@@ -21,6 +21,7 @@ public final class DatabaseContract {
         public static final String TIME_RECEIVED = "time_received";
         public static final String READ = "read";
         public static final String SEEN = "seen";
+        public static final String SUB_ID = "sub_id";
         public static final String[] ALL = {
             _ID,
             SENDER,
@@ -28,7 +29,8 @@ public final class DatabaseContract {
             TIME_SENT,
             TIME_RECEIVED,
             READ,
-            SEEN
+            SEEN,
+            SUB_ID,
         };
     }
 
@@ -53,7 +55,7 @@ public final class DatabaseContract {
             SENDER_CASE_SENSITIVE,
             BODY_MODE,
             BODY_PATTERN,
-            BODY_CASE_SENSITIVE
+            BODY_CASE_SENSITIVE,
         };
     }
 }
