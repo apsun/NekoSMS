@@ -144,7 +144,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     private void upgrade9To11(SQLiteDatabase db) {
         db.execSQL(
             "ALTER TABLE " + FilterRules.TABLE +
-            " ADD COLUMN " + FilterRules.ACTION + " TEXT NOT NULL " +
+            " ADD COLUMN " + FilterRules.ACTION + " TEXT NOT NULL" +
             " DEFAULT \"" + SmsFilterAction.BLOCK.name() + "\"");
         upgrade10To11(db);
     }
@@ -152,7 +152,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     private void upgrade10To11(SQLiteDatabase db) {
         db.execSQL(
             "ALTER TABLE " + BlockedMessages.TABLE +
-            " ADD COLUMN " + BlockedMessages.SUB_ID + " INTEGER NOT NULL " +
+            " ADD COLUMN " + BlockedMessages.SUB_ID + " INTEGER NOT NULL" +
             " DEFAULT 0");
     }
 }
