@@ -10,6 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /* package */ class BackupImporterDelegate1 extends BackupImporterDelegate {
+    private static final String KEY_FILTERS = "filters";
+    private static final String KEY_FILTER_FIELD = "field";
+    private static final String KEY_FILTER_MODE = "mode";
+    private static final String KEY_FILTER_PATTERN = "pattern";
+    private static final String KEY_FILTER_CASE_SENSITIVE = "case_sensitive";
+
     public BackupImporterDelegate1(Context context) {
         super(context);
     }
@@ -25,7 +31,7 @@ import java.util.List;
     private List<SmsFilterData> readFilters(JSONObject json) throws JSONException, InvalidBackupException {
         // In version 1 it was possible to export a backup w/o a filters field.
         // In that case, we just ignore the data and return success.
-        JSONArray filterListJson = json.optJSONArray("filters");
+        JSONArray filterListJson = json.optJSONArray(KEY_FILTERS);
         if (filterListJson == null) {
             return null;
         }
@@ -37,10 +43,10 @@ import java.util.List;
     }
 
     private SmsFilterData readFilterData(JSONObject filterJson) throws JSONException, InvalidBackupException {
-        String fieldString = filterJson.getString("field");
-        String modeString = filterJson.getString("mode");
-        String patternString = filterJson.getString("pattern");
-        boolean caseSensitive = filterJson.getBoolean("case_sensitive");
+        String fieldString = filterJson.getString(KEY_FILTER_FIELD);
+        String modeString = filterJson.getString(KEY_FILTER_MODE);
+        String patternString = filterJson.getString(KEY_FILTER_PATTERN);
+        boolean caseSensitive = filterJson.getBoolean(KEY_FILTER_CASE_SENSITIVE);
         SmsFilterField field;
         SmsFilterMode mode;
         try {

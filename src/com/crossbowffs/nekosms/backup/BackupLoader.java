@@ -17,6 +17,7 @@ public final class BackupLoader {
     private static final String BACKUP_DIRECTORY = "NekoSMS";
     private static final String BACKUP_FILE_EXTENSION = ".json";
     private static final String BACKUP_FILE_NAME_FORMAT = "backup-%s";
+    private static final String BACKUP_MIME_TYPE = "application/json";
 
     private BackupLoader() { }
 
@@ -113,7 +114,7 @@ public final class BackupLoader {
     public static void shareBackupFile(Context context, File file) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-        intent.setType("application/json");
+        intent.setType(BACKUP_MIME_TYPE);
         context.startActivity(Intent.createChooser(intent, null));
     }
 }
