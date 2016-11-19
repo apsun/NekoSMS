@@ -1,6 +1,8 @@
 package com.crossbowffs.nekosms.backup;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -8,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 
 public final class BackupLoader {
@@ -17,7 +20,7 @@ public final class BackupLoader {
 
     private BackupLoader() { }
 
-    private static File getBackupDirectory() {
+    public static File getBackupDirectory() {
         File sdCard = Environment.getExternalStorageDirectory();
         return new File(sdCard, BACKUP_DIRECTORY);
     }
@@ -39,18 +42,23 @@ public final class BackupLoader {
         return testName;
     }
 
-    public static String[] enumerateBackupFileNames() {
+    public static File[] enumerateBackupFiles() {
         File backupDir = getBackupDirectory();
-        String[] fileList = backupDir.list();
+        File[] fileList = backupDir.listFiles();
         if (fileList != null) {
             // Currently file names are sorted purely lexicographically,
             // maybe we should use an alphanumeric sorting algorithm instead?
-            Arrays.sort(fileList);
+            Arrays.sort(fileList, new Comparator<File>() {
+                @Override
+                public int compare(File f1, File f2) {
+                    return f1.getName().compareTo(f2.getName());
+                }
+            });
         }
         return fileList;
     }
 
-    public static ImportResult importFromStorage(Context context, String fileName) {
+    public static ImportResult importFromStorage(Context context, File file) {
         switch (Environment.getExternalStorageState()) {
         case Environment.MEDIA_MOUNTED:
         case Environment.MEDIA_MOUNTED_READ_ONLY:
@@ -60,7 +68,6 @@ public final class BackupLoader {
             return ImportResult.CANNOT_READ_STORAGE;
         }
 
-        File file = new File(getBackupDirectory(), fileName);
         try (BackupImporter importer = new BackupImporter(file)) {
             importer.read(context);
         } catch (IOException e) {
@@ -77,20 +84,22 @@ public final class BackupLoader {
         return ImportResult.SUCCESS;
     }
 
-    public static ExportResult exportToStorage(Context context, String fileName) {
+    public static ExportResult exportToStorage(Context context, File file) {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Xlog.e("Export failed: cannot write to external storage");
             return ExportResult.CANNOT_WRITE_STORAGE;
         }
 
-        File backupDir = getBackupDirectory();
-        // The return value is useless, since it combines the "directory
-        // already exists" and error cases into one result. Instead, if
-        // the directory creation fails, we rely on the FileOutputStream
-        // initialization failing in the try block below, which will
-        // throw an IOException.
-        backupDir.mkdirs();
-        File file = new File(backupDir, fileName);
+        File parentDir = file.getParentFile();
+        if (parentDir != null) {
+            // The return value is useless, since it combines the "directory
+            // already exists" and error cases into one result. Instead, if
+            // the directory creation fails, we rely on the FileOutputStream
+            // initialization failing in the try block below, which will
+            // throw an IOException.
+            parentDir.mkdirs();
+        }
+
         try (BackupExporter exporter = new BackupExporter(file)) {
             exporter.write(context);
         } catch (IOException e) {
@@ -99,5 +108,12 @@ public final class BackupLoader {
         }
         Xlog.i("Export succeeded");
         return ExportResult.SUCCESS;
+    }
+
+    public static void shareBackupFile(Context context, File file) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        intent.setType("application/json");
+        context.startActivity(Intent.createChooser(intent, null));
     }
 }

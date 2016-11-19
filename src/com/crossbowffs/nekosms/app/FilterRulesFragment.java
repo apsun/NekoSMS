@@ -28,6 +28,8 @@ import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
 
+import java.io.File;
+
 public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
@@ -168,14 +170,20 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     }
 
     private void showImportFileSelectionDialog() {
-        final String[] files = BackupLoader.enumerateBackupFileNames();
+        final File[] files = BackupLoader.enumerateBackupFiles();
         if (files == null || files.length == 0) {
             showToast(R.string.import_no_backup);
             return;
         }
+
+        String[] fileNames = new String[files.length];
+        for (int i = 0; i < fileNames.length; ++i) {
+            fileNames[i] = files[i].getName();
+        }
+
         new AlertDialog.Builder(getContext())
             .setTitle(R.string.import_choose_file)
-            .setItems(files, new DialogInterface.OnClickListener() {
+            .setItems(fileNames, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     showConfirmImportDialog(files[which]);
@@ -185,7 +193,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .show();
     }
 
-    private void showConfirmImportDialog(final String fileName) {
+    private void showConfirmImportDialog(final File file) {
         new AlertDialog.Builder(getContext())
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.import_confirm_title)
@@ -193,7 +201,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .setPositiveButton(R.string.backup_button_import, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    importFromStorage(fileName);
+                    importFromStorage(file);
                 }
             })
             .setNegativeButton(R.string.cancel, null)
@@ -211,7 +219,9 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .setPositiveButton(R.string.backup_button_export, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    exportToStorage(editText.getText().toString());
+                    String fileName = editText.getText().toString();
+                    File file = new File(BackupLoader.getBackupDirectory(), fileName);
+                    exportToStorage(file);
                 }
             })
             .setNegativeButton(R.string.cancel, null)
@@ -229,11 +239,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         });
     }
 
-    private void importFromStorage(final String fileName) {
+    private void importFromStorage(final File file) {
         new DialogAsyncTask<Void, Void, ImportResult>(getContext(), R.string.progress_importing) {
             @Override
             protected ImportResult doInBackground(Void... params) {
-                return BackupLoader.importFromStorage(getContext(), fileName);
+                return BackupLoader.importFromStorage(getContext(), file);
             }
 
             @Override
@@ -265,11 +275,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         }.execute();
     }
 
-    private void exportToStorage(final String fileName) {
+    private void exportToStorage(final File file) {
         new DialogAsyncTask<Void, Void, ExportResult>(getContext(), R.string.progress_exporting) {
             @Override
             protected ExportResult doInBackground(Void... params) {
-                return BackupLoader.exportToStorage(getContext(), fileName);
+                return BackupLoader.exportToStorage(getContext(), file);
             }
 
             @Override
@@ -289,7 +299,19 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 default:
                     throw new AssertionError("Unknown backup export result code: " + result);
                 }
-                showToast(messageId);
+
+                if (result == ExportResult.SUCCESS) {
+                    showSnackbar(messageId, R.string.share, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Context context = getContext();
+                            if (context == null) return;
+                            BackupLoader.shareBackupFile(context, file);
+                        }
+                    });
+                } else {
+                    showToast(messageId);
+                }
             }
         }.execute();
     }
