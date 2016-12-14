@@ -31,7 +31,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         Uri uri = ContentUris.withAppendedId(DatabaseContract.BlockedMessages.CONTENT_URI, messageData.getId());
 
         Intent viewIntent = new Intent(context, MainActivity.class);
-        viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
+        viewIntent.setAction(Intent.ACTION_VIEW);
         viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_MESSAGES);
         viewIntent.setData(uri);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
@@ -69,7 +69,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
     private Notification buildNotificationMulti(Context context, CursorWrapper<SmsMessageData> messages) {
         Intent viewIntent = new Intent(context, MainActivity.class);
-        viewIntent.setAction(MainActivity.ACTION_OPEN_SECTION);
+        viewIntent.setAction(Intent.ACTION_VIEW);
         viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_MESSAGES);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
 

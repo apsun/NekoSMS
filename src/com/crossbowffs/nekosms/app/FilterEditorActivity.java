@@ -88,7 +88,7 @@ public class FilterEditorActivity extends AppCompatActivity {
             mFilter = FilterRuleLoader.get().query(this, mFilterUri);
         } else {
             mFilter = new SmsFilterData();
-            SmsFilterAction action = (SmsFilterAction)getIntent().getSerializableExtra(EXTRA_ACTION);
+            SmsFilterAction action = getDefaultAction();
             mFilter.setAction(action);
         }
 
@@ -173,6 +173,15 @@ public class FilterEditorActivity extends AppCompatActivity {
             return getString(R.string.format_invalid_pattern_message, getString(fieldNameId), description);
         }
         return null;
+    }
+
+    private SmsFilterAction getDefaultAction() {
+        Intent intent = getIntent();
+        String actionStr = intent.getStringExtra(EXTRA_ACTION);
+        if (actionStr == null) {
+            return SmsFilterAction.BLOCK;
+        }
+        return SmsFilterAction.parse(actionStr);
     }
 
     private boolean shouldSaveFilter() {

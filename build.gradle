@@ -15,25 +15,25 @@ repositories {
 apply plugin: "com.android.application"
 
 dependencies {
-    compile "com.android.support:support-compat:25.0.1"
-    compile "com.android.support:support-core-ui:25.0.1"
-    compile "com.android.support:appcompat-v7:25.0.1"
-    compile "com.android.support:recyclerview-v7:25.0.1"
-    compile "com.android.support:support-annotations:25.0.1"
-    compile "com.android.support:design:25.0.1"
+    compile "com.android.support:support-compat:25.1.0"
+    compile "com.android.support:support-core-ui:25.1.0"
+    compile "com.android.support:appcompat-v7:25.1.0"
+    compile "com.android.support:recyclerview-v7:25.1.0"
+    compile "com.android.support:support-annotations:25.1.0"
+    compile "com.android.support:design:25.1.0"
     compile "com.crossbowffs.remotepreferences:remotepreferences:0.5"
     provided "de.robv.android.xposed:api:53"
 }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         versionCode 23
         versionName "0.13.0-dev"
         minSdkVersion 19
-        targetSdkVersion 24
+        targetSdkVersion 25
         resConfigs "en", "zh-rCN"
         buildConfigField("int", "MODULE_VERSION", "12")
         buildConfigField("int", "DATABASE_VERSION", "11")

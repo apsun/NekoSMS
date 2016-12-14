@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="view_blocked_messages"
+        android:enabled="true"
+        android:icon="@mipmap/ic_messages_shortcut"
+        android:shortcutShortLabel="@string/shortcut_blocked_messages">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.crossbowffs.nekosms"
+            android:targetClass="com.crossbowffs.nekosms.app.MainActivity">
+            <extra android:name="section" android:value="blocked_messages"/>
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="create_whitelist_rule"
+        android:enabled="true"
+        android:icon="@mipmap/ic_allow_shortcut"
+        android:shortcutShortLabel="@string/shortcut_new_whitelist_rule">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.crossbowffs.nekosms"
+            android:targetClass="com.crossbowffs.nekosms.app.FilterEditorActivity">
+            <extra android:name="action" android:value="allow"/>
+        </intent>
+    </shortcut>
+    <shortcut
+        android:shortcutId="create_blacklist_rule"
+        android:enabled="true"
+        android:icon="@mipmap/ic_block_shortcut"
+        android:shortcutShortLabel="@string/shortcut_new_blacklist_rule">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.crossbowffs.nekosms"
+            android:targetClass="com.crossbowffs.nekosms.app.FilterEditorActivity">
+            <extra android:name="action" android:value="block"/>
+        </intent>
+    </shortcut>
+</shortcuts>

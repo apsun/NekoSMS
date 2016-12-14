@@ -36,7 +36,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static final String ACTION_OPEN_SECTION = "action_open_section";
     public static final String EXTRA_SECTION = "section";
     public static final String EXTRA_SECTION_BLACKLIST_RULES = "blacklist_rules";
     public static final String EXTRA_SECTION_WHITELIST_RULES = "whitelist_rules";
@@ -90,9 +89,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
 
         // Process intent. Open a specific section if necessary.
-        Intent intent = getIntent();
-        if (intent != null && ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            setContentSection(intent.getStringExtra(EXTRA_SECTION));
+        if (handleSectionExtra(getIntent())) {
             return;
         }
 
@@ -163,14 +160,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        if (ACTION_OPEN_SECTION.equals(intent.getAction())) {
-            if (setContentSection(intent.getStringExtra(EXTRA_SECTION))) {
-                return;
-            }
+
+        // If the intent changed the current section,
+        // we don't propagate it to the fragment since
+        // it hasn't been initialized at this point.
+        if (handleSectionExtra(intent)) {
+            return;
         }
+
         if (mContentFragment instanceof MainFragment) {
             ((MainFragment)mContentFragment).onNewIntent(intent);
         }
+    }
+
+    private boolean handleSectionExtra(Intent intent) {
+        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String section = intent.getStringExtra(EXTRA_SECTION);
+            if (section != null && setContentSection(section)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean setContentSection(String key) {
@@ -184,14 +194,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         case EXTRA_SECTION_BLACKLIST_RULES:
             fragment = new FilterRulesFragment();
             Bundle argsB = new Bundle(1);
-            argsB.putSerializable(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK);
+            argsB.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK.name());
             fragment.setArguments(argsB);
             navId = R.id.main_drawer_blacklist_rules;
             break;
         case EXTRA_SECTION_WHITELIST_RULES:
             fragment = new FilterRulesFragment();
             Bundle argsW = new Bundle(1);
-            argsW.putSerializable(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW);
+            argsW.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW.name());
             fragment.setArguments(argsW);
             navId = R.id.main_drawer_whitelist_rules;
             break;

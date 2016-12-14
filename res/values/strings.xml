@@ -156,6 +156,11 @@
     <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
     <string name="view_in_nekosms">View in NekoSMS</string>
 
+    <!-- App shortcuts -->
+    <string name="shortcut_new_blacklist_rule">New blacklist rule</string>
+    <string name="shortcut_new_whitelist_rule">New whitelist rule</string>
+    <string name="shortcut_blocked_messages">Blocked messages</string>
+
     <!-- Debug stuff -->
     <string name="create_test_message">Create test message</string>
 </resources>

@@ -44,7 +44,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mAction = (SmsFilterAction)getArguments().getSerializable(EXTRA_ACTION);
+        mAction = SmsFilterAction.parse(getArguments().getString(EXTRA_ACTION));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), FilterEditorActivity.class);
-                intent.putExtra(EXTRA_ACTION, mAction);
+                intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
                 startActivity(intent);
             }
         });
