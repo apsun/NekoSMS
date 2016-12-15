@@ -33,10 +33,8 @@
     <string name="import_unknown_version">Backup file version is too new</string>
     <string name="import_invalid_backup">Invalid backup file</string>
     <string name="import_read_failed">Could not read backup file</string>
-    <string name="import_cannot_read_storage">External storage is not readable</string>
     <string name="export_success">Export successful</string>
     <string name="export_write_failed">Could not write backup file</string>
-    <string name="export_cannot_write_storage">External storage is not writable</string>
     <string name="need_storage_permission">Storage permissions required</string>
     <string name="backup_button_import">Import</string>
     <string name="backup_button_export">Export</string>

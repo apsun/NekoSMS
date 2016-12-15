@@ -5,5 +5,4 @@ public enum ImportResult {
     UNKNOWN_VERSION,
     INVALID_BACKUP,
     READ_FAILED,
-    CANNOT_READ_STORAGE
 }

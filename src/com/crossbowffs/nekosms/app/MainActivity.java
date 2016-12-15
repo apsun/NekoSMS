@@ -27,6 +27,8 @@ import android.widget.Toast;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
     private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
-    private static final String XPOSED_FORUM_URL = "http://forum.xda-developers.com/xposed";
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String ISSUES_URL = GITHUB_URL + "/issues";
@@ -87,29 +88,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // dismiss them when switching between fragments.
         mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
 
-        // Process intent. Open a specific section if necessary.
-        if (handleSectionExtra(getIntent())) {
-            return;
-        }
-
-        // Xposed dialog stuff is only displayed on initial activity creation,
-        // to prevent it from being re-displayed when the screen rotates.
+        // Don't do this if the activity is being re-created (e.g.
+        // after a screen rotation), since it will cause the fragment
+        // to be created twice (see http://stackoverflow.com/a/13306633/)
         if (savedInstanceState == null) {
+            // Process intent. If an action was taken, don't do the rest.
+            if (handleIntent(getIntent())) {
+                return;
+            }
+
+            // Display a dialog if the module is disabled/out of date
             if (!XposedUtils.isModuleEnabled()) {
-                showEnableModuleDialog();
+                if (XposedUtils.isXposedInstalled(this)) {
+                    showEnableModuleDialog();
+                } else {
+                    // We should probably show a different dialog if the
+                    // user doesn't even have Xposed installed...
+                    showEnableModuleDialog();
+                }
             } else if (XposedUtils.isModuleUpdated()) {
                 showModuleUpdatedDialog();
             }
-        }
 
-        // Set the section that was selected previously
-        String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_BLACKLIST_RULES);
-        setContentSection(section);
+            // Set the section that was selected previously
+            String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_BLACKLIST_RULES);
+            setContentSection(section);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         // Workaround for a weird issue where the drawer state
         // hasn't been restored in onPostCreate, leaving the arrow
         // state out-of-sync if the drawer is open.
@@ -159,49 +169,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-
-        // If the intent changed the current section,
-        // we don't propagate it to the fragment since
-        // it hasn't been initialized at this point.
-        if (handleSectionExtra(intent)) {
-            return;
-        }
-
-        if (mContentFragment instanceof MainFragment) {
-            ((MainFragment)mContentFragment).onNewIntent(intent);
-        }
+        handleIntent(intent);
     }
 
-    private boolean handleSectionExtra(Intent intent) {
-        if (intent != null && Intent.ACTION_VIEW.equals(intent.getAction())) {
-            String section = intent.getStringExtra(EXTRA_SECTION);
-            if (section != null && setContentSection(section)) {
-                return true;
+    private boolean handleIntent(Intent intent) {
+        if (intent == null) {
+            return false;
+        }
+
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri uri = intent.getData();
+            if (uri != null) {
+                String scheme = uri.getScheme();
+                if ("file".equals(scheme)) {
+                    // Treat all incoming file URI's as backup import requests.
+                    Xlog.i("Got ACTION_VIEW intent with file URI");
+                    Bundle args = new Bundle(1);
+                    args.putParcelable(FilterRulesFragment.ARG_IMPORT_URI, uri);
+                    setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
+                    intent.setData(null);
+                    return true;
+                } else if ("content".equals(scheme)) {
+                    // Intent is telling us to open a content URI. Usually this means it's
+                    // from our blocked message notification, however it is also possible
+                    // that someone is sharing a backup file via a content provider.
+                    // Unfortunately, we have no idea what it is until we open it, so we ignore
+                    // that possibility for now.
+                    if (IOUtils.isParentUri(DatabaseContract.BlockedMessages.CONTENT_URI, uri)) {
+                        Xlog.i("Got ACTION_VIEW intent with blocked message URI");
+                        Bundle args = new Bundle(1);
+                        args.putParcelable(BlockedMessagesFragment.ARG_MESSAGE_URI, uri);
+                        setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES, args);
+                        intent.setData(null);
+                        return true;
+                    }
+                }
             }
         }
+
+        // If we didn't process the intent already, respond to
+        // content section setting intents.
+        String section = intent.getStringExtra(EXTRA_SECTION);
+        if (section != null) {
+            intent.removeExtra(EXTRA_SECTION);
+            setContentSection(section);
+            return true;
+        }
+
         return false;
     }
 
-    private boolean setContentSection(String key) {
+    private boolean setContentSection(String key, Bundle newArgs) {
+        // If our target section is already selected, just update
+        // its arguments and return.
         if (key.equals(mContentSection)) {
+            if (newArgs != null) {
+                mContentFragment.setArguments(newArgs);
+            }
             return false;
         }
 
         Fragment fragment;
+        Bundle args = new Bundle();
+        if (newArgs != null) {
+            args.putAll(newArgs);
+        }
         int navId;
         switch (key) {
         case EXTRA_SECTION_BLACKLIST_RULES:
             fragment = new FilterRulesFragment();
-            Bundle argsB = new Bundle(1);
-            argsB.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK.name());
-            fragment.setArguments(argsB);
+            args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK.name());
             navId = R.id.main_drawer_blacklist_rules;
             break;
         case EXTRA_SECTION_WHITELIST_RULES:
             fragment = new FilterRulesFragment();
-            Bundle argsW = new Bundle(1);
-            argsW.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW.name());
-            fragment.setArguments(argsW);
+            args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW.name());
             navId = R.id.main_drawer_whitelist_rules;
             break;
         case EXTRA_SECTION_BLOCKED_MESSAGES:
@@ -217,6 +259,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
         }
 
+        fragment.setArguments(args);
         dismissSnackbar();
         getFragmentManager()
             .beginTransaction()
@@ -227,6 +270,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mNavigationView.setCheckedItem(navId);
         mInternalPrefs.edit().putString(PreferenceConsts.KEY_SELECTED_SECTION, key).apply();
         return true;
+    }
+
+    private boolean setContentSection(String key) {
+        return setContentSection(key, null);
     }
 
     public void enableFab(int iconId, View.OnClickListener listener) {
@@ -262,7 +309,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void startXposedActivity(String section) {
         if (!XposedUtils.startXposedActivity(this, section)) {
             Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
-            startBrowserActivity(XPOSED_FORUM_URL);
         }
     }
 

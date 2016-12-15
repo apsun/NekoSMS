@@ -34,6 +34,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
     public static final String EXTRA_ACTION = "action";
+    public static final String ARG_IMPORT_URI = "import_uri";
 
     private ListRecyclerView mRecyclerView;
     private TextView mEmptyView;
@@ -58,6 +59,8 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // Initialize filter list
         FilterRulesAdapter adapter = new FilterRulesAdapter(this);
         mAdapter = adapter;
         LoaderManager loaderManager = getLoaderManager();
@@ -66,6 +69,8 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
+
+        // Display create FAB
         enableFab(R.drawable.ic_create_white_24dp, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,12 +79,26 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 startActivity(intent);
             }
         });
+
+        // Set strings according to which section we're displaying
         if (mAction == SmsFilterAction.BLOCK) {
             setTitle(R.string.blacklist_rules);
             mEmptyView.setText(R.string.blacklist_rules_empty_text);
         } else if (mAction == SmsFilterAction.ALLOW) {
             setTitle(R.string.whitelist_rules);
             mEmptyView.setText(R.string.whitelist_rules_empty_text);
+        }
+
+        // Handle import requests as necessary
+        onNewArguments(getArguments());
+    }
+
+    @Override
+    protected void onNewArguments(Bundle args) {
+        Uri importUri = args.getParcelable(ARG_IMPORT_URI);
+        if (importUri != null) {
+            args.remove(ARG_IMPORT_URI);
+            showConfirmImportDialog(importUri);
         }
     }
 
@@ -186,14 +205,15 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .setItems(fileNames, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    showConfirmImportDialog(files[which]);
+                    Uri uri = Uri.fromFile(files[which]);
+                    showConfirmImportDialog(uri);
                 }
             })
             .setNegativeButton(R.string.cancel, null)
             .show();
     }
 
-    private void showConfirmImportDialog(final File file) {
+    private void showConfirmImportDialog(final Uri uri) {
         new AlertDialog.Builder(getContext())
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.import_confirm_title)
@@ -201,7 +221,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .setPositiveButton(R.string.backup_button_import, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    importFromStorage(file);
+                    importFilterRules(uri);
                 }
             })
             .setNegativeButton(R.string.cancel, null)
@@ -221,7 +241,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 public void onClick(DialogInterface dialog, int which) {
                     String fileName = editText.getText().toString();
                     File file = new File(BackupLoader.getBackupDirectory(), fileName);
-                    exportToStorage(file);
+                    exportFilterRules(file);
                 }
             })
             .setNegativeButton(R.string.cancel, null)
@@ -239,11 +259,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         });
     }
 
-    private void importFromStorage(final File file) {
+    private void importFilterRules(final Uri uri) {
         new DialogAsyncTask<Void, Void, ImportResult>(getContext(), R.string.progress_importing) {
             @Override
             protected ImportResult doInBackground(Void... params) {
-                return BackupLoader.importFromStorage(getContext(), file);
+                return BackupLoader.importFilterRules(getContext(), uri);
             }
 
             @Override
@@ -263,9 +283,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 case READ_FAILED:
                     messageId = R.string.import_read_failed;
                     break;
-                case CANNOT_READ_STORAGE:
-                    messageId = R.string.import_cannot_read_storage;
-                    break;
                 default:
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
@@ -274,11 +291,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         }.execute();
     }
 
-    private void exportToStorage(final File file) {
+    private void exportFilterRules(final File file) {
         new DialogAsyncTask<Void, Void, ExportResult>(getContext(), R.string.progress_exporting) {
             @Override
             protected ExportResult doInBackground(Void... params) {
-                return BackupLoader.exportToStorage(getContext(), file);
+                return BackupLoader.exportFilterRules(getContext(), file);
             }
 
             @Override
@@ -291,9 +308,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                     break;
                 case WRITE_FAILED:
                     messageId = R.string.export_write_failed;
-                    break;
-                case CANNOT_WRITE_STORAGE:
-                    messageId = R.string.export_cannot_write_storage;
                     break;
                 default:
                     throw new AssertionError("Unknown backup export result code: " + result);

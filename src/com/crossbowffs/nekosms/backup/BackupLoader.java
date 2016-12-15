@@ -48,7 +48,16 @@ public final class BackupLoader {
 
     public static File[] enumerateBackupFiles() {
         File backupDir = getBackupDirectory();
-        File[] fileList = backupDir.listFiles();
+
+        // In the future we will only accept backup files with the
+        // correct extension.
+        File[] fileList = backupDir.listFiles(/* new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(BACKUP_FILE_EXTENSION);
+            }
+        } */);
+
         if (fileList != null) {
             // Currently file names are sorted purely lexicographically,
             // maybe we should use an alphanumeric sorting algorithm instead?
@@ -62,17 +71,8 @@ public final class BackupLoader {
         return fileList;
     }
 
-    public static ImportResult importFromStorage(Context context, File file) {
-        switch (Environment.getExternalStorageState()) {
-        case Environment.MEDIA_MOUNTED:
-        case Environment.MEDIA_MOUNTED_READ_ONLY:
-            break;
-        default:
-            Xlog.e("Import failed: cannot read from external storage");
-            return ImportResult.CANNOT_READ_STORAGE;
-        }
-
-        try (BackupImporter importer = new BackupImporter(file)) {
+    public static ImportResult importFilterRules(Context context, Uri uri) {
+        try (BackupImporter importer = new BackupImporter(context.getContentResolver().openInputStream(uri))) {
             importer.read(context);
         } catch (IOException e) {
             Xlog.e("Import failed: could not read backup file", e);
@@ -88,12 +88,7 @@ public final class BackupLoader {
         return ImportResult.SUCCESS;
     }
 
-    public static ExportResult exportToStorage(Context context, File file) {
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Xlog.e("Export failed: cannot write to external storage");
-            return ExportResult.CANNOT_WRITE_STORAGE;
-        }
-
+    public static ExportResult exportFilterRules(Context context, File file) {
         File parentDir = file.getParentFile();
         if (parentDir != null) {
             // The return value is useless, since it combines the "directory

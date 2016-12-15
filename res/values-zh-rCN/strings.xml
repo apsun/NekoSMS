@@ -33,10 +33,8 @@
     <string name="import_unknown_version">备份文件版本过新，无法导入</string>
     <string name="import_invalid_backup">备份文件已损坏，无法导入</string>
     <string name="import_read_failed">无法读取备份文件</string>
-    <string name="import_cannot_read_storage">无法读取外部存储</string>
     <string name="export_success">导出成功</string>
     <string name="export_write_failed">无法写入备份文件</string>
-    <string name="export_cannot_write_storage">无法写入外部存储</string>
     <string name="need_storage_permission">此功能需要存储读写权限</string>
     <string name="backup_button_import">导入</string>
     <string name="backup_button_export">导出</string>

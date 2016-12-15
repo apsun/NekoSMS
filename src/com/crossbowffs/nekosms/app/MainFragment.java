@@ -2,9 +2,9 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -12,6 +12,12 @@ import android.widget.Toast;
 import com.crossbowffs.nekosms.utils.PermissionUtils;
 
 public class MainFragment extends Fragment {
+    public MainFragment() {
+        // Ensure we always have a bundle to work with, since
+        // we can't change this once the fragment has been attached
+        super.setArguments(new Bundle());
+    }
+
     public MainActivity getMainActivity() {
         return (MainActivity)getActivity();
     }
@@ -43,10 +49,6 @@ public class MainFragment extends Fragment {
 
     public void showToast(int textId) {
         makeToast(textId).show();
-    }
-
-    public Intent getIntent() {
-        return getMainActivity().getIntent();
     }
 
     public void setTitle(int titleId) {
@@ -96,7 +98,22 @@ public class MainFragment extends Fragment {
 
     }
 
-    protected void onNewIntent(Intent intent) {
+    @Override
+    public void setArguments(Bundle newArgs) {
+        Bundle args = getArguments();
+        args.putAll(newArgs);
+        try {
+            super.setArguments(args);
+        } catch (IllegalStateException e) {
+            // If we got an exception, we're already running.
+            // Just directly pass the data into onNewArguments().
+            // Otherwise, the fragment should manually call this
+            // once it's finished initialization.
+            onNewArguments(args);
+        }
+    }
+
+    protected void onNewArguments(Bundle args) {
 
     }
 }

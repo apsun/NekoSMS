@@ -26,6 +26,7 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class BlockedMessagesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
+    public static final String ARG_MESSAGE_URI = "message_uri";
 
     private ListRecyclerView mRecyclerView;
     private View mEmptyView;
@@ -57,18 +58,18 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         registerForContextMenu(mRecyclerView);
         disableFab();
         setTitle(R.string.blocked_messages);
-        showMessageDetailsDialog(getIntent());
+        onNewArguments(getArguments());
         BlockedSmsLoader.get().markAllSeen(getContext());
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        showMessageDetailsDialog(intent);
-
-        // Also make sure we mark all messages seen if we open a notification
-        // while the fragment is open. Ideally we should check the action,
-        // but since there's only one entry point we can ignore it.
-        BlockedSmsLoader.get().markAllSeen(getContext());
+    protected void onNewArguments(Bundle args) {
+        Uri messageUri = args.getParcelable(ARG_MESSAGE_URI);
+        if (messageUri != null) {
+            args.remove(ARG_MESSAGE_URI);
+            showMessageDetailsDialog(messageUri);
+            BlockedSmsLoader.get().markAllSeen(getContext());
+        }
     }
 
     @Override
@@ -159,19 +160,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             .show();
     }
 
-    private void showMessageDetailsDialog(Intent intent) {
+    private void showMessageDetailsDialog(Uri uri) {
         Context context = getContext();
-        if (context == null) return;
-
-        Uri uri = intent.getData();
-        if (uri == null) {
-            return;
-        } else {
-            // Consume the URI data, so we don't re-show the dialog
-            // when re-initializing the fragment
-            intent.setData(null);
-        }
-
         SmsMessageData messageData = BlockedSmsLoader.get().query(context, uri);
         if (messageData != null) {
             showMessageDetailsDialog(messageData);
