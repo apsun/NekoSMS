@@ -33,8 +33,7 @@
                 app:fabSize="normal"
                 app:elevation="6dp"
                 app:borderWidth="0dp"
-                app:useCompatPadding="true"
-                app:layout_behavior="com.crossbowffs.nekosms.widget.FabHideOnScrollBehavior"/>
+                app:useCompatPadding="true"/>
         </android.support.design.widget.CoordinatorLayout>
         <android.support.design.widget.NavigationView
             android:id="@+id/main_navigation"

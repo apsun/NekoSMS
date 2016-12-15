@@ -29,7 +29,6 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
-import com.crossbowffs.nekosms.widget.FabHideOnScrollBehavior;
 
 import java.util.Collections;
 import java.util.Set;
@@ -230,32 +229,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private FabHideOnScrollBehavior getFabBehavior() {
-        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams)mFloatingActionButton.getLayoutParams();
-        return (FabHideOnScrollBehavior)params.getBehavior();
-    }
-
-    private void setFabAutoHide(boolean enabled) {
-        getFabBehavior().setAutoHideEnabled(enabled);
-    }
-
     public void enableFab(int iconId, View.OnClickListener listener) {
         mFloatingActionButton.setImageResource(iconId);
         mFloatingActionButton.setOnClickListener(listener);
         mFloatingActionButton.show();
-        setFabAutoHide(true);
     }
 
     public void disableFab() {
         mFloatingActionButton.setOnClickListener(null);
         mFloatingActionButton.hide();
-        setFabAutoHide(false);
-    }
-
-    public void showFabIfAutoHidden() {
-        if (getFabBehavior().isAutoHideEnabled()) {
-            mFloatingActionButton.show();
-        }
     }
 
     public Snackbar makeSnackbar(int textId) {

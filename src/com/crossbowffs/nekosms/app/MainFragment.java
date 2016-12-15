@@ -61,10 +61,6 @@ public class MainFragment extends Fragment {
         getMainActivity().disableFab();
     }
 
-    public void showFabIfAutoHidden() {
-        getMainActivity().showFabIfAutoHidden();
-    }
-
     public void requestPermissionsCompat(String permission, int requestCode) {
         requestPermissionsCompat(new String[] {permission}, requestCode);
     }

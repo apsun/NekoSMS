@@ -270,7 +270,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
                 showToast(messageId);
-                showFabIfAutoHidden();
             }
         }.execute();
     }
@@ -323,7 +322,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             return;
         }
 
-        showFabIfAutoHidden();
         showSnackbar(R.string.filter_deleted, R.string.undo, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
