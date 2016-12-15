@@ -88,7 +88,7 @@ public class FilterEditorActivity extends AppCompatActivity {
             mFilter = FilterRuleLoader.get().query(this, mFilterUri);
         } else {
             mFilter = new SmsFilterData();
-            SmsFilterAction action = getDefaultAction();
+            SmsFilterAction action = getAction();
             mFilter.setAction(action);
         }
 
@@ -175,7 +175,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         return null;
     }
 
-    private SmsFilterAction getDefaultAction() {
+    private SmsFilterAction getAction() {
         Intent intent = getIntent();
         String actionStr = intent.getStringExtra(EXTRA_ACTION);
         if (actionStr == null) {

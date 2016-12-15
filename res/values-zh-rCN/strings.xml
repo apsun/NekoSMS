@@ -155,6 +155,11 @@
     <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
     <string name="view_in_nekosms">打开NekoSMS查看</string>
 
+    <!-- App shortcuts -->
+    <string name="shortcut_new_blacklist_rule">新建黑名单规则</string>
+    <string name="shortcut_new_whitelist_rule">新建白名单规则</string>
+    <string name="shortcut_blocked_messages">已拦截信息</string>
+
     <!-- Debug stuff -->
     <string name="create_test_message">创建测试信息</string>
 </resources>

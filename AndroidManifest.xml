@@ -28,6 +28,9 @@
         <activity
             android:name=".app.FilterEditorActivity"
             android:label="@string/filter_editor">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+            </intent-filter>
         </activity>
         <provider
             android:name=".provider.DatabaseProvider"
