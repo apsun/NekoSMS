@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:2.2.0"
+        classpath "com.android.tools.build:gradle:2.2.3"
     }
 }
 
@@ -30,8 +30,8 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        versionCode 23
-        versionName "0.13.0-dev"
+        versionCode 24
+        versionName "0.13.0"
         minSdkVersion 19
         targetSdkVersion 25
         resConfigs "en", "zh-rCN"
