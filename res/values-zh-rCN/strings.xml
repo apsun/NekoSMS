@@ -63,7 +63,7 @@
     <string name="enable_xposed_module_title">启用Xposed模块</string>
     <string name="enable_xposed_module_message">
         由于Android 4.4以上不允许非默认的短信应用拦截信息或写入信息收件箱，
-        您必须先启用NekoSMS的Xposed模块。否则，此应用将无法工作。
+        请先启用NekoSMS的Xposed模块。否则，此应用将无法正常工作。
     </string>
     <string name="module_outdated_title">Xposed模块已更新</string>
     <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
@@ -86,7 +86,7 @@
     <string name="filter_saved">过滤规则已保存</string>
     <string name="filter_save_failed">无法保存过滤规则</string>
     <string name="invalid_pattern_title">表达式不合法</string>
-    <string name="format_invalid_pattern_message">您输入的%1$s表达式不是合法的正则表达式！\n\n原因：%2$s</string>
+    <string name="format_invalid_pattern_message">您输入的%1$s表达式不合法！\n\n原因：%2$s</string>
     <string name="invalid_pattern_field_sender">发送者</string>
     <string name="invalid_pattern_field_body">文本</string>
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>

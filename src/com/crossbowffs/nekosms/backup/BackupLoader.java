@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
+import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.io.File;
@@ -15,9 +17,10 @@ import java.util.Date;
 
 public final class BackupLoader {
     private static final String BACKUP_DIRECTORY = "NekoSMS";
-    private static final String BACKUP_FILE_EXTENSION = ".json";
+    private static final String BACKUP_FILE_EXTENSION = ".nsbak";
     private static final String BACKUP_FILE_NAME_FORMAT = "backup-%s";
     private static final String BACKUP_MIME_TYPE = "application/json";
+    private static final String FILE_AUTHORITY = BuildConfig.APPLICATION_ID + ".files";
 
     private BackupLoader() { }
 
@@ -113,7 +116,9 @@ public final class BackupLoader {
 
     public static void shareBackupFile(Context context, File file) {
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+        Uri contentUri = FileProvider.getUriForFile(context, FILE_AUTHORITY, file);
+        intent.putExtra(Intent.EXTRA_STREAM, contentUri);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setType(BACKUP_MIME_TYPE);
         context.startActivity(Intent.createChooser(intent, null));
     }

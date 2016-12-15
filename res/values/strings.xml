@@ -62,9 +62,9 @@
     <string name="filter_actions">Filter actions</string>
     <string name="enable_xposed_module_title">Enable Xposed module</string>
     <string name="enable_xposed_module_message">
-        Android 4.4+ does not allow apps other than the default SMS app to intercept
+        Android 4.4+ does not allow non-default SMS apps to intercept
         SMS messages or write to the SMS inbox.\n\nTo bypass this restriction,
-        you must enable the Xposed module. Until you do so, this app will not work.
+        please enable the Xposed module; otherwise, this app will not work!
     </string>
     <string name="module_outdated_title">Xposed module updated</string>
     <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
