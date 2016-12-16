@@ -33,6 +33,7 @@ import java.io.File;
 public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int IMPORT_BACKUP_REQUEST = 0;
     private static final int EXPORT_BACKUP_REQUEST = 1;
+    private static final int IMPORT_BACKUP_DIRECT_REQUEST = 2;
     public static final String EXTRA_ACTION = "action";
     public static final String ARG_IMPORT_URI = "import_uri";
 
@@ -40,6 +41,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private TextView mEmptyView;
     private FilterRulesAdapter mAdapter;
     private SmsFilterAction mAction;
+    private Uri mPendingImportUri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -98,7 +100,13 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         Uri importUri = args.getParcelable(ARG_IMPORT_URI);
         if (importUri != null) {
             args.remove(ARG_IMPORT_URI);
-            showConfirmImportDialog(importUri);
+
+            // Since we don't accept non-file URI's, the file is almost
+            // guaranteed to be on external storage. Hence, we need to acquire
+            // external storage read permissions before we actually try to
+            // open the file.
+            mPendingImportUri = importUri;
+            requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST);
         }
     }
 
@@ -168,6 +176,9 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             showImportFileSelectionDialog();
         } else if (requestCode == EXPORT_BACKUP_REQUEST) {
             showExportFileNameDialog();
+        } else if (requestCode == IMPORT_BACKUP_DIRECT_REQUEST) {
+            showConfirmImportDialog(mPendingImportUri);
+            mPendingImportUri = null;
         }
     }
 
