@@ -24,7 +24,25 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\.nsbak"/>
                 <data android:scheme="file" android:host="*" android:pathPattern=".*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.nsbak"/>
+                <data android:scheme="file" android:host="*" android:pathPattern=".*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.nsbak" android:mimeType="*/*"/>
             </intent-filter>
             <meta-data
                 android:name="android.app.shortcuts"

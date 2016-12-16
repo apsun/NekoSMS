@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -181,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Uri uri = intent.getData();
             if (uri != null) {
                 String scheme = uri.getScheme();
-                if ("file".equals(scheme)) {
+                if (ContentResolver.SCHEME_FILE.equals(scheme)) {
                     // Treat all incoming file URI's as backup import requests.
                     Xlog.i("Got ACTION_VIEW intent with file URI");
                     Bundle args = new Bundle(1);
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
                     intent.setData(null);
                     return true;
-                } else if ("content".equals(scheme)) {
+                } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
                     // Intent is telling us to open a content URI. Usually this means it's
                     // from our blocked message notification, however it is also possible
                     // that someone is sharing a backup file via a content provider.
