@@ -208,6 +208,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 Xlog.e("Failed to load SMS filters (queryAll returned null)");
                 return null;
             }
+
             // Blacklist rules are expected to make up the majority
             // of rules, and we will end up adding all rules to the
             // whitelist list. Reserve the appropriate capacities.
@@ -215,17 +216,21 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             whitelist.ensureCapacity(filterCursor.getCount());
             SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
-                SmsFilter filter = new SmsFilter(filterCursor.get(data));
+                SmsFilter filter;
+                try {
+                    filter = new SmsFilter(filterCursor.get(data));
+                } catch (Exception e) {
+                    Xlog.e("Failed to load SMS filter", e);
+                    continue;
+                }
                 if (data.getAction() == SmsFilterAction.BLOCK) {
                     blacklist.add(filter);
                 } else if (data.getAction() == SmsFilterAction.ALLOW) {
                     whitelist.add(filter);
                 }
             }
-        } catch (Exception e) {
-            Xlog.e("Failed to load SMS filters", e);
-            return null;
         }
+
         // Combine whitelist and blacklist, with whitelist rules first
         whitelist.addAll(blacklist);
         return whitelist;
@@ -286,13 +291,18 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
 
         int uid = packageInfo.applicationInfo.uid;
-
-        Xlog.i("Checking if we have OP_WRITE_SMS permission");
-        if (AppOpsUtils.checkOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE)) {
-            Xlog.i("Already have OP_WRITE_SMS permission");
-        } else {
-            Xlog.i("Giving our package OP_WRITE_SMS permission");
-            AppOpsUtils.allowOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE);
+        try {
+            Xlog.i("Checking if we have OP_WRITE_SMS permission");
+            if (AppOpsUtils.checkOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE)) {
+                Xlog.i("Already have OP_WRITE_SMS permission");
+            } else {
+                Xlog.i("Giving our package OP_WRITE_SMS permission");
+                AppOpsUtils.allowOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE);
+            }
+        } catch (Exception e) {
+            // This isn't really a fatal error - the user just won't
+            // be able to restore messages to the inbox.
+            Xlog.e("Failed to grant OP_WRITE_SMS permission", e);
         }
     }
 

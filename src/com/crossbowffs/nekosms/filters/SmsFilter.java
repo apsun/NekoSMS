@@ -20,7 +20,7 @@ public class SmsFilter {
 
     public boolean match(String sender, String body) {
         if (mSenderPattern == null && mBodyPattern == null) {
-            Xlog.v("No sender or body pattern, ignoring");
+            Xlog.w("No sender or body pattern, ignoring");
             return false;
         }
         Xlog.v("Action: %s", getAction().name());

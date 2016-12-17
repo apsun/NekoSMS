@@ -33,10 +33,13 @@ import java.util.List;
         SmsFilterData data = new SmsFilterData();
         data.setAction(SmsFilterAction.BLOCK);
         JSONObject senderPatternJson = filterJson.optJSONObject(BackupConsts.KEY_FILTER_SENDER);
+        JSONObject bodyPatternJson = filterJson.optJSONObject(BackupConsts.KEY_FILTER_BODY);
+        if (senderPatternJson == null && bodyPatternJson == null) {
+            throw new InvalidBackupException("Need at least one sender or body pattern");
+        }
         if (senderPatternJson != null) {
             readFilterPatternData(data.getSenderPattern(), senderPatternJson);
         }
-        JSONObject bodyPatternJson = filterJson.optJSONObject(BackupConsts.KEY_FILTER_BODY);
         if (bodyPatternJson != null) {
             readFilterPatternData(data.getBodyPattern(), bodyPatternJson);
         }

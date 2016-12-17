@@ -281,13 +281,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         SmsMessageData message = new SmsMessageData();
-        message.setSender("+12345678900");
-        message.setBody(
-            "First line\n" +
-            "This is a test message with " +
-            "loooooooooooooooooooooooooooooooooooooooooooo" +
-            "ooooooooooooooooooooooooong content\n\n" +
-            "This is a new line!");
+        message.setSender("+11234567890");
+        message.setBody("Thanks for signing up for Cat Facts! You will now receive fun daily facts about CATS! >o<");
         message.setTimeReceived(System.currentTimeMillis());
         message.setTimeSent(System.currentTimeMillis());
         message.setRead(false);
