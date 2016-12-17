@@ -7,38 +7,14 @@ A pattern-based text message blocker for Android.
 - A rooted phone running Android 4.4 KitKat or newer
 - [Xposed framework](http://forum.xda-developers.com/xposed)
 
-## Example filter rules
+## Features
 
-Match all messages...
-
-...containing the word `spam`:  
-\[`Body`\] \[`Contains`\] \[`spam`\]
-
-...coming from numbers in the format `100XX`:  
-\[`Sender`\] \[`Wildcard`\] \[`100??`\]
-
-...coming from `12345`, and containing either `megane` or `poi`:  
-\[`Sender`\] \[`Equals`\] \[`12345`\] + \[`Body`\] \[`Regular expression`\] \[`megane|poi`\]
-
-**Note:** when matching against the sender field, you must use the
-*unformatted* sender number. In most SMS apps, this info can be obtained by
-viewing the extended message info. If the value begins with a `+`, you must
-include the `+` in your filter pattern.
-
-## Whitelist mode
-
-All whitelist rules are checked *before* any blacklist rules. There is no
-way to "override" a whitelist rule with a blacklist rule. You may
-whitelist all contacts by enabling the "Whitelist contacts" setting.
-
-## Importing/exporting data
-
-Your exported filter rules are saved under `/sdcard/NekoSMS`. To import a
-backup file, simply place it in this directory and select it within the app.
-
-Backwards compatibility is guaranteed (i.e. you can import backup files from
-older app versions), but not forward compatibility (i.e. there are no
-promises your exported backup can be imported on older app versions). 
+- Works with all SMS apps, stock or third party
+- Block messages based on sender and/or content
+- Supports regular expressions, wildcard patterns, and more
+- Backup and restore your filter rules across devices
+- Free, both as in beer and in speech
+- No internet access, no ads, no telemetry
 
 ## Q&A
 

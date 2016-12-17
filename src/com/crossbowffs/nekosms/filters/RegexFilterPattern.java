@@ -3,6 +3,7 @@ package com.crossbowffs.nekosms.filters;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 
+import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,10 +12,18 @@ import java.util.regex.Pattern;
 
     public RegexFilterPattern(SmsFilterPatternData data) {
         super(data);
-        String regexPattern = getPattern();
+
+        // We need to normalize the pattern ourselves since Android
+        // doesn't support the CANON_EQ regex flag. Note that this
+        // only has an effect if the pattern contains the actual
+        // character (e.g. \u3060), NOT the escape sequence (e.g. \\u3060)
+        String regexPattern = Normalizer.normalize(getPattern(), Normalizer.Form.NFC);
+
+        // If this is a wildcard pattern, convert it to regex syntax
         if (getMode() == SmsFilterMode.WILDCARD) {
             regexPattern = wildcardToRegex(regexPattern);
         }
+
         int regexFlags = Pattern.UNICODE_CASE;
         if (!isCaseSensitive()) {
             regexFlags |= Pattern.CASE_INSENSITIVE;
