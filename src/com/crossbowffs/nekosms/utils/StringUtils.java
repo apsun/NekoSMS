@@ -62,34 +62,4 @@ public final class StringUtils {
         sb.setLength(sb.length() - delimiter.length());
         return sb.toString();
     }
-
-    public static void main(String[] args) {
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        for (int i = 0; i < 100000000; ++i) {
-            int lenA = (int)(Math.random() * 10);
-            int lenB = (int)(Math.random() * 10);
-            String a = "";
-            String b = "";
-            for (int j = 0; j < lenA; ++j) {
-                a += alphabet.charAt((int)(Math.random() * alphabet.length()));
-            }
-            for (int j = 0; j < lenB; ++j) {
-                b += alphabet.charAt((int)(Math.random() * alphabet.length()));
-            }
-
-            if (a.toLowerCase().startsWith(b.toLowerCase()) ^ startsWith(a, b, true) ||
-                a.toLowerCase().endsWith(b.toLowerCase()) ^ endsWith(a, b, true) ||
-                a.toLowerCase().contains(b.toLowerCase()) ^ contains(a, b, true)) {
-                System.out.println("SHIT");
-            }
-
-            if (startsWith(a, b, true) && b.length() > 3) {
-                System.out.println("STARTSWITH: A: " + a + ", B: " + b);
-            }
-
-            if (endsWith(a, b, true) && b.length() > 3) {
-                System.out.println("ENDSWITH: A: " + a + ", B: " + b);
-            }
-        }
-    }
 }
