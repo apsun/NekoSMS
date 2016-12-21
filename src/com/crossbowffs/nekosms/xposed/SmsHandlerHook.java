@@ -6,10 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.UserHandle;
+import android.os.*;
 import android.provider.ContactsContract;
 import android.provider.Telephony;
 import android.telephony.SmsMessage;
@@ -286,7 +283,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             // This might occur if NekoSMS has been uninstalled.
             // In this case, don't do anything - we can't do anything
             // with the permissions anyways.
-            Xlog.w("NekoSMS package not found", e);
+            Xlog.e("NekoSMS package not found", e);
             return;
         }
 
@@ -331,15 +328,20 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            deleteFromRawTable24(smsHandler, smsReceiver);
-            sendBroadcastComplete(smsHandler);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            deleteFromRawTable19(smsHandler, smsReceiver);
-            sendBroadcastComplete(smsHandler);
-        } else {
-            throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
+        // Need to clear calling identity since dispatchIntent might be
+        // called from CarrierSmsFilterCallback.onFilterComplete, which is
+        // executing an IPC. This is required to write to the SMS database.
+        long token = Binder.clearCallingIdentity();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                deleteFromRawTable24(smsHandler, smsReceiver);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                deleteFromRawTable19(smsHandler, smsReceiver);
+            }
+        } finally {
+            Binder.restoreCallingIdentity(token);
         }
+        sendBroadcastComplete(smsHandler);
     }
 
     private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
