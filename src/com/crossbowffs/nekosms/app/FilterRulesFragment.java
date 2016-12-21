@@ -102,8 +102,10 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             args.remove(ARG_IMPORT_URI);
 
             // If the file is on external storage, make sure we have
-            // permissions to read it first, otherwise just import it directly.
-            if (IOUtils.isExternalStorageFileUri(importUri)) {
+            // permissions to read it first. Note that we just take
+            // file:// URIs to mean external storage, since otherwise
+            // a content:// URI would be used instead.
+            if (ContentResolver.SCHEME_FILE.equals(importUri.getScheme())) {
                 mPendingImportUri = importUri;
                 requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST);
             } else {

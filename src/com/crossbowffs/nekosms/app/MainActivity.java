@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     // Treat all other ACTION_VIEW intents as backup import requests.
                     // If we turn out to be wrong, at worst we just get an invalid
                     // file error.
-                    Xlog.i("Got ACTION_VIEW intent with backup file URI");
+                    Xlog.i("Got ACTION_VIEW intent with (maybe) backup file URI");
                     Bundle args = new Bundle(1);
                     args.putParcelable(FilterRulesFragment.ARG_IMPORT_URI, uri);
                     setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
