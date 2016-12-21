@@ -1,8 +1,11 @@
 package com.crossbowffs.nekosms.utils;
 
+import android.content.ContentResolver;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -107,5 +110,19 @@ public final class IOUtils {
         }
 
         return true;
+    }
+
+    public static boolean isExternalStorageFileUri(Uri uri) {
+        if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+            File extBase = Environment.getExternalStorageDirectory();
+            File file = new File(uri.getPath());
+            while (file != null) {
+                if (file.equals(extBase)) {
+                    return true;
+                }
+                file = file.getParentFile();
+            }
+        }
+        return false;
     }
 }

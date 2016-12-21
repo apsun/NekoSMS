@@ -101,12 +101,14 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         if (importUri != null) {
             args.remove(ARG_IMPORT_URI);
 
-            // Since we don't accept non-file URI's, the file is almost
-            // guaranteed to be on external storage. Hence, we need to acquire
-            // external storage read permissions before we actually try to
-            // open the file.
-            mPendingImportUri = importUri;
-            requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST);
+            // If the file is on external storage, make sure we have
+            // permissions to read it first, otherwise just import it directly.
+            if (IOUtils.isExternalStorageFileUri(importUri)) {
+                mPendingImportUri = importUri;
+                requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST);
+            } else {
+                showConfirmImportDialog(importUri);
+            }
         }
     }
 

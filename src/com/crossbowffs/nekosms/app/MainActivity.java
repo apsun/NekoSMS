@@ -1,7 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.Fragment;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -182,29 +181,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri uri = intent.getData();
             if (uri != null) {
-                String scheme = uri.getScheme();
-                if (ContentResolver.SCHEME_FILE.equals(scheme)) {
-                    // Treat all incoming file URI's as backup import requests.
-                    Xlog.i("Got ACTION_VIEW intent with file URI");
+                if (IOUtils.isParentUri(DatabaseContract.BlockedMessages.CONTENT_URI, uri)) {
+                    Xlog.i("Got ACTION_VIEW intent with blocked message URI");
+                    Bundle args = new Bundle(1);
+                    args.putParcelable(BlockedMessagesFragment.ARG_MESSAGE_URI, uri);
+                    setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES, args);
+                    intent.setData(null);
+                    return true;
+                } else {
+                    // Treat all other ACTION_VIEW intents as backup import requests.
+                    // If we turn out to be wrong, at worst we just get an invalid
+                    // file error.
+                    Xlog.i("Got ACTION_VIEW intent with backup file URI");
                     Bundle args = new Bundle(1);
                     args.putParcelable(FilterRulesFragment.ARG_IMPORT_URI, uri);
                     setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
                     intent.setData(null);
                     return true;
-                } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
-                    // Intent is telling us to open a content URI. Usually this means it's
-                    // from our blocked message notification, however it is also possible
-                    // that someone is sharing a backup file via a content provider.
-                    // Unfortunately, we have no idea what it is until we open it, so we ignore
-                    // that possibility for now.
-                    if (IOUtils.isParentUri(DatabaseContract.BlockedMessages.CONTENT_URI, uri)) {
-                        Xlog.i("Got ACTION_VIEW intent with blocked message URI");
-                        Bundle args = new Bundle(1);
-                        args.putParcelable(BlockedMessagesFragment.ARG_MESSAGE_URI, uri);
-                        setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES, args);
-                        intent.setData(null);
-                        return true;
-                    }
                 }
             }
         }
