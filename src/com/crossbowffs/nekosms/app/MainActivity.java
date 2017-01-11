@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -33,9 +34,7 @@ import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String EXTRA_SECTION = "section";
@@ -45,9 +44,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
     private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
+    private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
-    private static final String ISSUES_URL = GITHUB_URL + "/issues";
+    private static final String WIKI_URL = GITHUB_URL + "/wiki";
 
     private CoordinatorLayout mCoordinatorLayout;
     private DrawerLayout mDrawerLayout;
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // Load preferences
         mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
+        mInternalPrefs.edit().putInt(PreferenceConsts.KEY_APP_VERSION, VERSION_CODE).apply();
 
         // Setup toolbar
         setSupportActionBar(mToolbar);
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return;
             }
 
-            // Display a dialog if the module is disabled/out of date
+            // Show info dialogs as necessary
             if (!XposedUtils.isModuleEnabled()) {
                 if (XposedUtils.isXposedInstalled(this)) {
                     showEnableModuleDialog();
@@ -109,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             } else if (XposedUtils.isModuleUpdated()) {
                 showModuleUpdatedDialog();
+            } else {
+                showTaskKillerDialogIfNecessary();
             }
 
             // Set the section that was selected previously
@@ -301,10 +304,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         startActivity(intent);
     }
 
-    private void startXposedActivity(String section) {
+    private void startXposedActivity(XposedUtils.Section section) {
         if (!XposedUtils.startXposedActivity(this, section)) {
             Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private boolean shouldShowTaskKillerDialog(List<PackageInfo> taskKillers) {
+        if (taskKillers.isEmpty()) {
+            return false;
+        }
+
+        Set<String> knownTaskKillers = mInternalPrefs.getStringSet(PreferenceConsts.KEY_KNOWN_TASK_KILLERS, null);
+        if (knownTaskKillers == null) {
+            return true;
+        }
+
+        for (PackageInfo pkgInfo : taskKillers) {
+            if (!knownTaskKillers.contains(pkgInfo.packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void showTaskKillerDialogIfNecessary() {
+        final List<PackageInfo> taskKillers = XposedUtils.getInstalledTaskKillers(this);
+        if (!shouldShowTaskKillerDialog(taskKillers)) {
+            return;
+        }
+
+        // Build dialog content (note that the list is definitely not empty
+        // so we don't need to check for the empty list edge case here)
+        StringBuilder sb = new StringBuilder();
+        for (PackageInfo pkgInfo : taskKillers) {
+            sb.append("- ");
+            sb.append(XposedUtils.getAppDisplayName(this, pkgInfo));
+            sb.append('\n');
+        }
+        sb.setLength(sb.length() - 1);
+        String message = getString(R.string.task_killer_message, sb.toString());
+
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.task_killer_title)
+            .setMessage(message)
+            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setPositiveButton(R.string.task_killer_ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    HashSet<String> knownTaskKillers = new HashSet<>();
+                    for (PackageInfo pkgInfo : taskKillers) {
+                        knownTaskKillers.add(pkgInfo.packageName);
+                    }
+                    mInternalPrefs.edit().putStringSet(PreferenceConsts.KEY_KNOWN_TASK_KILLERS, knownTaskKillers).apply();
+                }
+            })
+            .setNegativeButton(R.string.ignore, null)
+            .show();
     }
 
     private void showEnableModuleDialog() {
@@ -315,13 +371,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    startXposedActivity(XposedUtils.XPOSED_SECTION_MODULES);
-                }
-            })
-            .setNeutralButton(R.string.report_bug, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startBrowserActivity(ISSUES_URL);
+                    startXposedActivity(XposedUtils.Section.MODULES);
                 }
             })
             .setNegativeButton(R.string.ignore, null)
@@ -336,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .setPositiveButton(R.string.reboot, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    startXposedActivity(XposedUtils.XPOSED_SECTION_INSTALL);
+                    startXposedActivity(XposedUtils.Section.INSTALL);
                 }
             })
             .setNegativeButton(R.string.ignore, null)
@@ -345,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showAboutDialog() {
         Spanned html = Html.fromHtml(getString(R.string.format_about_message,
-            TWITTER_URL, GITHUB_URL, ISSUES_URL));
+            TWITTER_URL, GITHUB_URL, WIKI_URL));
 
         AlertDialog dialog = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)

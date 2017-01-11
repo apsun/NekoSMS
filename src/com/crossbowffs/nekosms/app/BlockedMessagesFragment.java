@@ -203,7 +203,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         BlockedSmsLoader.get().setReadStatus(context, messageData.getId(), true);
     }
 
-    private void startXposedActivity(String section) {
+    private void startXposedActivity(XposedUtils.Section section) {
         Context context = getContext();
         if (context == null) return;
         if (!XposedUtils.startXposedActivity(context, section)) {
@@ -220,7 +220,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             showSnackbar(R.string.must_enable_xposed_module, R.string.enable, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startXposedActivity(XposedUtils.XPOSED_SECTION_MODULES);
+                    startXposedActivity(XposedUtils.Section.MODULES);
                 }
             });
             return;

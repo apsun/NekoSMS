@@ -62,18 +62,23 @@
     <string name="enable_xposed_module_message">
         Android 4.4+ does not allow non-default SMS apps to intercept
         SMS messages or write to the SMS inbox.\n\nTo bypass this restriction,
-        please enable the Xposed module; otherwise, this app will not work!
+        please enable the Xposed module, or else this app will not work!
     </string>
     <string name="module_outdated_title">Xposed module updated</string>
     <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
+    <string name="task_killer_title">Task killer apps detected</string>
+    <string name="task_killer_message">
+        The following apps have been detected on your device:\n\n%s\n\nPlease
+        make sure to whitelist NekoSMS, or else this app will not work!
+    </string>
+    <string name="task_killer_ok">I understand</string>
     <string name="xposed_not_installed">Xposed not installed</string>
-    <string name="report_bug">Report bug</string>
     <string name="format_about_message">
         <![CDATA[
             A pattern-based text message blocker for Android.<br><br>
             Made with &lt;3 by <a href="%1$s">Andrew Sun</a><br><br>
             Visit the project on <a href="%2$s">GitHub</a><br><br>
-            Found a bug? <a href="%3$s">Report it here!</a>
+            Have a question? <a href="%3$s">Read the wiki!</a>
         ]]>
     </string>
 

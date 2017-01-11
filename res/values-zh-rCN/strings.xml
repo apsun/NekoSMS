@@ -60,19 +60,25 @@
     <string name="filter_actions">过滤规则操作</string>
     <string name="enable_xposed_module_title">启用Xposed模块</string>
     <string name="enable_xposed_module_message">
-        由于Android 4.4以上不允许非默认的短信应用拦截信息或写入信息收件箱，
-        请先启用NekoSMS的Xposed模块。否则，此应用将无法正常工作。
+        Android 4.4以上不允许非默认的短信应用拦截信息或写入信息收件箱。\n
+        \n为了绕过此限制，请先启用NekoSMS的Xposed模块。否则，此应用将无法正常工作。
     </string>
     <string name="module_outdated_title">Xposed模块已更新</string>
     <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
+    <string name="task_killer_title">已检测到进程阻止应用</string>
+    <string name="task_killer_message">
+        在设备上已检测到了下列应用：\n
+        \n%s\n
+        \n请将NekoSMS加到白名单上。否则，此应用将无法正常工作。
+    </string>
+    <string name="task_killer_ok">我明白了</string>
     <string name="xposed_not_installed">未安装Xposed</string>
-    <string name="report_bug">提交BUG</string>
     <string name="format_about_message">
         <![CDATA[
             基于表达式的Android短信拦截器<br><br>
             开发者：<a href="%1$s">Andrew Sun</a><br><br>
             项目首页：<a href="%2$s">GitHub</a><br><br>
-            发现了BUG？<a href="%3$s">请在这里提交</a>
+            有问题？<a href="%3$s">请阅读Wiki</a>
         ]]>
     </string>
 

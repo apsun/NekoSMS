@@ -21,7 +21,9 @@ public final class PreferenceConsts {
     public static final String KEY_NOTIFICATIONS_LIGHTS = "pref_notifications_lights";
     public static final boolean KEY_NOTIFICATIONS_LIGHTS_DEFAULT = true;
 
+    public static final String KEY_APP_VERSION = "pref_app_version";
     public static final String KEY_SELECTED_SECTION = "pref_selected_section";
+    public static final String KEY_KNOWN_TASK_KILLERS = "pref_known_task_killers";
 
     private PreferenceConsts() { }
 }
