@@ -152,6 +152,12 @@
     <string name="pref_notifications_ringtone_none">None</string>
     <string name="pref_notifications_vibrate">Vibration</string>
     <string name="pref_notifications_lights">Lights</string>
+    <string name="pref_notifications_priority">Priority</string>
+    <string name="pref_notifications_priority_max">Very high</string>
+    <string name="pref_notifications_priority_high">High</string>
+    <string name="pref_notifications_priority_default">Normal</string>
+    <string name="pref_notifications_priority_low">Low</string>
+    <string name="pref_notifications_priority_min">Very low</string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s (blocked)</string>

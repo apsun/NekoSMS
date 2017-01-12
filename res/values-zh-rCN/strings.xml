@@ -152,6 +152,12 @@
     <string name="pref_notifications_ringtone_none">无</string>
     <string name="pref_notifications_vibrate">震动</string>
     <string name="pref_notifications_lights">灯光</string>
+    <string name="pref_notifications_priority">优先级</string>
+    <string name="pref_notifications_priority_max">最高</string>
+    <string name="pref_notifications_priority_high">高</string>
+    <string name="pref_notifications_priority_default">正常</string>
+    <string name="pref_notifications_priority_low">低</string>
+    <string name="pref_notifications_priority_min">最低</string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s（已拦截）</string>

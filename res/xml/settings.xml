@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/pref_general">
         <CheckBoxPreference
             android:key="pref_enable"
@@ -23,13 +21,13 @@
             android:summary="@string/pref_notifications_enable_summary"
             android:defaultValue="false"
             android:widgetLayout="@layout/switch_compat"/>
-        <com.crossbowffs.nekosms.app.AutoRingtonePreference
+        <com.crossbowffs.nekosms.widget.AutoRingtonePreference
             android:key="pref_notifications_ringtone"
             android:title="@string/pref_notifications_ringtone"
             android:dependency="pref_notifications_enable"
             android:defaultValue="content://settings/system/notification_sound"
             android:ringtoneType="notification"
-            app:noneSummary="@string/pref_notifications_ringtone_none"/>
+            android:summary="@string/pref_notifications_ringtone_none"/>
         <CheckBoxPreference
             android:key="pref_notifications_vibrate"
             android:title="@string/pref_notifications_vibrate"
@@ -40,5 +38,13 @@
             android:title="@string/pref_notifications_lights"
             android:dependency="pref_notifications_enable"
             android:defaultValue="true"/>
+        <ListPreference
+            android:key="pref_notifications_priority"
+            android:title="@string/pref_notifications_priority"
+            android:summary="%s"
+            android:dependency="pref_notifications_enable"
+            android:entries="@array/pref_notifications_priority_entries"
+            android:entryValues="@array/pref_notifications_priority_values"
+            android:defaultValue="0"/>
     </PreferenceCategory>
 </PreferenceScreen>

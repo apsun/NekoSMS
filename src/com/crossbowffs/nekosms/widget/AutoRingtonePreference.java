@@ -1,22 +1,18 @@
-package com.crossbowffs.nekosms.app;
+package com.crossbowffs.nekosms.widget;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.RingtonePreference;
 import android.util.AttributeSet;
-import com.crossbowffs.nekosms.R;
 
 public class AutoRingtonePreference extends RingtonePreference {
-    private final String mNoneSummary;
+    private final CharSequence mNoneSummary;
 
     public AutoRingtonePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AutoRingtonePreference, 0, 0);
-        mNoneSummary = a.getString(R.styleable.AutoRingtonePreference_noneSummary);
-        a.recycle();
+        mNoneSummary = getSummary();
     }
 
     @Override

@@ -6,6 +6,7 @@ import android.content.*;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -59,6 +60,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
+            .setColor(ContextCompat.getColor(context, R.color.main))
             .setGroup(NOTIFICATION_GROUP)
             .setGroupSummary(summary)
             .build();
@@ -97,6 +99,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
+            .setColor(ContextCompat.getColor(context, R.color.main))
             .setGroup(NOTIFICATION_GROUP)
             .setGroupSummary(true)
             .build();
@@ -119,6 +122,8 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         if (prefs.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS, PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS_DEFAULT)) {
             notification.defaults |= Notification.DEFAULT_LIGHTS;
         }
+        String priority = prefs.getString(PreferenceConsts.KEY_NOTIFICATIONS_PRIORITY, PreferenceConsts.KEY_NOTIFICATIONS_PRIORITY_DEFAULT);
+        notification.priority = Integer.parseInt(priority);
     }
 
     private void updateSummaryNotification(Context context, boolean creating) {
