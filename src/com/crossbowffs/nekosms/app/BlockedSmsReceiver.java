@@ -1,11 +1,11 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.*;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -21,13 +21,21 @@ import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
-    private static final int NOTIFICATION_ID = 1;
+    private static final int NOTIFICATION_SUMMARY_ID = 1;
+    private static final String NOTIFICATION_GROUP = "blocked_message";
 
-    private NotificationManager getNotificationManager(Context context) {
-        return (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+    private static int uriToNotificationId(Uri uri) {
+        return (int)ContentUris.parseId(uri);
     }
 
-    private Notification buildNotificationSingle(Context context, SmsMessageData messageData) {
+    private PendingIntent createPendingIntent(Context context, String action, Uri uri) {
+        Intent intent = new Intent(context, BlockedSmsReceiver.class);
+        intent.setAction(action);
+        intent.setData(uri);
+        return PendingIntent.getBroadcast(context, 0, intent, 0);
+    }
+
+    private Notification buildNotificationSingle(Context context, SmsMessageData messageData, boolean summary) {
         Uri uri = ContentUris.withAppendedId(DatabaseContract.BlockedMessages.CONTENT_URI, messageData.getId());
 
         Intent viewIntent = new Intent(context, MainActivity.class);
@@ -35,35 +43,25 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         viewIntent.setData(uri);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
 
-        Intent deleteIntent = new Intent(context, BlockedSmsReceiver.class);
-        deleteIntent.setAction(BroadcastConsts.ACTION_DELETE_SMS);
-        deleteIntent.setData(uri);
-        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, 0, deleteIntent, 0);
+        PendingIntent deleteIntent = createPendingIntent(context, BroadcastConsts.ACTION_DELETE_SMS, uri);
+        PendingIntent restoreIntent = createPendingIntent(context, BroadcastConsts.ACTION_RESTORE_SMS, uri);
+        PendingIntent dismissIntent = createPendingIntent(context, BroadcastConsts.ACTION_DISMISS_NOTIFICATION, uri);
 
-        Intent restoreIntent = new Intent(context, BlockedSmsReceiver.class);
-        restoreIntent.setAction(BroadcastConsts.ACTION_RESTORE_SMS);
-        restoreIntent.setData(uri);
-        PendingIntent restorePendingIntent = PendingIntent.getBroadcast(context, 0, restoreIntent, 0);
-
-        Intent dismissIntent = new Intent(context, BlockedSmsReceiver.class);
-        dismissIntent.setAction(BroadcastConsts.ACTION_DISMISS_NOTIFICATION);
-        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, 0, dismissIntent, 0);
-
-        Notification notification = new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
             .setContentTitle(context.getString(R.string.format_notification_single_sender, messageData.getSender()))
             .setContentText(messageData.getBody())
             .setStyle(new NotificationCompat.BigTextStyle().bigText(messageData.getBody()))
             .setContentIntent(viewPendingIntent)
-            .addAction(R.drawable.ic_delete_white_24dp, context.getString(R.string.delete), deletePendingIntent)
-            .addAction(R.drawable.ic_unarchive_white_24dp, context.getString(R.string.restore), restorePendingIntent)
-            .setDeleteIntent(dismissPendingIntent)
+            .addAction(R.drawable.ic_delete_white_24dp, context.getString(R.string.delete), deleteIntent)
+            .addAction(R.drawable.ic_unarchive_white_24dp, context.getString(R.string.restore), restoreIntent)
+            .setDeleteIntent(dismissIntent)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
+            .setGroup(NOTIFICATION_GROUP)
+            .setGroupSummary(summary)
             .build();
-
-        return notification;
     }
 
     private Notification buildNotificationMulti(Context context, CursorWrapper<SmsMessageData> messages) {
@@ -72,9 +70,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_MESSAGES);
         PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
 
-        Intent dismissIntent = new Intent(context, BlockedSmsReceiver.class);
-        dismissIntent.setAction(BroadcastConsts.ACTION_DISMISS_NOTIFICATION);
-        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(context, 0, dismissIntent, 0);
+        PendingIntent dismissIntent = createPendingIntent(context, BroadcastConsts.ACTION_DISMISS_NOTIFICATION, null);
 
         NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
         SmsMessageData data = new SmsMessageData();
@@ -89,75 +85,104 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             }
             inboxStyle.addLine(line);
         }
-        inboxStyle.setSummaryText(context.getString(R.string.view_in_nekosms));
 
-        Notification notification = new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
             .setContentTitle(context.getString(R.string.format_notification_multi_count, messages.getCount()))
             .setContentText(firstLine)
             .setStyle(inboxStyle)
             .setNumber(messages.getCount())
             .setContentIntent(viewPendingIntent)
-            .setDeleteIntent(dismissPendingIntent)
+            .setDeleteIntent(dismissIntent)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
+            .setGroup(NOTIFICATION_GROUP)
+            .setGroupSummary(true)
             .build();
-
-        return notification;
     }
 
-    private void displayNotification(Context context, Intent intent) {
-        SharedPreferences preferences = context.getSharedPreferences(PreferenceConsts.FILE_MAIN, Context.MODE_PRIVATE);
-        if (!preferences.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_ENABLE, PreferenceConsts.KEY_NOTIFICATIONS_ENABLE_DEFAULT)) {
-            // Just mark the message as seen and return
-            Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+    private boolean areNotificationsEnabled(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PreferenceConsts.FILE_MAIN, Context.MODE_PRIVATE);
+        return prefs.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_ENABLE, PreferenceConsts.KEY_NOTIFICATIONS_ENABLE_DEFAULT);
+    }
+
+    private void applyNotificationStyle(Context context, Notification notification) {
+        SharedPreferences prefs = context.getSharedPreferences(PreferenceConsts.FILE_MAIN, Context.MODE_PRIVATE);
+        String ringtone = prefs.getString(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE, PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE_DEFAULT);
+        if (!TextUtils.isEmpty(ringtone)) {
+            notification.sound = Uri.parse(ringtone);
+        }
+        if (prefs.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_VIBRATE, PreferenceConsts.KEY_NOTIFICATIONS_VIBRATE_DEFAULT)) {
+            notification.defaults |= Notification.DEFAULT_VIBRATE;
+        }
+        if (prefs.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS, PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS_DEFAULT)) {
+            notification.defaults |= Notification.DEFAULT_LIGHTS;
+        }
+    }
+
+    private void updateSummaryNotification(Context context, boolean creating) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        try (CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context)) {
+            if (messages.getCount() == 0) {
+                notificationManager.cancel(NOTIFICATION_SUMMARY_ID);
+            } else if (creating) {
+                // We don't update the summary notification unless we are *adding*,
+                // not *removing* a notification. This prevents apps like Pushbullet
+                // from mirroring the summary notification when dismissing individual
+                // notifications.
+                //
+                // This works because on Android < 7.0, it's impossible to remove
+                // the notifications individually, and on Android >= 7.0, the summary
+                // notification is never shown so it doesn't need to be updated.
+                Notification notification;
+                if (messages.getCount() == 1) {
+                    messages.moveToNext();
+                    notification = buildNotificationSingle(context, messages.get(), true);
+                } else {
+                    notification = buildNotificationMulti(context, messages);
+                }
+
+                // Note that the sounds/vibration are applied to the summary notification
+                // and not the individual notifications, since the summary notification is
+                // the only one displayed on Android < 7.0.
+                applyNotificationStyle(context, notification);
+                notificationManager.notify(NOTIFICATION_SUMMARY_ID, notification);
+            }
+        }
+    }
+
+    private void removeNotification(Context context, Uri messageUri) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancel(uriToNotificationId(messageUri));
+        updateSummaryNotification(context, false);
+    }
+
+    private void displayNotification(Context context, Uri messageUri) {
+        if (!areNotificationsEnabled(context)) {
             BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
             return;
         }
 
-        Notification notification;
-        try (CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context)) {
-            if (messages == null || messages.getCount() == 0) {
-                Xlog.e("Failed to load read messages, falling back to intent URI");
-                Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
-                SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
-                if (messageData == null) {
-                    Xlog.e("Failed to load message from intent URI");
-                    return;
-                }
-                notification = buildNotificationSingle(context, messageData);
-            } else if (messages.getCount() == 1) {
-                messages.moveToNext();
-                notification = buildNotificationSingle(context, messages.get());
-            } else {
-                notification = buildNotificationMulti(context, messages);
-            }
-        }
-
-        NotificationManager notificationManager = getNotificationManager(context);
-        String ringtone = preferences.getString(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE, PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE_DEFAULT);
-        if (!TextUtils.isEmpty(ringtone)) {
-            notification.sound = Uri.parse(ringtone);
-        }
-        if (preferences.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_VIBRATE, PreferenceConsts.KEY_NOTIFICATIONS_VIBRATE_DEFAULT)) {
-            notification.defaults |= Notification.DEFAULT_VIBRATE;
-        }
-        if (preferences.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS, PreferenceConsts.KEY_NOTIFICATIONS_LIGHTS_DEFAULT)) {
-            notification.defaults |= Notification.DEFAULT_LIGHTS;
-        }
-        notificationManager.notify(NOTIFICATION_ID, notification);
+        SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
+        Notification notification = buildNotificationSingle(context, messageData, false);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.notify(uriToNotificationId(messageUri), notification);
+        updateSummaryNotification(context, true);
     }
 
     private void onReceiveSms(Context context, Intent intent) {
-        displayNotification(context, intent);
+        Uri messageUri = intent.getParcelableExtra(BroadcastConsts.EXTRA_MESSAGE);
+        if (messageUri == null) {
+            return;
+        }
+
+        displayNotification(context, messageUri);
     }
 
     private void onDeleteSms(Context context, Intent intent) {
-        NotificationManager notificationManager = getNotificationManager(context);
-        notificationManager.cancel(NOTIFICATION_ID);
-
         Uri messageUri = intent.getData();
+
         boolean deleted = BlockedSmsLoader.get().delete(context, messageUri);
         if (!deleted) {
             Xlog.e("Failed to delete message: could not load data");
@@ -165,11 +190,18 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         } else {
             Toast.makeText(context, R.string.message_deleted, Toast.LENGTH_SHORT).show();
         }
+
+        removeNotification(context, messageUri);
     }
 
     private void onRestoreSms(Context context, Intent intent) {
-        NotificationManager notificationManager = getNotificationManager(context);
-        notificationManager.cancel(NOTIFICATION_ID);
+        Uri messageUri = intent.getData();
+
+        // First mark the message as seen, since we want the summary
+        // notification to be updated even if the message could not
+        // actually be restored.
+        BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
+        removeNotification(context, messageUri);
 
         if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
             Xlog.e("Do not have permissions to write SMS");
@@ -177,7 +209,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             return;
         }
 
-        SmsMessageData messageToRestore = BlockedSmsLoader.get().query(context, intent.getData());
+        SmsMessageData messageToRestore = BlockedSmsLoader.get().query(context, messageUri);
         if (messageToRestore == null) {
             Xlog.e("Failed to restore message: could not load data");
             Toast.makeText(context, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
@@ -192,17 +224,22 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             return;
         }
 
-        Uri messageUri = intent.getData();
         BlockedSmsLoader.get().delete(context, messageUri);
         Toast.makeText(context, R.string.message_restored, Toast.LENGTH_SHORT).show();
     }
 
     private void onDismissNotification(Context context, Intent intent) {
-        // When the notification is dismissed, mark all messages as seen.
-        // Technically we should only mark messages in the notification as
-        // seen, but unless there is a race condition, the notification will
-        // always contain all unseen messages.
-        BlockedSmsLoader.get().markAllSeen(context);
+        // If messageUri is null, we are dismissing the summary notification,
+        // so mark all messages as seen. Otherwise, only mark the one that
+        // was dismissed as seen.
+        Uri messageUri = intent.getData();
+        if (messageUri != null) {
+            BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
+        } else {
+            BlockedSmsLoader.get().markAllSeen(context);
+        }
+
+        updateSummaryNotification(context, false);
     }
 
     @Override

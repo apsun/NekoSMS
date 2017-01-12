@@ -157,7 +157,6 @@
     <string name="format_notification_single_sender">%s (blocked)</string>
     <string name="format_notification_multi_count">%d blocked messages</string>
     <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
-    <string name="view_in_nekosms">View in NekoSMS</string>
 
     <!-- App shortcuts -->
     <string name="shortcut_new_blacklist_rule">New blacklist rule</string>
