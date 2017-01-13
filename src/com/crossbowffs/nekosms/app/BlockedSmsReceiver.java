@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.*;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
@@ -148,10 +149,12 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
                     notification = buildNotificationMulti(context, messages);
                 }
 
-                // Note that the sounds/vibration are applied to the summary notification
-                // and not the individual notifications, since the summary notification is
-                // the only one displayed on Android < 7.0.
-                applyNotificationStyle(context, notification);
+                // On pre-N, we apply the notification style to the summary notification
+                // since the individual notifications are not displayed.
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    Xlog.d("Applying style to summary notification");
+                    applyNotificationStyle(context, notification);
+                }
                 notificationManager.notify(NOTIFICATION_SUMMARY_ID, notification);
             }
         }
@@ -172,6 +175,15 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
         Notification notification = buildNotificationSingle(context, messageData, false);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+
+        // On N and above, we apply the notification style to each individual notification.
+        // This is useful for heads-up notifications and notification mirroring apps
+        // like Pushbullet since the user can interact with the individual messages.
+        // Unfortunately on pre-N this is not possible without un-merging the notifications.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Xlog.d("Applying style to individual notification");
+            applyNotificationStyle(context, notification);
+        }
         notificationManager.notify(uriToNotificationId(messageUri), notification);
         updateSummaryNotification(context, true);
     }
