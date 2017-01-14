@@ -9,11 +9,11 @@ import android.net.Uri;
 
 public abstract class AutoContentLoader<T> {
     private final Uri mContentUri;
-    private final String[] mAllColumns;
+    private final String[] mColumnNames;
 
-    public AutoContentLoader(Uri contentUri, String[] allColumns) {
+    public AutoContentLoader(Uri contentUri, String[] columnNames) {
         mContentUri = contentUri;
-        mAllColumns = allColumns;
+        mColumnNames = columnNames;
     }
 
     protected Uri getContentUri() {
@@ -21,9 +21,9 @@ public abstract class AutoContentLoader<T> {
     }
 
     public int[] getColumns(Cursor cursor) {
-        int[] columns = new int[mAllColumns.length];
+        int[] columns = new int[mColumnNames.length];
         for (int i = 0; i < columns.length; ++i) {
-            columns[i] = cursor.getColumnIndex(mAllColumns[i]);
+            columns[i] = cursor.getColumnIndex(mColumnNames[i]);
         }
         return columns;
     }
@@ -36,7 +36,7 @@ public abstract class AutoContentLoader<T> {
         }
         for (int i = 0; i < columns.length; ++i) {
             if (columns[i] >= 0) {
-                bindData(cursor, columns[i], mAllColumns[i], data);
+                bindData(cursor, columns[i], mColumnNames[i], data);
             }
         }
         return data;
@@ -60,7 +60,7 @@ public abstract class AutoContentLoader<T> {
 
     protected CursorWrapper<T> queryAll(Context context, String where, String[] whereArgs, String orderBy) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(getContentUri(), mAllColumns, where, whereArgs, orderBy);
+        Cursor cursor = contentResolver.query(getContentUri(), mColumnNames, where, whereArgs, orderBy);
         return wrapCursor(cursor);
     }
 
@@ -70,7 +70,7 @@ public abstract class AutoContentLoader<T> {
 
     public T query(Context context, Uri uri) {
         ContentResolver contentResolver = context.getContentResolver();
-        Cursor cursor = contentResolver.query(uri, mAllColumns, null, null, null);
+        Cursor cursor = contentResolver.query(uri, mColumnNames, null, null, null);
         if (cursor == null) {
             return null;
         }
@@ -88,7 +88,10 @@ public abstract class AutoContentLoader<T> {
         ContentResolver contentResolver = context.getContentResolver();
         ContentValues values = serialize(data);
         Uri uri = contentResolver.insert(getContentUri(), values);
-        long id = ContentUris.parseId(uri);
+        long id = -1;
+        if (uri != null) {
+            id = ContentUris.parseId(uri);
+        }
         if (id < 0) {
             return null;
         } else {

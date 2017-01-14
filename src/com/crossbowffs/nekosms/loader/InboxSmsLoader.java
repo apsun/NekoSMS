@@ -34,7 +34,10 @@ public final class InboxSmsLoader {
     public static Uri writeMessage(Context context, SmsMessageData messageData) {
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, serializeMessage(messageData));
-        long id = ContentUris.parseId(uri);
+        long id = -1;
+        if (uri != null) {
+            id = ContentUris.parseId(uri);
+        }
 
         // An ID of 0 when writing to the SMS inbox could mean we don't have the
         // OP_WRITE_SMS permission. See ContentProvider#rejectInsert(Uri, ContentValues).
