@@ -64,4 +64,8 @@ android {
             buildConfigField("boolean", "LOG_TO_XPOSED", "true")
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
