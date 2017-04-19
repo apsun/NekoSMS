@@ -25,8 +25,7 @@ was the first word that popped into my head. Hence, NekoSMS.
 
 ### Why does this app require Xposed?
 
-[Starting from Android 4.4, only the default SMS app has the ability to intercept SMS messages]
-(http://android-developers.blogspot.in/2013/10/getting-your-sms-apps-ready-for-kitkat.html).
+[Starting from Android 4.4, only the default SMS app has the ability to intercept SMS messages](http://android-developers.blogspot.in/2013/10/getting-your-sms-apps-ready-for-kitkat.html).
 In order to bypass this restriction, code must be modified at the OS level.
 
 ### What are the permissions used for?
@@ -42,8 +41,7 @@ code, so if it works with one SMS app, it will work with them all.
 
 ### How does it work? (for nerds)
 
-It hooks the internal Android class, [`com.android.internal.telephony.InboundSmsHandler`]
-(https://android.googlesource.com/platform/frameworks/opt/telephony/+/master/src/java/com/android/internal/telephony/InboundSmsHandler.java).
+It hooks the internal Android class, [`com.android.internal.telephony.InboundSmsHandler`](https://android.googlesource.com/platform/frameworks/opt/telephony/+/master/src/java/com/android/internal/telephony/InboundSmsHandler.java).
 This class is responsible for taking the raw SMS data received by the phone
 and dispatching it to the default SMS app, then broadcasting it to all apps
 capable of reading SMS messages.
@@ -54,7 +52,7 @@ message matches a blacklist rule, the broadcast is dropped.
 
 ### How does it work? (for non-nerds)
 
-[Unicorn magic.](https://www.youtube.com/watch?v=wwZ4suij8oM)
+[Dragon magic.](https://www.youtube.com/watch?v=kXbrvDsdlgE)
 
 ### Hey! Are you trying to steal my personal data?!
 
