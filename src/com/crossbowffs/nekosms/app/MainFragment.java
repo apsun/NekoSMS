@@ -2,9 +2,12 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -43,6 +46,10 @@ public class MainFragment extends Fragment {
         makeSnackbar(textId, actionTextId, listener).show();
     }
 
+    public void showSnackbar(int textId) {
+        makeSnackbar(textId).show();
+    }
+
     private Toast makeToast(int textId) {
         return Toast.makeText(getContext(), textId, Toast.LENGTH_SHORT);
     }
@@ -63,18 +70,40 @@ public class MainFragment extends Fragment {
         getMainActivity().disableFab();
     }
 
-    public void requestPermissionsCompat(String permission, int requestCode) {
-        requestPermissionsCompat(new String[] {permission}, requestCode);
+    public void requestPermissionsCompat(String permission, int requestCode, boolean openSettings) {
+        requestPermissionsCompat(new String[] {permission}, requestCode, openSettings);
     }
 
-    public void requestPermissionsCompat(String[] permissions, int requestCode) {
+    private void openPermissionSettings(int requestCode) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", getContext().getPackageName(), null);
+        intent.setData(uri);
+        startActivityForResult(intent, requestCode);
+    }
+
+    public void requestPermissionsCompat(String[] permissions, int requestCode, boolean openSettings) {
         // Unlike requestPermissions(), this will not display the request dialog
         // on Android 23+ if the permissions have already been granted.
         int[] grantResults = new int[permissions.length];
         boolean hasPermissions = PermissionUtils.checkPermissions(getContext(), permissions, grantResults);
         if (!hasPermissions && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // First check if user has ticked the "never ask again" option.
+            // If so (and openSettings is true), open the settings activity instead.
+            // Note that this will NOT call onRequestPermissionsResult.
+            if (openSettings) {
+                for (String permission : permissions) {
+                    if (!shouldShowRequestPermissionRationale(permission)) {
+                        openPermissionSettings(requestCode);
+                        return;
+                    }
+                }
+            }
+
             requestPermissions(permissions, requestCode);
         } else {
+            // If we already have the permissions (or we're on pre-M),
+            // just directly call the result handler
             onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }

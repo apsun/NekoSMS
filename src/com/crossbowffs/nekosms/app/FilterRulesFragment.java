@@ -107,7 +107,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             // a content:// URI would be used instead.
             if (ContentResolver.SCHEME_FILE.equals(importUri.getScheme())) {
                 mPendingImportUri = importUri;
-                requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST);
+                requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST, false);
             } else {
                 showConfirmImportDialog(importUri);
             }
@@ -173,9 +173,14 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, boolean granted) {
+    public void onRequestPermissionsResult(final int requestCode, boolean granted) {
         if (!granted) {
-            showToast(R.string.need_storage_permission);
+            showSnackbar(R.string.need_storage_permission, R.string.retry, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestStoragePermissions(requestCode, true);
+                }
+            });
         } else if (requestCode == IMPORT_BACKUP_REQUEST) {
             showImportFileSelectionDialog();
         } else if (requestCode == EXPORT_BACKUP_REQUEST) {
@@ -183,6 +188,14 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         } else if (requestCode == IMPORT_BACKUP_DIRECT_REQUEST) {
             showConfirmImportDialog(mPendingImportUri);
             mPendingImportUri = null;
+        }
+    }
+
+    private void requestStoragePermissions(int request, boolean openSettings) {
+        if (request == IMPORT_BACKUP_REQUEST) {
+            requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_REQUEST, openSettings);
+        } else if (request == EXPORT_BACKUP_REQUEST) {
+            requestPermissionsCompat(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXPORT_BACKUP_REQUEST, openSettings);
         }
     }
 
@@ -194,9 +207,9 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
-                        requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_REQUEST);
+                        requestStoragePermissions(IMPORT_BACKUP_REQUEST, false);
                     } else if (which == 1) {
-                        requestPermissionsCompat(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXPORT_BACKUP_REQUEST);
+                        requestStoragePermissions(EXPORT_BACKUP_REQUEST, false);
                     }
                 }
             })
@@ -206,7 +219,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private void showImportFileSelectionDialog() {
         final File[] files = BackupLoader.enumerateBackupFiles();
         if (files == null || files.length == 0) {
-            showToast(R.string.import_no_backup);
+            showSnackbar(R.string.import_no_backup);
             return;
         }
 
@@ -301,7 +314,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 default:
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
-                showToast(messageId);
+                showSnackbar(messageId);
             }
         }.execute();
     }
@@ -338,7 +351,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                         }
                     });
                 } else {
-                    showToast(messageId);
+                    showSnackbar(messageId);
                 }
             }
         }.execute();

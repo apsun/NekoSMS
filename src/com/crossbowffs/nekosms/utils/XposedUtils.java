@@ -3,12 +3,8 @@ package com.crossbowffs.nekosms.utils;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import com.crossbowffs.nekosms.BuildConfig;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class XposedUtils {
     public enum Section {
@@ -34,11 +30,6 @@ public final class XposedUtils {
     // New Xposed installer
     private static final String XPOSED_ACTIVITY = XPOSED_PACKAGE + ".WelcomeActivity";
     private static final String XPOSED_EXTRA_FRAGMENT = "fragment";
-
-    private static final String[] TASK_KILLER_PACKAGES = {
-        "me.piebridge.forcestopgb",
-        "com.oasisfeng.greenify",
-    };
 
     private XposedUtils() { }
 
@@ -93,30 +84,5 @@ public final class XposedUtils {
     public static boolean startXposedActivity(Context context, Section section) {
         return startOldXposedActivity(context, section.mSection) ||
                startNewXposedActivity(context, section.mFragment);
-    }
-
-    public static List<PackageInfo> getInstalledTaskKillers(Context context) {
-        PackageManager packageManager = context.getPackageManager();
-        ArrayList<PackageInfo> apps = new ArrayList<>();
-        for (String pkgName : TASK_KILLER_PACKAGES) {
-            PackageInfo pkgInfo;
-            try {
-                pkgInfo = packageManager.getPackageInfo(pkgName, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                continue;
-            }
-            apps.add(pkgInfo);
-        }
-        return apps;
-    }
-
-    public static String getAppDisplayName(Context context, PackageInfo pkgInfo) {
-        PackageManager packageManager = context.getPackageManager();
-        CharSequence name = packageManager.getApplicationLabel(pkgInfo.applicationInfo);
-        if (name != null) {
-            return name.toString();
-        } else {
-            return pkgInfo.packageName;
-        }
     }
 }

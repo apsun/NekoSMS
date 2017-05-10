@@ -139,7 +139,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         BlockedSmsLoader.get().deleteAll(context);
-        showToast(R.string.cleared_blocked_messages);
+        showSnackbar(R.string.cleared_blocked_messages);
     }
 
     private void showConfirmClearDialog() {
@@ -167,7 +167,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             showMessageDetailsDialog(messageData);
         } else {
             // This can occur if the user deletes the message, then opens the notification
-            showToast(R.string.load_blocked_message_failed);
+            showSnackbar(R.string.load_blocked_message_failed);
         }
     }
 
@@ -206,8 +206,9 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     private void startXposedActivity(XposedUtils.Section section) {
         Context context = getContext();
         if (context == null) return;
+
         if (!XposedUtils.startXposedActivity(context, section)) {
-            showToast(R.string.xposed_not_installed);
+            showSnackbar(R.string.xposed_not_installed);
         }
     }
 
@@ -229,7 +230,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to restore message: could not load data");
-            showToast(R.string.load_blocked_message_failed);
+            showSnackbar(R.string.load_blocked_message_failed);
             return;
         }
 
@@ -238,7 +239,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (DatabaseException e) {
             Xlog.e("Failed to restore message: could not write to SMS inbox");
-            showToast(R.string.message_restore_failed);
+            showSnackbar(R.string.message_restore_failed);
             return;
         }
 
@@ -259,10 +260,11 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     private void deleteSms(long smsId) {
         Context context = getContext();
         if (context == null) return;
+
         final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to delete message: could not load data");
-            showToast(R.string.load_blocked_message_failed);
+            showSnackbar(R.string.load_blocked_message_failed);
             return;
         }
 

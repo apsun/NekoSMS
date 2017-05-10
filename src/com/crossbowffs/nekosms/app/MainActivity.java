@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String WIKI_URL = GITHUB_URL + "/wiki";
+
+    private static final String[] TASK_KILLER_PACKAGES = {
+        "me.piebridge.forcestopgb",
+        "com.oasisfeng.greenify",
+    };
 
     private CoordinatorLayout mCoordinatorLayout;
     private DrawerLayout mDrawerLayout;
@@ -328,8 +334,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
+    private List<PackageInfo> getInstalledTaskKillers() {
+        PackageManager packageManager = getPackageManager();
+        ArrayList<PackageInfo> apps = new ArrayList<>();
+        for (String pkgName : TASK_KILLER_PACKAGES) {
+            PackageInfo pkgInfo;
+            try {
+                pkgInfo = packageManager.getPackageInfo(pkgName, 0);
+            } catch (PackageManager.NameNotFoundException e) {
+                continue;
+            }
+            apps.add(pkgInfo);
+        }
+        return apps;
+    }
+
+    private String getAppDisplayName(PackageInfo pkgInfo) {
+        PackageManager packageManager = getPackageManager();
+        CharSequence name = packageManager.getApplicationLabel(pkgInfo.applicationInfo);
+        if (name != null) {
+            return name.toString();
+        } else {
+            return pkgInfo.packageName;
+        }
+    }
+
     private void showTaskKillerDialogIfNecessary() {
-        final List<PackageInfo> taskKillers = XposedUtils.getInstalledTaskKillers(this);
+        final List<PackageInfo> taskKillers = getInstalledTaskKillers();
         if (!shouldShowTaskKillerDialog(taskKillers)) {
             return;
         }
@@ -338,8 +369,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // so we don't need to check for the empty list edge case here)
         StringBuilder sb = new StringBuilder();
         for (PackageInfo pkgInfo : taskKillers) {
-            sb.append("- ");
-            sb.append(XposedUtils.getAppDisplayName(this, pkgInfo));
+            sb.append(getAppDisplayName(pkgInfo));
             sb.append('\n');
         }
         sb.setLength(sb.length() - 1);
@@ -400,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AlertDialog dialog = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)
             .setMessage(html)
-            .setPositiveButton(R.string.ok, null)
+            .setPositiveButton(R.string.close, null)
             .show();
 
         TextView textView = (TextView)dialog.findViewById(android.R.id.message);
