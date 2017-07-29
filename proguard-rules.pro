@@ -1,10 +1,12 @@
 -dontobfuscate
 
-# This is technically not required since we don't obfuscate,
-# but keep it anyways in case we want to do so in the future
+# Keep so Xposed module can hook version info
 -keep class com.crossbowffs.nekosms.utils.XposedUtils {
     int getModuleVersion();
 }
+
+# Keep so explicit intents can use class name
+-keep class com.crossbowffs.app.BlockedSmsReceiver
 
 # Prevent ProGuard from deleting our Xposed hook classes
 -keep class * implements de.robv.android.xposed.IXposedHookLoadPackage
