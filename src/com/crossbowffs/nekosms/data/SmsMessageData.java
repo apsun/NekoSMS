@@ -1,5 +1,11 @@
 package com.crossbowffs.nekosms.data;
 
+import android.content.Intent;
+import android.telephony.SmsMessage;
+import com.crossbowffs.nekosms.utils.SmsMessageUtils;
+
+import java.text.Normalizer;
+
 public class SmsMessageData {
     private long mId = -1;
     private String mSender;
@@ -9,6 +15,25 @@ public class SmsMessageData {
     private boolean mRead;
     private boolean mSeen;
     private int mSubId;
+
+    public static SmsMessageData fromIntent(Intent intent) {
+        SmsMessage[] messageParts = SmsMessageUtils.fromIntent(intent);
+        String sender = messageParts[0].getDisplayOriginatingAddress();
+        String body = SmsMessageUtils.getMessageBody(messageParts);
+        long timeSent = messageParts[0].getTimestampMillis();
+        long timeReceived = System.currentTimeMillis();
+        int subId = SmsMessageUtils.getSubId(messageParts[0]);
+
+        SmsMessageData message = new SmsMessageData();
+        message.setSender(Normalizer.normalize(sender, Normalizer.Form.NFC));
+        message.setBody(Normalizer.normalize(body, Normalizer.Form.NFC));
+        message.setTimeSent(timeSent);
+        message.setTimeReceived(timeReceived);
+        message.setRead(false);
+        message.setSeen(false);
+        message.setSubId(subId);
+        return message;
+    }
 
     public void reset() {
         mId = -1;

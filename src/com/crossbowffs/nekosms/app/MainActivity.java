@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.IOUtils;
@@ -195,8 +196,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Bundle args = new Bundle(1);
                     args.putParcelable(BlockedMessagesFragment.ARG_MESSAGE_URI, uri);
                     setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES, args);
-                    intent.setData(null);
-                    return true;
                 } else {
                     // Treat all other ACTION_VIEW intents as backup import requests.
                     // If we turn out to be wrong, at worst we just get an invalid
@@ -205,9 +204,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Bundle args = new Bundle(1);
                     args.putParcelable(FilterRulesFragment.ARG_IMPORT_URI, uri);
                     setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
-                    intent.setData(null);
-                    return true;
                 }
+
+                // Kind of a hacky workaround; this ensures that we only execute the
+                // action once (in case intent gets re-delivered).
+                intent.setData(null);
+                return true;
             }
         }
 

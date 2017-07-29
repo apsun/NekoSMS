@@ -2,6 +2,7 @@ package com.crossbowffs.nekosms.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.crossbowffs.nekosms.widget.AutoContentProvider;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
 import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;

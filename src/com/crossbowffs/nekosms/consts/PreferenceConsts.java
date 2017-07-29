@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.app;
+package com.crossbowffs.nekosms.consts;
 
 import com.crossbowffs.nekosms.BuildConfig;
 

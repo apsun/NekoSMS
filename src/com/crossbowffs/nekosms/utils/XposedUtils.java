@@ -11,8 +11,8 @@ public final class XposedUtils {
         INSTALL("install", 0),
         MODULES("modules", 1);
 
-        private String mSection;
-        private int mFragment;
+        private final String mSection;
+        private final int mFragment;
 
         Section(String section, int fragment) {
             mSection = section;

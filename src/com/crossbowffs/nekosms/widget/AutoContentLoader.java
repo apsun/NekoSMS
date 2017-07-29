@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.loader;
+package com.crossbowffs.nekosms.widget;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import com.crossbowffs.nekosms.loader.CursorWrapper;
 
 public abstract class AutoContentLoader<T> {
     private final Uri mContentUri;

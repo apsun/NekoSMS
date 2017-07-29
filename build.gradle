@@ -4,38 +4,41 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:2.3.1"
+        classpath "com.android.tools.build:gradle:2.3.3"
     }
 }
 
 repositories {
     jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
 }
 
 apply plugin: "com.android.application"
 
 dependencies {
-    compile "com.android.support:support-compat:25.3.1"
-    compile "com.android.support:support-core-ui:25.3.1"
-    compile "com.android.support:appcompat-v7:25.3.1"
-    compile "com.android.support:recyclerview-v7:25.3.1"
-    compile "com.android.support:support-annotations:25.3.1"
-    compile "com.android.support:design:25.3.1"
+    compile "com.android.support:support-compat:26.0.0"
+    compile "com.android.support:support-core-ui:26.0.0"
+    compile "com.android.support:appcompat-v7:26.0.0"
+    compile "com.android.support:recyclerview-v7:26.0.0"
+    compile "com.android.support:support-annotations:26.0.0"
+    compile "com.android.support:design:26.0.0"
     compile "com.crossbowffs.remotepreferences:remotepreferences:0.5"
     provided "de.robv.android.xposed:api:53"
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
 
     defaultConfig {
-        versionCode 29
-        versionName "0.14.0"
+        versionCode 31
+        versionName "0.14.1-dev"
         minSdkVersion 19
-        targetSdkVersion 25
+        targetSdkVersion 26
         resConfigs "en", "zh-rCN"
-        buildConfigField("int", "MODULE_VERSION", "13")
+        buildConfigField("int", "MODULE_VERSION", "14")
         buildConfigField("int", "DATABASE_VERSION", "11")
         buildConfigField("int", "BACKUP_VERSION", "3")
         buildConfigField("String", "LOG_TAG", "\"NekoSMS\"")

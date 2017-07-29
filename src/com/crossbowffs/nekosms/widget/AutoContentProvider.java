@@ -1,4 +1,4 @@
-package com.crossbowffs.nekosms.provider;
+package com.crossbowffs.nekosms.widget;
 
 import android.content.*;
 import android.database.Cursor;

@@ -14,13 +14,24 @@ public final class Xlog {
         if (priority < LOG_LEVEL) {
             return;
         }
+
+        // Perform string formatting (if the caller passed a throwable
+        // as the last argument, it should be ignored)
         message = String.format(message, args);
+
+        // If caller also passed a throwable as the last argument,
+        // append its stacktrace to the message (yes I know this is
+        // not safe, but there isn't a much better alternative)
         if (args.length > 0 && args[args.length - 1] instanceof Throwable) {
             Throwable throwable = (Throwable)args[args.length - 1];
             String stacktraceStr = Log.getStackTraceString(throwable);
             message += '\n' + stacktraceStr;
         }
+
+        // Write to the default log tag
         Log.println(priority, LOG_TAG, message);
+
+        // Duplicate to the Xposed log if enabled
         if (LOG_TO_XPOSED) {
             Log.println(priority, "Xposed", LOG_TAG + ": " + message);
         }

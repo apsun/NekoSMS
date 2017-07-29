@@ -1,6 +1,6 @@
 package com.crossbowffs.nekosms.provider;
 
-import com.crossbowffs.nekosms.app.PreferenceConsts;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.remotepreferences.RemotePreferenceProvider;
 
 public class PreferenceProvider extends RemotePreferenceProvider {

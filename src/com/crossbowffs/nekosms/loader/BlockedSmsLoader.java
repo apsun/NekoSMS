@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.utils.MapUtils;
+import com.crossbowffs.nekosms.widget.AutoContentLoader;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
 

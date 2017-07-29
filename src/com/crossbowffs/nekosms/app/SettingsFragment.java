@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
 public class SettingsFragment extends PreferenceFragment {

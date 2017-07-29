@@ -36,9 +36,9 @@ import com.crossbowffs.nekosms.utils.Xlog;
 
     public void printToLog() {
         Xlog.v("Field: %s", getField().name());
-        Xlog.v("  Mode: %s", getMode().name());
-        Xlog.v("  Pattern: %s", getPattern());
-        Xlog.v("  Case sensitive: %s", isCaseSensitive());
+        Xlog.v("Mode: %s", getMode().name());
+        Xlog.v("Pattern: %s", getPattern());
+        Xlog.v("Case sensitive: %s", isCaseSensitive());
     }
 
     public abstract boolean match(String sender, String body);

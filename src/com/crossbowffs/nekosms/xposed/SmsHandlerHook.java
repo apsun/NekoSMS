@@ -1,27 +1,26 @@
 package com.crossbowffs.nekosms.xposed;
 
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.database.ContentObserver;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.*;
-import android.provider.ContactsContract;
+import android.os.Binder;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.UserHandle;
 import android.provider.Telephony;
-import android.telephony.SmsMessage;
 import com.crossbowffs.nekosms.BuildConfig;
-import com.crossbowffs.nekosms.app.BroadcastConsts;
-import com.crossbowffs.nekosms.app.PreferenceConsts;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
-import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.consts.BroadcastConsts;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilter;
+import com.crossbowffs.nekosms.filters.SmsFilterLoader;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
-import com.crossbowffs.nekosms.loader.CursorWrapper;
-import com.crossbowffs.nekosms.loader.FilterRuleLoader;
-import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
+import com.crossbowffs.nekosms.utils.ContactUtils;
+import com.crossbowffs.nekosms.utils.ReflectionUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.remotepreferences.RemotePreferenceAccessException;
 import com.crossbowffs.remotepreferences.RemotePreferences;
@@ -31,8 +30,7 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-import java.text.Normalizer;
-import java.util.ArrayList;
+import java.lang.reflect.Method;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private class ConstructorHook extends XC_MethodHook {
@@ -66,212 +64,27 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
-    private static final int SMS_CHARACTER_LIMIT = 160;
+    private static final String TELEPHONY_PKG = "com.android.internal.telephony";
+    private static final String SMS_HANDLER_CLS = TELEPHONY_PKG + ".InboundSmsHandler";
+    private static final int MARK_DELETED = 2;
+    private static final int EVENT_BROADCAST_COMPLETE = 3;
 
-    private ContentObserver mContentObserver;
-    private BroadcastReceiver mBroadcastReceiver;
+    private Context mContext;
+    private SmsFilterLoader mFilterLoader;
     private RemotePreferences mPreferences;
-    private ArrayList<SmsFilter> mSmsFilters;
 
-    private static SmsMessageData createMessageData(SmsMessage[] messageParts) {
-        String sender = messageParts[0].getDisplayOriginatingAddress();
-        String body = mergeMessageBodies(messageParts);
-        long timeSent = messageParts[0].getTimestampMillis();
-        long timeReceived = System.currentTimeMillis();
-        int subId = 0;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            try {
-                subId = (Integer)XposedHelpers.callMethod(messageParts[0], "getSubId");
-            } catch (Throwable e) {
-                Xlog.e("Failed to get SMS subscription ID", e);
-            }
-        }
-
-        SmsMessageData message = new SmsMessageData();
-        message.setSender(sender);
-        message.setBody(body);
-        message.setTimeSent(timeSent);
-        message.setTimeReceived(timeReceived);
-        message.setRead(false);
-        message.setSeen(false);
-        message.setSubId(subId);
-        return message;
-    }
-
-    private static String mergeMessageBodies(SmsMessage[] messageParts) {
-        if (messageParts.length == 1) {
-            return messageParts[0].getDisplayMessageBody();
-        } else {
-            StringBuilder sb = new StringBuilder(SMS_CHARACTER_LIMIT * messageParts.length);
-            for (SmsMessage messagePart : messageParts) {
-                sb.append(messagePart.getDisplayMessageBody());
-            }
-            return sb.toString();
-        }
-    }
-
-    private void resetFilters() {
-        mSmsFilters = null;
-    }
-
-    private ContentObserver registerContentObserver(Context context) {
-        Xlog.i("Registering SMS filter content observer");
-
-        ContentObserver contentObserver = new ContentObserver(new Handler()) {
-            @Override
-            public void onChange(boolean selfChange) {
-                Xlog.i("SMS filter database updated, marking cache as dirty");
-                resetFilters();
-            }
-        };
-
-        ContentResolver contentResolver = context.getContentResolver();
-        contentResolver.registerContentObserver(DatabaseContract.FilterRules.CONTENT_URI, true, contentObserver);
-        return contentObserver;
-    }
-
-    private BroadcastReceiver registerBroadcastReceiver(Context context) {
-        // It is necessary to listen for these events because uninstalling
-        // an app or clearing its data does not notify registered ContentObservers.
-        // If the filter cache is not cleared, messages may be unintentionally blocked.
-        // A user might be able to get around this by manually modifying the
-        // database file itself, but at that point, it's not worth trying to handle.
-        // The only other alternative would be to reload the entire filter list every
-        // time a SMS is received, which does not scale well to a large number of filters.
-        Xlog.i("Registering NekoSMS package state receiver");
-
-        BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (!Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
-                    !Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
-                    return;
-                }
-
-                Uri data = intent.getData();
-                if (data == null) {
-                    return;
-                }
-
-                String packageName = data.getSchemeSpecificPart();
-                if (!NEKOSMS_PACKAGE.equals(packageName)) {
-                    return;
-                }
-
-                if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
-                    Xlog.i("NekoSMS uninstalled, resetting filters");
-                    resetFilters();
-                } else if (Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
-                    Xlog.i("NekoSMS data cleared, resetting filters");
-                    resetFilters();
-                }
-            }
-        };
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addAction(Intent.ACTION_PACKAGE_DATA_CLEARED);
-        filter.addDataScheme("package");
-        context.registerReceiver(receiver, filter);
-        return receiver;
-    }
-
-    private RemotePreferences createRemotePreferences(Context context) {
-        Xlog.i("Initializing remote preferences");
-
-        return new RemotePreferences(context,
-            PreferenceConsts.REMOTE_PREFS_AUTHORITY,
-            PreferenceConsts.FILE_MAIN,
-            true);
-    }
-
-    private void broadcastBlockedSms(Context context, Uri messageUri) {
-        // Permissions are not required here since we are only
-        // broadcasting the URI of the message, not the message
-        // contents. The provider requires permissions to read
-        // the actual message contents.
-        Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
-        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
-        context.sendBroadcast(intent);
-    }
-
-    private static ArrayList<SmsFilter> loadSmsFilters(Context context) {
-        ArrayList<SmsFilter> blacklist = new ArrayList<>();
-        ArrayList<SmsFilter> whitelist = new ArrayList<>();
-        try (CursorWrapper<SmsFilterData> filterCursor = FilterRuleLoader.get().queryAll(context)) {
-            if (filterCursor == null) {
-                // Can occur if NekoSMS has been uninstalled
-                Xlog.e("Failed to load SMS filters (queryAll returned null)");
-                return null;
-            }
-
-            // Blacklist rules are expected to make up the majority
-            // of rules, and we will end up adding all rules to the
-            // whitelist list. Reserve the appropriate capacities.
-            blacklist.ensureCapacity(filterCursor.getCount());
-            whitelist.ensureCapacity(filterCursor.getCount());
-            SmsFilterData data = new SmsFilterData();
-            while (filterCursor.moveToNext()) {
-                SmsFilter filter;
-                try {
-                    filter = new SmsFilter(filterCursor.get(data));
-                } catch (Exception e) {
-                    Xlog.e("Failed to load SMS filter", e);
-                    continue;
-                }
-                if (data.getAction() == SmsFilterAction.BLOCK) {
-                    blacklist.add(filter);
-                } else if (data.getAction() == SmsFilterAction.ALLOW) {
-                    whitelist.add(filter);
-                }
-            }
-        }
-
-        // Combine whitelist and blacklist, with whitelist rules first
-        whitelist.addAll(blacklist);
-        return whitelist;
-    }
-
-    private boolean isMessageFromContact(Context context, String sender) {
-        Uri uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(sender));
-        ContentResolver contentResolver = context.getContentResolver();
-        try (Cursor cursor = contentResolver.query(uri, new String[0], null, null, null)) {
-            return cursor != null && cursor.getCount() > 0;
-        }
-    }
-
-    private boolean shouldFilterMessage(Context context, String sender, String body) {
-        ArrayList<SmsFilter> filters = mSmsFilters;
-        if (filters == null) {
-            Xlog.i("Cached SMS filters dirty, loading from database");
-            mSmsFilters = filters = loadSmsFilters(context);
-        }
-
-        if (filters == null) {
-            // This might occur if NekoSMS has been uninstalled (removing the DB),
-            // but the user has not rebooted their device yet. We should not filter
-            // any messages in this state.
-            return false;
-        }
-
-        Xlog.v("----------------------------------------");
-        for (SmsFilter filter : filters) {
-            if (filter.match(sender, body)) {
-                if (filter.getAction() == SmsFilterAction.BLOCK) {
-                    return true;
-                } else if (filter.getAction() == SmsFilterAction.ALLOW) {
-                    return false;
-                }
-            }
-            Xlog.v("----------------------------------------");
-        }
-        return false;
+    private static Object callDeclaredMethod(String clsName, Object obj, String methodName, Object... args) {
+        // Unlike Xposed's built-in callMethod, this one searches
+        // for private methods as well, in the specified class
+        // (which must be assignable from the object).
+        Class<?> cls = XposedHelpers.findClass(clsName, obj.getClass().getClassLoader());
+        Method method = XposedHelpers.findMethodBestMatch(cls, methodName, args);
+        return ReflectionUtils.invoke(method, obj, args);
     }
 
     private void grantWriteSmsPermissions(Context context) {
-        // We need to grant OP_WRITE_SMS permissions to the
-        // NekoSMS package so it can restore messages to the
+        // We need to grant OP_WRITE_SMS permissions to the app
+        // (the non-Xposed part) so it can restore messages to the
         // SMS inbox. We can do this from the com.android.phone
         // process since it holds the UPDATE_APP_OPS_STATS
         // permission.
@@ -280,10 +93,10 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             packageInfo = packageManager.getPackageInfo(NEKOSMS_PACKAGE, 0);
         } catch (PackageManager.NameNotFoundException e) {
-            // This might occur if NekoSMS has been uninstalled.
+            // This might occur if the app has been uninstalled.
             // In this case, don't do anything - we can't do anything
             // with the permissions anyways.
-            Xlog.e("NekoSMS package not found", e);
+            Xlog.e("App package not found, ignoring", e);
             return;
         }
 
@@ -297,7 +110,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 AppOpsUtils.allowOp(context, AppOpsUtils.OP_WRITE_SMS, uid, NEKOSMS_PACKAGE);
             }
         } catch (Exception e) {
-            // This isn't really a fatal error - the user just won't
+            // This isn't a fatal error - the user just won't
             // be able to restore messages to the inbox.
             Xlog.e("Failed to grant OP_WRITE_SMS permission", e);
         }
@@ -305,199 +118,226 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private void deleteFromRawTable19(Object smsHandler, Object smsReceiver) {
         Xlog.i("Removing raw SMS data from database for Android v19+");
-        XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
-            new Class<?>[] {String.class, String[].class},
-            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
-            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
+        callDeclaredMethod(SMS_HANDLER_CLS, smsHandler, "deleteFromRawTable",
+            /*     deleteWhere */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
+            /* deleteWhereArgs */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
     }
 
     private void deleteFromRawTable24(Object smsHandler, Object smsReceiver) {
         Xlog.i("Removing raw SMS data from database for Android v24+");
-        XposedHelpers.callMethod(smsHandler, "deleteFromRawTable",
-            new Class<?>[] {String.class, String[].class, int.class},
-            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
-            XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
-            2 /* MARK_DELETED */);
+        callDeclaredMethod(SMS_HANDLER_CLS, smsHandler, "deleteFromRawTable",
+            /*     deleteWhere */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
+            /* deleteWhereArgs */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
+            /*      deleteType */ MARK_DELETED);
+    }
+
+    private void deleteFromRawTable(Object smsHandler, Object smsReceiver) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            deleteFromRawTable24(smsHandler, smsReceiver);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            deleteFromRawTable19(smsHandler, smsReceiver);
+        }
     }
 
     private void sendBroadcastComplete(Object smsHandler) {
         Xlog.i("Notifying completion of SMS broadcast");
         XposedHelpers.callMethod(smsHandler, "sendMessage",
-            new Class<?>[] {int.class},
-            3 /* EVENT_BROADCAST_COMPLETE */);
+            /* what */ EVENT_BROADCAST_COMPLETE);
     }
 
     private void finishSmsBroadcast(Object smsHandler, Object smsReceiver) {
-        // Need to clear calling identity since dispatchIntent might be
-        // called from CarrierSmsFilterCallback.onFilterComplete, which is
+        // Need to clear calling identity since dispatchIntent() might be
+        // called from CarrierSmsFilterCallback.onFilterComplete(), which is
         // executing an IPC. This is required to write to the SMS database.
         long token = Binder.clearCallingIdentity();
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                deleteFromRawTable24(smsHandler, smsReceiver);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                deleteFromRawTable19(smsHandler, smsReceiver);
-            }
+            deleteFromRawTable(smsHandler, smsReceiver);
         } finally {
             Binder.restoreCallingIdentity(token);
         }
         sendBroadcastComplete(smsHandler);
     }
 
+    private void broadcastBlockedSms(Uri messageUri) {
+        // Permissions are not required here since we are only
+        // broadcasting the URI of the message, not the message
+        // contents. The provider requires permissions to read
+        // the actual message contents.
+        Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
+        intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
+        mContext.sendBroadcast(intent);
+    }
+
+    private boolean getBooleanPref(String key, boolean defValue) {
+        try {
+            return mPreferences.getBoolean(key, defValue);
+        } catch (RemotePreferenceAccessException e) {
+            Xlog.e("Failed to read preference: " + key);
+            return defValue;
+        }
+    }
+
+    private boolean shouldBlockMessage(String sender, String body) {
+        SmsFilter[] filters = mFilterLoader.getFilters();
+        if (filters == null) {
+            return false;
+        }
+
+        // Filters are already sorted whitelist first,
+        // so we can just return on the first match.
+        for (SmsFilter filter : filters) {
+            if (filter.match(sender, body)) {
+                switch (filter.getAction()) {
+                case BLOCK:
+                    return true;
+                case ALLOW:
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
     private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
         Context context = (Context)param.args[1];
-        if (mContentObserver == null) {
-            mContentObserver = registerContentObserver(context);
+        if (mContext == null) {
+            mContext = context;
+            mFilterLoader = new SmsFilterLoader(context);
+            mPreferences = new RemotePreferences(context,
+                PreferenceConsts.REMOTE_PREFS_AUTHORITY,
+                PreferenceConsts.FILE_MAIN,
+                true);
+            grantWriteSmsPermissions(context);
         }
-        if (mBroadcastReceiver == null) {
-            mBroadcastReceiver = registerBroadcastReceiver(context);
-        }
-        if (mPreferences == null) {
-            mPreferences = createRemotePreferences(context);
-        }
-        grantWriteSmsPermissions(context);
     }
 
     private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param, int receiverIndex) {
         Intent intent = (Intent)param.args[0];
         String action = intent.getAction();
 
+        // We only care about the initial SMS_DELIVER intent,
+        // the rest are irrelevant
         if (!Telephony.Sms.Intents.SMS_DELIVER_ACTION.equals(action)) {
             return;
         }
 
-        boolean enable = PreferenceConsts.KEY_ENABLE_DEFAULT;
-        try {
-            enable = mPreferences.getBoolean(PreferenceConsts.KEY_ENABLE, enable);
-        } catch (RemotePreferenceAccessException e) {
-            Xlog.e("Failed to read enable preference");
-        }
-
-        if (!enable) {
+        // Skip everything if the global killswitch is toggled
+        if (!getBooleanPref(PreferenceConsts.KEY_ENABLE, PreferenceConsts.KEY_ENABLE_DEFAULT)) {
             Xlog.i("SMS blocking disabled, exiting");
             return;
         }
 
-        boolean allowContacts = PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT;
-        try {
-            allowContacts = mPreferences.getBoolean(PreferenceConsts.KEY_WHITELIST_CONTACTS, allowContacts);
-        } catch (RemotePreferenceAccessException e) {
-            Xlog.e("Failed to read whitelist contacts preference");
-        }
-
-        Object smsHandler = param.thisObject;
-        Context context = (Context)XposedHelpers.getObjectField(smsHandler, "mContext");
-
-        SmsMessage[] messageParts = Telephony.Sms.Intents.getMessagesFromIntent(intent);
-        SmsMessageData message = createMessageData(messageParts);
-        String sender = Normalizer.normalize(message.getSender(), Normalizer.Form.NFC);
-        String body = Normalizer.normalize(message.getBody(), Normalizer.Form.NFC);
+        SmsMessageData message = SmsMessageData.fromIntent(intent);
+        String sender = message.getSender();
+        String body = message.getBody();
         Xlog.i("Received a new SMS message");
-        Xlog.v("  Sender: %s", sender);
-        Xlog.v("  Body: %s", body);
+        Xlog.v("Sender: %s", sender);
+        Xlog.v("Body: %s", body);
 
-        if (allowContacts && isMessageFromContact(context, sender)) {
-            Xlog.i("  Result: Allowed (contact whitelist)");
-        } else if (shouldFilterMessage(context, sender, body)) {
-            Xlog.i("  Result: Blocked");
-            Uri messageUri = BlockedSmsLoader.get().insert(context, message);
-            broadcastBlockedSms(context, messageUri);
-            param.setResult(null);
-            finishSmsBroadcast(smsHandler, param.args[receiverIndex]);
-        } else {
-            Xlog.i("  Result: Allowed");
+        // Skip if "whitelist contacts" is enabled and the message
+        // is from a contact (this is done in the module so we don't
+        // need contact permissions on the app itself).
+        boolean allowContacts = getBooleanPref(
+            PreferenceConsts.KEY_WHITELIST_CONTACTS,
+            PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
+        if (allowContacts && ContactUtils.isContact(mContext, sender)) {
+            Xlog.i("Allowed message (contact whitelist)");
+            return;
         }
+
+        if (!shouldBlockMessage(sender, body)) {
+            Xlog.i("Allowed message (matched whitelist or no matching rules)");
+            return;
+        }
+
+        // Order is important here! First, save a copy of the message to
+        // the blocked message list and notify everyone about it. THEN,
+        // we can delete the original. If it were the other way around,
+        // any bug in our code would cause the message to disappear. This
+        // way, the worst that can happen is that the user gets two copies.
+        Xlog.i("Blocked message (matched blacklist)");
+        Uri messageUri = BlockedSmsLoader.get().insert(mContext, message);
+        broadcastBlockedSms(messageUri);
+        finishSmsBroadcast(param.thisObject, param.args[receiverIndex]);
+        param.setResult(null);
     }
 
     private void hookConstructor19(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.android.internal.telephony.InboundSmsHandler";
-        Class<?> param1Type = String.class;
-        Class<?> param2Type = Context.class;
-        String param3Type = "com.android.internal.telephony.SmsStorageMonitor";
-        String param4Type = "com.android.internal.telephony.PhoneBase";
-        String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
-
         Xlog.i("Hooking InboundSmsHandler constructor for Android v19+");
-
-        XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
-            param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
+        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLS, lpparam.classLoader,
+            /*                 name */ String.class,
+            /*              context */ Context.class,
+            /*       storageMonitor */ TELEPHONY_PKG + ".SmsStorageMonitor",
+            /*                phone */ TELEPHONY_PKG + ".PhoneBase",
+            /* cellBroadcastHandler */ TELEPHONY_PKG + ".CellBroadcastHandler",
+            new ConstructorHook());
     }
 
     private void hookConstructor24(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.android.internal.telephony.InboundSmsHandler";
-        Class<?> param1Type = String.class;
-        Class<?> param2Type = Context.class;
-        String param3Type = "com.android.internal.telephony.SmsStorageMonitor";
-        String param4Type = "com.android.internal.telephony.Phone";
-        String param5Type = "com.android.internal.telephony.CellBroadcastHandler";
-
         Xlog.i("Hooking InboundSmsHandler constructor for Android v24+");
-
-        XposedHelpers.findAndHookConstructor(className, lpparam.classLoader,
-            param1Type, param2Type, param3Type, param4Type, param5Type, new ConstructorHook());
+        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLS, lpparam.classLoader,
+            /*                 name */ String.class,
+            /*              context */ Context.class,
+            /*       storageMonitor */ TELEPHONY_PKG + ".SmsStorageMonitor",
+            /*                phone */ TELEPHONY_PKG + ".Phone",
+            /* cellBroadcastHandler */ TELEPHONY_PKG + ".CellBroadcastHandler",
+            new ConstructorHook());
     }
 
     private void hookDispatchIntent19(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.android.internal.telephony.InboundSmsHandler";
-        String methodName = "dispatchIntent";
-        Class<?> param1Type = Intent.class;
-        Class<?> param2Type = String.class;
-        Class<?> param3Type = int.class;
-        Class<?> param4Type = BroadcastReceiver.class;
-
         Xlog.i("Hooking dispatchIntent() for Android v19+");
-
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, new DispatchIntentHook(3));
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLS, lpparam.classLoader, "dispatchIntent",
+            /*         intent */ Intent.class,
+            /*     permission */ String.class,
+            /*          appOp */ int.class,
+            /* resultReceiver */ BroadcastReceiver.class,
+            new DispatchIntentHook(3));
     }
 
     private void hookDispatchIntent21(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.android.internal.telephony.InboundSmsHandler";
-        String methodName = "dispatchIntent";
-        Class<?> param1Type = Intent.class;
-        Class<?> param2Type = String.class;
-        Class<?> param3Type = int.class;
-        Class<?> param4Type = BroadcastReceiver.class;
-        Class<?> param5Type = UserHandle.class;
-
         Xlog.i("Hooking dispatchIntent() for Android v21+");
-
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, param5Type, new DispatchIntentHook(3));
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLS, lpparam.classLoader, "dispatchIntent",
+            /*         intent */ Intent.class,
+            /*     permission */ String.class,
+            /*          appOp */ int.class,
+            /* resultReceiver */ BroadcastReceiver.class,
+            /*           user */ UserHandle.class,
+            new DispatchIntentHook(3));
     }
 
     private void hookDispatchIntent23(XC_LoadPackage.LoadPackageParam lpparam) {
-        String className = "com.android.internal.telephony.InboundSmsHandler";
-        String methodName = "dispatchIntent";
-        Class<?> param1Type = Intent.class;
-        Class<?> param2Type = String.class;
-        Class<?> param3Type = int.class;
-        Class<?> param4Type = Bundle.class;
-        Class<?> param5Type = BroadcastReceiver.class;
-        Class<?> param6Type = UserHandle.class;
-
         Xlog.i("Hooking dispatchIntent() for Android v23+");
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLS, lpparam.classLoader, "dispatchIntent",
+            /*         intent */ Intent.class,
+            /*     permission */ String.class,
+            /*          appOp */ int.class,
+            /*           opts */ Bundle.class,
+            /* resultReceiver */ BroadcastReceiver.class,
+            /*           user */ UserHandle.class,
+            new DispatchIntentHook(4));
+    }
 
-        XposedHelpers.findAndHookMethod(className, lpparam.classLoader, methodName,
-            param1Type, param2Type, param3Type, param4Type, param5Type, param6Type, new DispatchIntentHook(4));
+    private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            hookConstructor24(lpparam);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hookConstructor19(lpparam);
+        }
+    }
+
+    private void hookDispatchIntent(XC_LoadPackage.LoadPackageParam lpparam) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            hookDispatchIntent23(lpparam);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            hookDispatchIntent21(lpparam);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            hookDispatchIntent19(lpparam);
+        }
     }
 
     private void hookSmsHandler(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            hookConstructor24(lpparam);
-            hookDispatchIntent23(lpparam);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            hookConstructor19(lpparam);
-            hookDispatchIntent23(lpparam);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            hookConstructor19(lpparam);
-            hookDispatchIntent21(lpparam);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            hookConstructor19(lpparam);
-            hookDispatchIntent19(lpparam);
-        } else {
-            throw new UnsupportedOperationException("NekoSMS is only supported on Android 4.4+");
-        }
+        hookConstructor(lpparam);
+        hookDispatchIntent(lpparam);
     }
 
     private static void printDeviceInfo() {

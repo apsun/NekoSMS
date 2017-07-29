@@ -14,6 +14,7 @@ import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.widget.AutoContentLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +118,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
         if (!updated && insertIfError) {
             return insert(context, filterData);
         } else if (!updated) {
-            Xlog.w("Failed to update filter, possibly already exists");
+            Xlog.w("Filter does not exist, failed to update");
             return null;
         } else {
             return filterUri;

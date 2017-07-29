@@ -13,6 +13,8 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
+import com.crossbowffs.nekosms.consts.BroadcastConsts;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.loader.CursorWrapper;
