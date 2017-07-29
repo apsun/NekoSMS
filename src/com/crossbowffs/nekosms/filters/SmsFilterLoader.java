@@ -7,7 +7,7 @@ import android.os.Handler;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.loader.CursorWrapper;
+import com.crossbowffs.nekosms.widget.CursorWrapper;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;

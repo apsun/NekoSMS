@@ -5,7 +5,7 @@ import android.util.JsonWriter;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
-import com.crossbowffs.nekosms.loader.CursorWrapper;
+import com.crossbowffs.nekosms.widget.CursorWrapper;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 
 import java.io.*;

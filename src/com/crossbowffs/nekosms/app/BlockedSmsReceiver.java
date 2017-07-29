@@ -17,7 +17,7 @@ import com.crossbowffs.nekosms.consts.BroadcastConsts;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
-import com.crossbowffs.nekosms.loader.CursorWrapper;
+import com.crossbowffs.nekosms.widget.CursorWrapper;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;

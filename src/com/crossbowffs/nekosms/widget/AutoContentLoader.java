@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import com.crossbowffs.nekosms.loader.CursorWrapper;
 
 public abstract class AutoContentLoader<T> {
     private final Uri mContentUri;
