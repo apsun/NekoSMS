@@ -225,30 +225,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return false;
     }
 
-    private boolean setContentSection(String key, Bundle newArgs) {
+    private boolean setContentSection(String key, Bundle args) {
         // If our target section is already selected, just update
         // its arguments and return.
         if (key.equals(mContentSection)) {
-            if (newArgs != null) {
-                mContentFragment.setArguments(newArgs);
+            if (args != null) {
+                if (mContentFragment instanceof MainFragment) {
+                    ((MainFragment)mContentFragment).onNewArguments(args);
+                }
             }
             return false;
         }
 
         Fragment fragment;
-        Bundle args = new Bundle();
-        if (newArgs != null) {
-            args.putAll(newArgs);
-        }
         int navId;
         switch (key) {
         case EXTRA_SECTION_BLACKLIST_RULES:
             fragment = new FilterRulesFragment();
+            if (args == null) {
+                args = new Bundle();
+            }
             args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK.name());
             navId = R.id.main_drawer_blacklist_rules;
             break;
         case EXTRA_SECTION_WHITELIST_RULES:
             fragment = new FilterRulesFragment();
+            if (args == null) {
+                args = new Bundle();
+            }
             args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW.name());
             navId = R.id.main_drawer_whitelist_rules;
             break;
@@ -265,7 +269,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
         }
 
-        fragment.setArguments(args);
+        if (args != null) {
+            fragment.setArguments(args);
+        }
         dismissSnackbar();
         getFragmentManager()
             .beginTransaction()

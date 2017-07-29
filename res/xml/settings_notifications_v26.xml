@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/pref_notifications">
+        <Preference
+            android:key="pref_notifications_open_settings"
+            android:title="@string/pref_notifications_open_settings"
+            android:summary="@string/pref_notifications_open_settings_summary"/>
+    </PreferenceCategory>
+</PreferenceScreen>

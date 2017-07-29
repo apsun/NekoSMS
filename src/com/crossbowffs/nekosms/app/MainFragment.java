@@ -15,12 +15,6 @@ import android.widget.Toast;
 import com.crossbowffs.nekosms.utils.PermissionUtils;
 
 public class MainFragment extends Fragment {
-    public MainFragment() {
-        // Ensure we always have a bundle to work with, since
-        // we can't change this once the fragment has been attached
-        super.setArguments(new Bundle());
-    }
-
     public MainActivity getMainActivity() {
         return (MainActivity)getActivity();
     }
@@ -127,22 +121,7 @@ public class MainFragment extends Fragment {
 
     }
 
-    @Override
-    public void setArguments(Bundle newArgs) {
-        Bundle args = getArguments();
-        args.putAll(newArgs);
-        try {
-            super.setArguments(args);
-        } catch (IllegalStateException e) {
-            // If we got an exception, we're already running.
-            // Just directly pass the data into onNewArguments().
-            // Otherwise, the fragment should manually call this
-            // once it's finished initialization.
-            onNewArguments(args);
-        }
-    }
-
-    protected void onNewArguments(Bundle args) {
+    public void onNewArguments(Bundle args) {
 
     }
 }

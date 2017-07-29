@@ -108,7 +108,7 @@
     <string name="message_restored">Message restored to inbox</string>
     <string name="message_delete_failed">Message could not be deleted</string>
     <string name="message_restore_failed">Message could not be restored</string>
-    <string name="load_blocked_message_failed">Could not load blocked message</string>
+    <string name="load_message_failed">Could not load message</string>
     <string name="message_actions">Message actions</string>
     <string name="format_message_details">
         <![CDATA[
@@ -159,11 +159,14 @@
     <string name="pref_notifications_priority_default">Normal</string>
     <string name="pref_notifications_priority_low">Low</string>
     <string name="pref_notifications_priority_min">Very low</string>
+    <string name="pref_notifications_open_settings">Notification settings</string>
+    <string name="pref_notifications_open_settings_summary">Click to open notification settings</string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s (blocked)</string>
     <string name="format_notification_multi_count">%d blocked messages</string>
     <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
+    <string name="channel_blocked_messages">Blocked messages</string>
 
     <!-- App shortcuts -->
     <string name="shortcut_new_blacklist_rule">New blacklist rule</string>

@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.xposed;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -65,8 +66,8 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
-    private static final String TELEPHONY_PKG = "com.android.internal.telephony";
-    private static final String SMS_HANDLER_CLS = TELEPHONY_PKG + ".InboundSmsHandler";
+    private static final String TELEPHONY_PACKAGE = "com.android.internal.telephony";
+    private static final String SMS_HANDLER_CLASS = TELEPHONY_PACKAGE + ".InboundSmsHandler";
     private static final int MARK_DELETED = 2;
     private static final int EVENT_BROADCAST_COMPLETE = 3;
 
@@ -119,14 +120,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private void deleteFromRawTable19(Object smsHandler, Object smsReceiver) {
         Xlog.i("Removing raw SMS data from database for Android v19+");
-        callDeclaredMethod(SMS_HANDLER_CLS, smsHandler, "deleteFromRawTable",
+        callDeclaredMethod(SMS_HANDLER_CLASS, smsHandler, "deleteFromRawTable",
             /*     deleteWhere */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
             /* deleteWhereArgs */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"));
     }
 
     private void deleteFromRawTable24(Object smsHandler, Object smsReceiver) {
         Xlog.i("Removing raw SMS data from database for Android v24+");
-        callDeclaredMethod(SMS_HANDLER_CLS, smsHandler, "deleteFromRawTable",
+        callDeclaredMethod(SMS_HANDLER_CLASS, smsHandler, "deleteFromRawTable",
             /*     deleteWhere */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhere"),
             /* deleteWhereArgs */ XposedHelpers.getObjectField(smsReceiver, "mDeleteWhereArgs"),
             /*      deleteType */ MARK_DELETED);
@@ -165,6 +166,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // contents. The provider requires permissions to read
         // the actual message contents.
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
+        intent.setComponent(new ComponentName(NEKOSMS_PACKAGE, BroadcastConsts.RECEIVER_NAME));
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, messageUri);
         mContext.sendBroadcast(intent);
     }
@@ -265,29 +267,29 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private void hookConstructor19(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking InboundSmsHandler constructor for Android v19+");
-        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLS, lpparam.classLoader,
+        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLASS, lpparam.classLoader,
             /*                 name */ String.class,
             /*              context */ Context.class,
-            /*       storageMonitor */ TELEPHONY_PKG + ".SmsStorageMonitor",
-            /*                phone */ TELEPHONY_PKG + ".PhoneBase",
-            /* cellBroadcastHandler */ TELEPHONY_PKG + ".CellBroadcastHandler",
+            /*       storageMonitor */ TELEPHONY_PACKAGE + ".SmsStorageMonitor",
+            /*                phone */ TELEPHONY_PACKAGE + ".PhoneBase",
+            /* cellBroadcastHandler */ TELEPHONY_PACKAGE + ".CellBroadcastHandler",
             new ConstructorHook());
     }
 
     private void hookConstructor24(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking InboundSmsHandler constructor for Android v24+");
-        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLS, lpparam.classLoader,
+        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLASS, lpparam.classLoader,
             /*                 name */ String.class,
             /*              context */ Context.class,
-            /*       storageMonitor */ TELEPHONY_PKG + ".SmsStorageMonitor",
-            /*                phone */ TELEPHONY_PKG + ".Phone",
-            /* cellBroadcastHandler */ TELEPHONY_PKG + ".CellBroadcastHandler",
+            /*       storageMonitor */ TELEPHONY_PACKAGE + ".SmsStorageMonitor",
+            /*                phone */ TELEPHONY_PACKAGE + ".Phone",
+            /* cellBroadcastHandler */ TELEPHONY_PACKAGE + ".CellBroadcastHandler",
             new ConstructorHook());
     }
 
     private void hookDispatchIntent19(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking dispatchIntent() for Android v19+");
-        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLS, lpparam.classLoader, "dispatchIntent",
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
             /*         intent */ Intent.class,
             /*     permission */ String.class,
             /*          appOp */ int.class,
@@ -297,7 +299,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private void hookDispatchIntent21(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking dispatchIntent() for Android v21+");
-        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLS, lpparam.classLoader, "dispatchIntent",
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
             /*         intent */ Intent.class,
             /*     permission */ String.class,
             /*          appOp */ int.class,
@@ -308,7 +310,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private void hookDispatchIntent23(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking dispatchIntent() for Android v23+");
-        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLS, lpparam.classLoader, "dispatchIntent",
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
             /*         intent */ Intent.class,
             /*     permission */ String.class,
             /*          appOp */ int.class,

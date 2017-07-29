@@ -20,10 +20,10 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
-import com.crossbowffs.nekosms.widget.ListRecyclerView;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+import com.crossbowffs.nekosms.widget.ListRecyclerView;
 
 public class BlockedMessagesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
@@ -64,7 +64,11 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     }
 
     @Override
-    protected void onNewArguments(Bundle args) {
+    public void onNewArguments(Bundle args) {
+        if (args == null) {
+            return;
+        }
+
         Uri messageUri = args.getParcelable(ARG_MESSAGE_URI);
         if (messageUri != null) {
             args.remove(ARG_MESSAGE_URI);
@@ -168,7 +172,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             showMessageDetailsDialog(messageData);
         } else {
             // This can occur if the user deletes the message, then opens the notification
-            showSnackbar(R.string.load_blocked_message_failed);
+            showSnackbar(R.string.load_message_failed);
         }
     }
 
@@ -231,7 +235,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to restore message: could not load data");
-            showSnackbar(R.string.load_blocked_message_failed);
+            showSnackbar(R.string.load_message_failed);
             return;
         }
 
@@ -252,8 +256,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             public void onClick(View v) {
                 Context context2 = getContext();
                 if (context2 == null) return;
-                InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
                 BlockedSmsLoader.get().insert(context2, messageData);
+                InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
             }
         });
     }
@@ -265,7 +269,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to delete message: could not load data");
-            showSnackbar(R.string.load_blocked_message_failed);
+            showSnackbar(R.string.load_message_failed);
             return;
         }
 
@@ -293,6 +297,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
         Uri uri = BlockedSmsLoader.get().insert(context, message);
         Intent intent = new Intent(BroadcastConsts.ACTION_RECEIVE_SMS);
+        intent.setComponent(new ComponentName(context, BroadcastConsts.RECEIVER_NAME));
         intent.putExtra(BroadcastConsts.EXTRA_MESSAGE, uri);
         context.sendBroadcast(intent);
     }

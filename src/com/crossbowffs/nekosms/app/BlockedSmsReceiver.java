@@ -1,6 +1,9 @@
 package com.crossbowffs.nekosms.app;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.*;
 import android.net.Uri;
@@ -17,16 +20,17 @@ import com.crossbowffs.nekosms.consts.BroadcastConsts;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
-import com.crossbowffs.nekosms.widget.CursorWrapper;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.widget.CursorWrapper;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
     private static final int NOTIFICATION_SUMMARY_ID = 1;
     private static final String NOTIFICATION_GROUP = "blocked_message";
+    private static final String NOTIFICATION_CHANNEL = "blocked_message";
 
     private static int uriToNotificationId(Uri uri) {
         return (int)ContentUris.parseId(uri);
@@ -51,7 +55,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         PendingIntent restoreIntent = createPendingIntent(context, BroadcastConsts.ACTION_RESTORE_SMS, uri);
         PendingIntent dismissIntent = createPendingIntent(context, BroadcastConsts.ACTION_DISMISS_NOTIFICATION, uri);
 
-        return new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
             .setContentTitle(context.getString(R.string.format_notification_single_sender, messageData.getSender()))
             .setContentText(messageData.getBody())
@@ -91,7 +95,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             inboxStyle.addLine(line);
         }
 
-        return new NotificationCompat.Builder(context)
+        return new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL)
             .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
             .setContentTitle(context.getString(R.string.format_notification_multi_count, messages.getCount()))
             .setContentText(firstLine)
@@ -127,6 +131,14 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         }
         String priority = prefs.getString(PreferenceConsts.KEY_NOTIFICATIONS_PRIORITY, PreferenceConsts.KEY_NOTIFICATIONS_PRIORITY_DEFAULT);
         notification.priority = Integer.parseInt(priority);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createChannel(Context context) {
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String name = context.getString(R.string.channel_blocked_messages);
+        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL, name, NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(channel);
     }
 
     private void updateSummaryNotification(Context context, boolean creating) {
@@ -174,6 +186,11 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             return;
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Xlog.d("Creating notification channel");
+            createChannel(context);
+        }
+
         SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
         Notification notification = buildNotificationSingle(context, messageData, false);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
@@ -205,7 +222,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         boolean deleted = BlockedSmsLoader.get().delete(context, messageUri);
         if (!deleted) {
             Xlog.e("Failed to delete message: could not load data");
-            Toast.makeText(context, R.string.message_delete_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.load_message_failed, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(context, R.string.message_deleted, Toast.LENGTH_SHORT).show();
         }
@@ -231,7 +248,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         SmsMessageData messageToRestore = BlockedSmsLoader.get().query(context, messageUri);
         if (messageToRestore == null) {
             Xlog.e("Failed to restore message: could not load data");
-            Toast.makeText(context, R.string.message_restore_failed, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.load_message_failed, Toast.LENGTH_SHORT).show();
             return;
         }
 

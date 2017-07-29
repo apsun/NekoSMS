@@ -96,7 +96,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     }
 
     @Override
-    protected void onNewArguments(Bundle args) {
+    public void onNewArguments(Bundle args) {
+        if (args == null) {
+            return;
+        }
+
         Uri importUri = args.getParcelable(ARG_IMPORT_URI);
         if (importUri != null) {
             args.remove(ARG_IMPORT_URI);
