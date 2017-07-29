@@ -4,10 +4,10 @@ Write your issue description here.
 
 **If you are submitting a bug report and do not include the following info, your issue will be ignored!**
 
-- Device ("Nexus 6P"): 
-- Android version ("7.1.1"): 
-- Xposed version ("53"): 
-- NekoSMS version ("0.13.1"): 
+- Device: 
+- Android version: 
+- Xposed version: 
+- NekoSMS version: 
 
 Please paste your Xposed logs (Xposed Installer -> Logs -> Menu -> Save to SD card) below:
 

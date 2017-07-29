@@ -31,6 +31,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private class ConstructorHook extends XC_MethodHook {
@@ -178,7 +179,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private boolean shouldBlockMessage(String sender, String body) {
-        SmsFilter[] filters = mFilterLoader.getFilters();
+        List<SmsFilter> filters = mFilterLoader.getFilters();
         if (filters == null) {
             return false;
         }

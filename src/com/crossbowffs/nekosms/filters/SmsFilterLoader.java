@@ -12,13 +12,16 @@ import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SmsFilterLoader {
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
 
     private final Context mContext;
     private final ContentObserver mContentObserver;
     private final BroadcastReceiver mBroadcastReceiver;
-    private SmsFilter[] mCachedFilters;
+    private List<SmsFilter> mCachedFilters;
 
     public SmsFilterLoader(Context context) {
         mContext = context;
@@ -31,8 +34,8 @@ public class SmsFilterLoader {
         unregisterBroadcastReceiver(mBroadcastReceiver);
     }
 
-    public SmsFilter[] getFilters() {
-        SmsFilter[] filters = mCachedFilters;
+    public List<SmsFilter> getFilters() {
+        List<SmsFilter> filters = mCachedFilters;
         if (filters == null) {
             Xlog.i("Cached SMS filters dirty, loading from database");
             filters = mCachedFilters = loadFilters();
@@ -44,7 +47,7 @@ public class SmsFilterLoader {
         mCachedFilters = null;
     }
 
-    private SmsFilter[] loadFilters() {
+    private List<SmsFilter> loadFilters() {
         try (CursorWrapper<SmsFilterData> filterCursor = FilterRuleLoader.get().queryAll(mContext)) {
             if (filterCursor == null) {
                 // This might occur if the app has been uninstalled (removing the DB),
@@ -54,11 +57,12 @@ public class SmsFilterLoader {
                 return null;
             }
 
-            // Whitelist rules come before blacklist rules. Use a front and
-            // back array "cursor" to separate the two sections.
-            SmsFilter[] filters = new SmsFilter[filterCursor.getCount()];
-            int whitelistIndex = 0;
-            int blacklistIndex = filters.length;
+            // It's better to just over-reserve since we expect most
+            // rules to go into the blacklist, but all rules will
+            // be merged into the whitelist list in the end (with
+            // whitelist rules coming first).
+            ArrayList<SmsFilter> whitelist = new ArrayList<>(filterCursor.getCount());
+            ArrayList<SmsFilter> blacklist = new ArrayList<>(filterCursor.getCount());
 
             SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
@@ -71,17 +75,15 @@ public class SmsFilterLoader {
                 }
 
                 if (data.getAction() == SmsFilterAction.BLOCK) {
-                    filters[--blacklistIndex] = filter;
+                    blacklist.add(filter);
                 } else if (data.getAction() == SmsFilterAction.ALLOW) {
-                    filters[whitelistIndex++] = filter;
+                    whitelist.add(filter);
                 }
             }
 
-            if (whitelistIndex != blacklistIndex) {
-                throw new AssertionError("Whitelist and blacklist cursor position mismatch");
-            }
-
-            return filters;
+            whitelist.addAll(blacklist);
+            whitelist.trimToSize();
+            return whitelist;
         }
     }
 
