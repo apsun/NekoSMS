@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String[] TASK_KILLER_PACKAGES = {
         "me.piebridge.forcestopgb",
         "com.oasisfeng.greenify",
+        "me.piebridge.brevent",
     };
 
     private CoordinatorLayout mCoordinatorLayout;

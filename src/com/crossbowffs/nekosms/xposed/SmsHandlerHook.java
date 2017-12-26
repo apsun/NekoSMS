@@ -16,7 +16,6 @@ import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.consts.BroadcastConsts;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.filters.SmsFilter;
 import com.crossbowffs.nekosms.filters.SmsFilterLoader;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
@@ -32,7 +31,6 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 import java.lang.reflect.Method;
-import java.util.List;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private class ConstructorHook extends XC_MethodHook {
@@ -180,27 +178,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
-    private boolean shouldBlockMessage(String sender, String body) {
-        List<SmsFilter> filters = mFilterLoader.getFilters();
-        if (filters == null) {
-            return false;
-        }
-
-        // Filters are already sorted whitelist first,
-        // so we can just return on the first match.
-        for (SmsFilter filter : filters) {
-            if (filter.match(sender, body)) {
-                switch (filter.getAction()) {
-                case BLOCK:
-                    return true;
-                case ALLOW:
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
     private void afterConstructorHandler(XC_MethodHook.MethodHookParam param) {
         Context context = (Context)param.args[1];
         if (mContext == null) {
@@ -248,8 +225,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        if (!shouldBlockMessage(sender, body)) {
-            Xlog.i("Allowed message (matched whitelist or no matching rules)");
+        if (!mFilterLoader.shouldBlockMessage(sender, body)) {
             return;
         }
 

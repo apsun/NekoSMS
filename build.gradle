@@ -10,33 +10,31 @@ buildscript {
 
 repositories {
     jcenter()
-    maven {
-        url "https://maven.google.com"
-    }
+    google()
 }
 
 apply plugin: "com.android.application"
 
 dependencies {
-    compile "com.android.support:support-compat:26.0.0"
-    compile "com.android.support:support-core-ui:26.0.0"
-    compile "com.android.support:appcompat-v7:26.0.0"
-    compile "com.android.support:recyclerview-v7:26.0.0"
-    compile "com.android.support:support-annotations:26.0.0"
-    compile "com.android.support:design:26.0.0"
+    compile "com.android.support:support-compat:27.0.2"
+    compile "com.android.support:support-core-ui:27.0.2"
+    compile "com.android.support:appcompat-v7:27.0.2"
+    compile "com.android.support:recyclerview-v7:27.0.2"
+    compile "com.android.support:support-annotations:27.0.2"
+    compile "com.android.support:design:27.0.2"
     compile "com.crossbowffs.remotepreferences:remotepreferences:0.5"
     provided "de.robv.android.xposed:api:53"
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         versionCode 31
         versionName "0.15.0"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         resConfigs "en", "zh-rCN"
         buildConfigField("int", "MODULE_VERSION", "14")
         buildConfigField("int", "DATABASE_VERSION", "11")

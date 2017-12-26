@@ -7,10 +7,10 @@ import android.os.Handler;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
-import com.crossbowffs.nekosms.widget.CursorWrapper;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.widget.CursorWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,36 @@ public class SmsFilterLoader {
     public void close() {
         unregisterContentObserver(mContentObserver);
         unregisterBroadcastReceiver(mBroadcastReceiver);
+        invalidateCache();
     }
 
-    public List<SmsFilter> getFilters() {
+    public boolean shouldBlockMessage(String sender, String body) {
+        List<SmsFilter> filters = getFilters();
+        if (filters == null) {
+            Xlog.i("Allowing message (filters failed to load)");
+            return false;
+        }
+
+        // Filters are already sorted whitelist first,
+        // so we can just return on the first match.
+        for (SmsFilter filter : filters) {
+            if (filter.match(sender, body)) {
+                switch (filter.getAction()) {
+                case ALLOW:
+                    Xlog.i("Allowing message (matched whitelist)");
+                    return false;
+                case BLOCK:
+                    Xlog.i("Blocking message (matched blacklist)");
+                    return true;
+                }
+            }
+        }
+
+        Xlog.i("Allowing message (did not match any rules)");
+        return false;
+    }
+
+    private List<SmsFilter> getFilters() {
         List<SmsFilter> filters = mCachedFilters;
         if (filters == null) {
             Xlog.i("Cached SMS filters dirty, loading from database");
