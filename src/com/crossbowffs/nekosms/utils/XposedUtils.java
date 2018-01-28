@@ -1,6 +1,5 @@
 package com.crossbowffs.nekosms.utils;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -64,7 +63,10 @@ public final class XposedUtils {
         try {
             context.startActivity(intent);
             return true;
-        } catch (ActivityNotFoundException e) {
+        } catch (Exception e) {
+            // Some devices throw IllegalArgumentException instead of
+            // ActivityNotFoundException.
+            Xlog.e("Failed to start Xposed activity", e);
             return false;
         }
     }
@@ -76,7 +78,10 @@ public final class XposedUtils {
         try {
             context.startActivity(intent);
             return true;
-        } catch (ActivityNotFoundException e) {
+        } catch (Exception e) {
+            // Some devices throw IllegalArgumentException instead of
+            // ActivityNotFoundException.
+            Xlog.e("Failed to start Xposed activity", e);
             return false;
         }
     }
