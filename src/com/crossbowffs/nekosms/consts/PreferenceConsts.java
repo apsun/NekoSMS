@@ -14,6 +14,8 @@ public final class PreferenceConsts {
     public static final boolean KEY_WHITELIST_CONTACTS_DEFAULT = false;
     public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";
     public static final boolean KEY_NOTIFICATIONS_ENABLE_DEFAULT = false;
+    public static final String KEY_VERBOSE_LOGGING = "pref_verbose_logging";
+    public static final boolean KEY_VERBOSE_LOGGING_DEFAULT = false;
     public static final String KEY_NOTIFICATIONS_RINGTONE = "pref_notifications_ringtone";
     public static final String KEY_NOTIFICATIONS_RINGTONE_DEFAULT = "content://settings/system/notification_sound";
     public static final String KEY_NOTIFICATIONS_VIBRATE = "pref_notifications_vibrate";

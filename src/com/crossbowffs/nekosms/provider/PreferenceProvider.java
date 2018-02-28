@@ -15,12 +15,6 @@ public class PreferenceProvider extends RemotePreferenceProvider {
             return false;
         }
 
-        // Only allow access to enable/whitelist contacts preferences
-        if (!PreferenceConsts.KEY_ENABLE.equals(prefKey) &&
-            !PreferenceConsts.KEY_WHITELIST_CONTACTS.equals(prefKey)) {
-            return false;
-        }
-
         // Only allow access from telephony process
         return "com.android.phone".equals(getCallingPackage());
     }

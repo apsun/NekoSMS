@@ -70,8 +70,6 @@
         <provider
             android:name=".provider.DatabaseProvider"
             android:authorities="${applicationId}.database"
-            android:readPermission="android.permission.READ_SMS"
-            android:writePermission="android.permission.WRITE_SMS"
             android:exported="true"/>
         <provider
             android:name=".provider.PreferenceProvider"

@@ -13,5 +13,11 @@
             android:summary="@string/pref_whitelist_contacts_summary"
             android:defaultValue="false"
             android:widgetLayout="@layout/switch_compat"/>
+        <CheckBoxPreference
+            android:key="pref_verbose_logging"
+            android:title="@string/pref_verbose_logging"
+            android:summary="@string/pref_verbose_logging_summary"
+            android:defaultValue="false"
+            android:widgetLayout="@layout/switch_compat"/>
     </PreferenceCategory>
 </PreferenceScreen>

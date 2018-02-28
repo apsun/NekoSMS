@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.data;
 
 import android.text.TextUtils;
+import com.crossbowffs.nekosms.utils.StringUtils;
 
 public class SmsFilterPatternData {
     private final SmsFilterField mField;
@@ -51,5 +52,15 @@ public class SmsFilterPatternData {
 
     public boolean isCaseSensitive() {
         return mCaseSensitive;
+    }
+
+    @Override
+    public String toString() {
+        return "SmsFilterPatternData{" +
+            "field=" + mField +
+            ", mode=" + mMode +
+            ", pattern=" + StringUtils.escape(mPattern) +
+            ", caseSensitive=" + mCaseSensitive +
+            "}";
     }
 }

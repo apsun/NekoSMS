@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         "me.piebridge.forcestopgb",
         "com.oasisfeng.greenify",
         "me.piebridge.brevent",
+        "com.click369.controlbp",
     };
 
     private CoordinatorLayout mCoordinatorLayout;

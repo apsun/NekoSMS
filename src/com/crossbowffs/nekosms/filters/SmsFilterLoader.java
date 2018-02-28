@@ -84,18 +84,22 @@ public class SmsFilterLoader {
                 return null;
             }
 
+            int count = filterCursor.getCount();
+            Xlog.i("filterCursor.getCount() = %d", count);
+
             // It's better to just over-reserve since we expect most
             // rules to go into the blacklist, but all rules will
             // be merged into the whitelist list in the end (with
             // whitelist rules coming first).
-            ArrayList<SmsFilter> whitelist = new ArrayList<>(filterCursor.getCount());
-            ArrayList<SmsFilter> blacklist = new ArrayList<>(filterCursor.getCount());
+            ArrayList<SmsFilter> whitelist = new ArrayList<>(count);
+            ArrayList<SmsFilter> blacklist = new ArrayList<>(count);
 
             SmsFilterData data = new SmsFilterData();
             while (filterCursor.moveToNext()) {
                 SmsFilter filter;
                 try {
-                    filter = new SmsFilter(filterCursor.get(data));
+                    data = filterCursor.get(data);
+                    filter = new SmsFilter(data);
                 } catch (Exception e) {
                     Xlog.e("Failed to load SMS filter", e);
                     continue;
@@ -108,6 +112,8 @@ public class SmsFilterLoader {
                 }
             }
 
+            Xlog.i("Loaded %d blacklist filters", blacklist.size());
+            Xlog.i("Loaded %d whitelist filters", whitelist.size());
             whitelist.addAll(blacklist);
             whitelist.trimToSize();
             return whitelist;

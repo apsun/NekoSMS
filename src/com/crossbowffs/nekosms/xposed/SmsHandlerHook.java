@@ -18,10 +18,7 @@ import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilterLoader;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
-import com.crossbowffs.nekosms.utils.AppOpsUtils;
-import com.crossbowffs.nekosms.utils.ContactUtils;
-import com.crossbowffs.nekosms.utils.ReflectionUtils;
-import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.utils.*;
 import com.crossbowffs.remotepreferences.RemotePreferenceAccessException;
 import com.crossbowffs.remotepreferences.RemotePreferences;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -173,7 +170,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         try {
             return mPreferences.getBoolean(key, defValue);
         } catch (RemotePreferenceAccessException e) {
-            Xlog.e("Failed to read preference: " + key);
+            Xlog.e("Failed to read preference: %s", key, e);
             return defValue;
         }
     }
@@ -211,8 +208,13 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         String sender = message.getSender();
         String body = message.getBody();
         Xlog.i("Received a new SMS message");
-        Xlog.v("Sender: %s", sender);
-        Xlog.v("Body: %s", body);
+        if (getBooleanPref(PreferenceConsts.KEY_VERBOSE_LOGGING, PreferenceConsts.KEY_VERBOSE_LOGGING_DEFAULT)) {
+            Xlog.i("Sender: %s", StringUtils.escape(sender));
+            Xlog.i("Body: %s", StringUtils.escape(body));
+        } else {
+            Xlog.v("Sender: %s", StringUtils.escape(sender));
+            Xlog.v("Body: %s", StringUtils.escape(body));
+        }
 
         // Skip if "whitelist contacts" is enabled and the message
         // is from a contact (this is done in the module so we don't

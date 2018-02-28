@@ -49,4 +49,14 @@ public class SmsFilterData {
             throw new AssertionError("Invalid filter field: " + field);
         }
     }
+
+    @Override
+    public String toString() {
+        return "SmsFilterData{" +
+            "id=" + mId +
+            ", action=" + mAction +
+            ", senderPattern=" + mSenderPattern +
+            ", bodyPattern=" + mBodyPattern +
+            "}";
+    }
 }

@@ -31,12 +31,12 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        versionCode 32
-        versionName "0.15.1-dev"
+        versionCode 33
+        versionName "0.16.0"
         minSdkVersion 19
         targetSdkVersion 27
         resConfigs "en", "zh-rCN"
-        buildConfigField("int", "MODULE_VERSION", "14")
+        buildConfigField("int", "MODULE_VERSION", "15")
         buildConfigField("int", "DATABASE_VERSION", "11")
         buildConfigField("int", "BACKUP_VERSION", "3")
         buildConfigField("String", "LOG_TAG", "\"NekoSMS\"")
