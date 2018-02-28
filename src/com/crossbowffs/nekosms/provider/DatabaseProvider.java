@@ -71,7 +71,7 @@ public class DatabaseProvider extends AutoContentProvider {
 
     private void checkAccess() {
         String caller = getCallingPackage();
-        if (caller != null && !"com.android.phone".equals(caller)) {
+        if (caller != null && !"com.android.phone".equals(caller) && !"com.crossbowffs.nekosms".equals(caller)) {
             throw new SecurityException("Cannot access this database, go away!");
         }
     }
