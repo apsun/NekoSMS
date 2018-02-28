@@ -9,6 +9,7 @@ import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -48,15 +49,12 @@ public final class BackupLoader {
 
     public static File[] enumerateBackupFiles() {
         File backupDir = getBackupDirectory();
-
-        // In the future we will only accept backup files with the
-        // correct extension.
-        File[] fileList = backupDir.listFiles(/* new FilenameFilter() {
+        File[] fileList = backupDir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
                 return name.endsWith(BACKUP_FILE_EXTENSION);
             }
-        } */);
+        });
 
         if (fileList != null) {
             // Currently file names are sorted purely lexicographically,
