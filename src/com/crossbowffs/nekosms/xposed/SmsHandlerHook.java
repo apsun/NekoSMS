@@ -223,7 +223,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             PreferenceConsts.KEY_WHITELIST_CONTACTS,
             PreferenceConsts.KEY_WHITELIST_CONTACTS_DEFAULT);
         if (allowContacts && ContactUtils.isContact(mContext, sender)) {
-            Xlog.i("Allowed message (contact whitelist)");
+            Xlog.i("Allowing message (contact whitelist)");
             return;
         }
 
@@ -236,7 +236,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // we can delete the original. If it were the other way around,
         // any bug in our code would cause the message to disappear. This
         // way, the worst that can happen is that the user gets two copies.
-        Xlog.i("Blocked message (matched blacklist)");
         Uri messageUri = BlockedSmsLoader.get().insert(mContext, message);
         broadcastBlockedSms(messageUri);
         finishSmsBroadcast(param.thisObject, param.args[receiverIndex]);

@@ -147,7 +147,7 @@
     <string name="pref_whitelist_contacts">联系人白名单</string>
     <string name="pref_whitelist_contacts_summary">不拦截来自联系人的信息</string>
     <string name="pref_verbose_logging">详细log模式</string>
-    <string name="pref_verbose_logging_summary">将短信内容写到logcat</string>
+    <string name="pref_verbose_logging_summary">将信息内容写到logcat</string>
     <string name="pref_notifications">通知</string>
     <string name="pref_notifications_enable">启用通知</string>
     <string name="pref_notifications_enable_summary">当信息被拦截时显示通知</string>
