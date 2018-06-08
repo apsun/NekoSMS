@@ -1,9 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.*;
 import android.net.Uri;
@@ -11,8 +8,6 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.widget.Toast;
 import com.crossbowffs.nekosms.R;
@@ -25,12 +20,10 @@ import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
-import com.crossbowffs.nekosms.widget.CursorWrapper;
 
 public class BlockedSmsReceiver extends BroadcastReceiver {
-    private static final int NOTIFICATION_SUMMARY_ID = 1;
     private static final String NOTIFICATION_GROUP = "blocked_message";
-    private static final String NOTIFICATION_CHANNEL = "blocked_message";
+    public static final String NOTIFICATION_CHANNEL = "blocked_message";
 
     private static int uriToNotificationId(Uri uri) {
         return (int)ContentUris.parseId(uri);
@@ -43,7 +36,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         return PendingIntent.getBroadcast(context, 0, intent, 0);
     }
 
-    private Notification buildNotificationSingle(Context context, SmsMessageData messageData, boolean summary) {
+    private Notification buildNotificationSingle(Context context, SmsMessageData messageData) {
         Uri uri = ContentUris.withAppendedId(DatabaseContract.BlockedMessages.CONTENT_URI, messageData.getId());
 
         Intent viewIntent = new Intent(context, MainActivity.class);
@@ -69,51 +62,10 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
             .setAutoCancel(true)
             .setColor(ContextCompat.getColor(context, R.color.main))
             .setGroup(NOTIFICATION_GROUP)
-            .setGroupSummary(summary)
-            .build();
-    }
-
-    private Notification buildNotificationMulti(Context context, CursorWrapper<SmsMessageData> messages) {
-        Intent viewIntent = new Intent(context, MainActivity.class);
-        viewIntent.setAction(Intent.ACTION_VIEW);
-        viewIntent.putExtra(MainActivity.EXTRA_SECTION, MainActivity.EXTRA_SECTION_BLOCKED_MESSAGES);
-        PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
-
-        PendingIntent dismissIntent = createPendingIntent(context, BroadcastConsts.ACTION_DISMISS_NOTIFICATION, null);
-
-        NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
-        SmsMessageData data = new SmsMessageData();
-        Spanned firstLine = null;
-        while (messages.moveToNext()) {
-            data = messages.get(data);
-            String escapedSender = Html.escapeHtml(data.getSender().replace('\n', ' '));
-            String escapedBody = Html.escapeHtml(data.getBody().replace('\n', ' '));
-            Spanned line = Html.fromHtml(context.getString(R.string.format_notification_multi_item, escapedSender, escapedBody));
-            if (firstLine == null) {
-                firstLine = line;
-            }
-            inboxStyle.addLine(line);
-        }
-
-        return new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL)
-            .setSmallIcon(R.drawable.ic_message_blocked_white_24dp)
-            .setContentTitle(context.getString(R.string.format_notification_multi_count, messages.getCount()))
-            .setContentText(firstLine)
-            .setStyle(inboxStyle)
-            .setNumber(messages.getCount())
-            .setContentIntent(viewPendingIntent)
-            .setDeleteIntent(dismissIntent)
-            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-            .setAutoCancel(true)
-            .setColor(ContextCompat.getColor(context, R.color.main))
-            .setGroup(NOTIFICATION_GROUP)
-            .setGroupSummary(true)
             .build();
     }
 
     private boolean areNotificationsEnabled(Context context) {
-        // On Android O, this is managed by the system
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return true;
         }
@@ -123,6 +75,10 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void applyNotificationStyle(Context context, Notification notification) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return;
+        }
+
         SharedPreferences prefs = context.getSharedPreferences(PreferenceConsts.FILE_MAIN, Context.MODE_PRIVATE);
         String ringtone = prefs.getString(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE, PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE_DEFAULT);
         if (!TextUtils.isEmpty(ringtone)) {
@@ -138,43 +94,9 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         notification.priority = Integer.parseInt(priority);
     }
 
-    private void updateSummaryNotification(Context context, boolean creating) {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        try (CursorWrapper<SmsMessageData> messages = BlockedSmsLoader.get().queryUnseen(context)) {
-            if (messages.getCount() == 0) {
-                notificationManager.cancel(NOTIFICATION_SUMMARY_ID);
-            } else if (creating) {
-                // We don't update the summary notification unless we are *adding*,
-                // not *removing* a notification. This prevents apps like Pushbullet
-                // from mirroring the summary notification when dismissing individual
-                // notifications.
-                //
-                // This works because on Android < 7.0, it's impossible to remove
-                // the notifications individually, and on Android >= 7.0, the summary
-                // notification is never shown so it doesn't need to be updated.
-                Notification notification;
-                if (messages.getCount() == 1) {
-                    messages.moveToNext();
-                    notification = buildNotificationSingle(context, messages.get(), true);
-                } else {
-                    notification = buildNotificationMulti(context, messages);
-                }
-
-                // On pre-N, we apply the notification style to the summary notification
-                // since the individual notifications are not displayed.
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                    Xlog.d("Applying style to summary notification");
-                    applyNotificationStyle(context, notification);
-                }
-                notificationManager.notify(NOTIFICATION_SUMMARY_ID, notification);
-            }
-        }
-    }
-
     private void removeNotification(Context context, Uri messageUri) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(uriToNotificationId(messageUri));
-        updateSummaryNotification(context, false);
     }
 
     private void displayNotification(Context context, Uri messageUri) {
@@ -184,19 +106,11 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         }
 
         SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
-        Notification notification = buildNotificationSingle(context, messageData, false);
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        Notification notification = buildNotificationSingle(context, messageData);
+        applyNotificationStyle(context, notification);
 
-        // On N and above, we apply the notification style to each individual notification.
-        // This is useful for heads-up notifications and notification mirroring apps
-        // like Pushbullet since the user can interact with the individual messages.
-        // Unfortunately on pre-N this is not possible without un-merging the notifications.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Xlog.d("Applying style to individual notification");
-            applyNotificationStyle(context, notification);
-        }
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(uriToNotificationId(messageUri), notification);
-        updateSummaryNotification(context, true);
     }
 
     private void onReceiveSms(Context context, Intent intent) {
@@ -225,9 +139,6 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     private void onRestoreSms(Context context, Intent intent) {
         Uri messageUri = intent.getData();
 
-        // First mark the message as seen, since we want the summary
-        // notification to be updated even if the message could not
-        // actually be restored.
         BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
         removeNotification(context, messageUri);
 
@@ -257,17 +168,12 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private void onDismissNotification(Context context, Intent intent) {
-        // If messageUri is null, we are dismissing the summary notification,
-        // so mark all messages as seen. Otherwise, only mark the one that
-        // was dismissed as seen.
         Uri messageUri = intent.getData();
         if (messageUri != null) {
             BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
         } else {
             BlockedSmsLoader.get().markAllSeen(context);
         }
-
-        updateSummaryNotification(context, false);
     }
 
     @Override

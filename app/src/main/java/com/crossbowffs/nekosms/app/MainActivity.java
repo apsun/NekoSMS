@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
     private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
-    private static final String NOTIFICATION_CHANNEL = "blocked_message";
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String WIKI_URL = GITHUB_URL + "/wiki";
@@ -202,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void createNotificationChannel() {
         NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         String name = getString(R.string.channel_blocked_messages);
-        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL, name, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel channel = new NotificationChannel(BlockedSmsReceiver.NOTIFICATION_CHANNEL, name, NotificationManager.IMPORTANCE_DEFAULT);
         notificationManager.createNotificationChannel(channel);
     }
 
