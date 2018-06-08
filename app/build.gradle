@@ -1,0 +1,47 @@
+apply plugin: 'com.android.application'
+
+dependencies {
+    implementation 'com.android.support:support-compat:27.1.1'
+    implementation 'com.android.support:support-core-ui:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:support-annotations:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.5'
+    compileOnly 'de.robv.android.xposed:api:53'
+}
+
+android {
+    compileSdkVersion 27
+
+    defaultConfig {
+        versionCode 33
+        versionName '0.16.0'
+        minSdkVersion 19
+        targetSdkVersion 27
+        resConfigs 'en', 'zh-rCN'
+        buildConfigField('int', 'MODULE_VERSION', '15')
+        buildConfigField('int', 'DATABASE_VERSION', '11')
+        buildConfigField('int', 'BACKUP_VERSION', '3')
+        buildConfigField('String', 'LOG_TAG', '"NekoSMS"')
+    }
+
+    buildTypes {
+        debug {
+            buildConfigField('int', 'LOG_LEVEL', '2')
+            buildConfigField('boolean', 'LOG_TO_XPOSED', 'false')
+        }
+
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField('int', 'LOG_LEVEL', '4')
+            buildConfigField('boolean', 'LOG_TO_XPOSED', 'true')
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}

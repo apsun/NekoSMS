@@ -1,6 +1,10 @@
 package com.crossbowffs.nekosms.app;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +12,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -47,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
     private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
+    private static final String NOTIFICATION_CHANNEL = "blocked_message";
     private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String WIKI_URL = GITHUB_URL + "/wiki";
@@ -98,6 +104,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // This is used to cache displayed snackbars, so we can
         // dismiss them when switching between fragments.
         mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
+
+        // Create the notification channel immediately so user can
+        // configure them immediately without actually getting
+        // a notification first
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel();
+        }
 
         // Don't do this if the activity is being re-created (e.g.
         // after a screen rotation), since it will cause the fragment
@@ -183,6 +196,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onNewIntent(intent);
         setIntent(intent);
         handleIntent(intent);
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private void createNotificationChannel() {
+        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        String name = getString(R.string.channel_blocked_messages);
+        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL, name, NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(channel);
     }
 
     private boolean handleIntent(Intent intent) {

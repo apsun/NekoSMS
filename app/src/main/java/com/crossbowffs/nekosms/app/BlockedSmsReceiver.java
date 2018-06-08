@@ -113,6 +113,11 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
     }
 
     private boolean areNotificationsEnabled(Context context) {
+        // On Android O, this is managed by the system
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return true;
+        }
+
         SharedPreferences prefs = context.getSharedPreferences(PreferenceConsts.FILE_MAIN, Context.MODE_PRIVATE);
         return prefs.getBoolean(PreferenceConsts.KEY_NOTIFICATIONS_ENABLE, PreferenceConsts.KEY_NOTIFICATIONS_ENABLE_DEFAULT);
     }
@@ -131,14 +136,6 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         }
         String priority = prefs.getString(PreferenceConsts.KEY_NOTIFICATIONS_PRIORITY, PreferenceConsts.KEY_NOTIFICATIONS_PRIORITY_DEFAULT);
         notification.priority = Integer.parseInt(priority);
-    }
-
-    @TargetApi(Build.VERSION_CODES.O)
-    private void createChannel(Context context) {
-        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
-        String name = context.getString(R.string.channel_blocked_messages);
-        NotificationChannel channel = new NotificationChannel(NOTIFICATION_CHANNEL, name, NotificationManager.IMPORTANCE_DEFAULT);
-        notificationManager.createNotificationChannel(channel);
     }
 
     private void updateSummaryNotification(Context context, boolean creating) {
@@ -184,11 +181,6 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
         if (!areNotificationsEnabled(context)) {
             BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
             return;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Xlog.d("Creating notification channel");
-            createChannel(context);
         }
 
         SmsMessageData messageData = BlockedSmsLoader.get().query(context, messageUri);
