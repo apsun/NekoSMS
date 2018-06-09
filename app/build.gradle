@@ -15,8 +15,8 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        versionCode 33
-        versionName '0.16.0'
+        versionCode 34
+        versionName '0.17.0-dev'
         minSdkVersion 19
         targetSdkVersion 27
         resConfigs 'en', 'zh-rCN'

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Telephony;
 import com.crossbowffs.nekosms.data.SmsMessageData;
+import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
@@ -32,6 +33,10 @@ public final class InboxSmsLoader {
     }
 
     public static Uri writeMessage(Context context, SmsMessageData messageData) {
+        if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
+            throw new SecurityException("Do not have permissions to write SMS");
+        }
+
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, serializeMessage(messageData));
         long id = -1;

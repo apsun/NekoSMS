@@ -1,7 +1,10 @@
 package com.crossbowffs.nekosms.data;
 
+import android.content.ContentUris;
 import android.content.Intent;
+import android.net.Uri;
 import android.telephony.SmsMessage;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.SmsMessageUtils;
 
 import java.text.Normalizer;
@@ -116,5 +119,13 @@ public class SmsMessageData {
 
     public int getSubId() {
         return mSubId;
+    }
+
+    public Uri getUri() {
+        long id = getId();
+        if (id < 0) {
+            return null;
+        }
+        return ContentUris.withAppendedId(DatabaseContract.BlockedMessages.CONTENT_URI, id);
     }
 }

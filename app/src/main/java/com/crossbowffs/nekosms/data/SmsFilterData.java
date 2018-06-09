@@ -1,5 +1,9 @@
 package com.crossbowffs.nekosms.data;
 
+import android.content.ContentUris;
+import android.net.Uri;
+import com.crossbowffs.nekosms.provider.DatabaseContract;
+
 public class SmsFilterData {
     private long mId = -1;
     private SmsFilterAction mAction;
@@ -48,6 +52,14 @@ public class SmsFilterData {
         default:
             throw new AssertionError("Invalid filter field: " + field);
         }
+    }
+
+    public Uri getUri() {
+        long id = getId();
+        if (id < 0) {
+            return null;
+        }
+        return ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, id);
     }
 
     @Override

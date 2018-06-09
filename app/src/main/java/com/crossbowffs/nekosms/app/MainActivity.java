@@ -1,10 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
-import android.annotation.TargetApi;
 import android.app.Fragment;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,7 +8,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -105,11 +100,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
 
         // Create the notification channel immediately so user can
-        // configure them immediately without actually getting
+        // configure them immediately without needing to receive
         // a notification first
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            createNotificationChannel();
-        }
+        NotificationHelper.createNotificationChannel(this);
 
         // Don't do this if the activity is being re-created (e.g.
         // after a screen rotation), since it will cause the fragment
@@ -195,14 +188,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onNewIntent(intent);
         setIntent(intent);
         handleIntent(intent);
-    }
-
-    @TargetApi(Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        String name = getString(R.string.channel_blocked_messages);
-        NotificationChannel channel = new NotificationChannel(BlockedSmsReceiver.NOTIFICATION_CHANNEL, name, NotificationManager.IMPORTANCE_DEFAULT);
-        notificationManager.createNotificationChannel(channel);
     }
 
     private boolean handleIntent(Intent intent) {

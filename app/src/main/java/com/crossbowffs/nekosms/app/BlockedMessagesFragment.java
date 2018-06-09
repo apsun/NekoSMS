@@ -20,7 +20,6 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
-import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
@@ -180,6 +179,9 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         Context context = getContext();
         if (context == null) return;
 
+        // Dismiss notification if present
+        NotificationHelper.removeNotification(context, messageData.getId());
+
         final long smsId = messageData.getId();
         String sender = messageData.getSender();
         String body = messageData.getBody();
@@ -221,7 +223,22 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         Context context = getContext();
         if (context == null) return;
 
-        if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
+        // We've obviously seen the message, so remove the notification
+        NotificationHelper.removeNotification(context, smsId);
+
+        // Load message content (so we can undo)
+        final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
+        if (messageData == null) {
+            Xlog.e("Failed to restore message: could not load data");
+            showSnackbar(R.string.load_message_failed);
+            return;
+        }
+
+        // Write message to the inbox
+        final Uri inboxSmsUri;
+        try {
+            inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
+        } catch (SecurityException e) {
             Xlog.e("Do not have permissions to write SMS");
             showSnackbar(R.string.must_enable_xposed_module, R.string.enable, new View.OnClickListener() {
                 @Override
@@ -230,25 +247,13 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
                 }
             });
             return;
-        }
-
-        final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
-        if (messageData == null) {
-            Xlog.e("Failed to restore message: could not load data");
-            showSnackbar(R.string.load_message_failed);
-            return;
-        }
-
-        final Uri inboxSmsUri;
-        try {
-            inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (DatabaseException e) {
             Xlog.e("Failed to restore message: could not write to SMS inbox");
             showSnackbar(R.string.message_restore_failed);
             return;
         }
 
-        // Only delete the message after we have successfully written it to the SMS inbox
+        // Delete the message after we successfully write it to the inbox
         BlockedSmsLoader.get().delete(context, smsId);
 
         showSnackbar(R.string.message_restored, R.string.undo, new View.OnClickListener() {
@@ -266,6 +271,10 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         Context context = getContext();
         if (context == null) return;
 
+        // We've obviously seen the message, so remove the notification
+        NotificationHelper.removeNotification(context, smsId);
+
+        // Load message content (for undo), then delete it
         final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to delete message: could not load data");
