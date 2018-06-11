@@ -25,7 +25,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
     private void onDeleteSms(Context context, Intent intent) {
         Uri messageUri = intent.getData();
-        NotificationHelper.removeNotification(context, messageUri);
+        NotificationHelper.cancelNotification(context, messageUri);
 
         boolean deleted = BlockedSmsLoader.get().delete(context, messageUri);
         if (!deleted) {
@@ -38,7 +38,7 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
     private void onRestoreSms(Context context, Intent intent) {
         Uri messageUri = intent.getData();
-        NotificationHelper.removeNotification(context, messageUri);
+        NotificationHelper.cancelNotification(context, messageUri);
 
         // Always mark message as seen, even though we're deleting it,
         // so even if we don't get to delete it, the seen flag still gets set.

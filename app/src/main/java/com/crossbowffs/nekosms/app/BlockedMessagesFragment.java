@@ -142,6 +142,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         Context context = getContext();
         if (context == null) return;
 
+        NotificationHelper.cancelAllNotifications(context);
         BlockedSmsLoader.get().deleteAll(context);
         showSnackbar(R.string.cleared_blocked_messages);
     }
@@ -180,7 +181,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         // Dismiss notification if present
-        NotificationHelper.removeNotification(context, messageData.getId());
+        NotificationHelper.cancelNotification(context, messageData.getId());
 
         final long smsId = messageData.getId();
         String sender = messageData.getSender();
@@ -224,7 +225,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         // We've obviously seen the message, so remove the notification
-        NotificationHelper.removeNotification(context, smsId);
+        NotificationHelper.cancelNotification(context, smsId);
 
         // Load message content (so we can undo)
         final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
@@ -272,7 +273,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         // We've obviously seen the message, so remove the notification
-        NotificationHelper.removeNotification(context, smsId);
+        NotificationHelper.cancelNotification(context, smsId);
 
         // Load message content (for undo), then delete it
         final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);

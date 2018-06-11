@@ -95,14 +95,18 @@ public final class NotificationHelper {
             .build();
     }
 
-    public static void removeNotification(Context context, Uri messageUri) {
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancel(uriToNotificationId(messageUri));
-    }
-
-    public static void removeNotification(Context context, long messageId) {
+    public static void cancelNotification(Context context, long messageId) {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel((int)messageId);
+    }
+
+    public static void cancelNotification(Context context, Uri messageUri) {
+        cancelNotification(context, uriToNotificationId(messageUri));
+    }
+
+    public static void cancelAllNotifications(Context context) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        notificationManager.cancelAll();
     }
 
     public static void displayNotification(Context context, Uri messageUri) {
