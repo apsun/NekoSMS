@@ -32,7 +32,6 @@ In order to bypass this restriction, code must be modified at the OS level.
 
 - `READ_SMS`, `WRITE_SMS` for obvious reasons
 - `VIBRATE` for notifications
-- `WRITE_EXTERNAL_STORAGE` for importing/exporting backups
 
 ### Does NekoSMS work with (insert SMS app here)?
 
