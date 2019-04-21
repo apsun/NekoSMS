@@ -2,7 +2,7 @@ package com.crossbowffs.nekosms.app;
 
 import android.database.Cursor;
 import android.graphics.Typeface;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;

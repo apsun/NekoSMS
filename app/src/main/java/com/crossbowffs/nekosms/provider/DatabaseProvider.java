@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.crossbowffs.nekosms.widget.AutoContentProvider;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;

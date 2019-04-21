@@ -2,7 +2,7 @@ package com.crossbowffs.nekosms.widget;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private Cursor mCursor;
