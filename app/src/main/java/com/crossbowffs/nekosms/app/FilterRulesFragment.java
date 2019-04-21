@@ -1,5 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
+import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.CursorLoader;
@@ -168,6 +169,19 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mAdapter.changeCursor(null);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != Activity.RESULT_OK) {
+            return;
+        }
+
+        if (requestCode == IMPORT_BACKUP_REQUEST) {
+            showConfirmImportDialog(data.getData());
+        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
+            exportFilterRules(data.getData());
+        }
+    }
+
     private void showImportExportDialog() {
         CharSequence[] items = {getString(R.string.import_from_storage), getString(R.string.export_to_storage)};
         new AlertDialog.Builder(getContext())
@@ -198,17 +212,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             })
             .setNegativeButton(R.string.cancel, null)
             .show();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == IMPORT_BACKUP_REQUEST) {
-            Uri uri = data.getData();
-            importFilterRules(uri);
-        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
-            Uri uri = data.getData();
-            exportFilterRules(uri);
-        }
     }
 
     private void importFilterRules(final Uri uri) {
