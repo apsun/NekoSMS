@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.View;
-import android.widget.Toast;
 
 public class MainFragment extends Fragment {
     public MainActivity getMainActivity() {
@@ -36,14 +35,6 @@ public class MainFragment extends Fragment {
 
     public void showSnackbar(int textId) {
         makeSnackbar(textId).show();
-    }
-
-    private Toast makeToast(int textId) {
-        return Toast.makeText(getContext(), textId, Toast.LENGTH_SHORT);
-    }
-
-    public void showToast(int textId) {
-        makeToast(textId).show();
     }
 
     public void setTitle(int titleId) {
