@@ -25,10 +25,6 @@ import java.io.*;
         mJsonWriter.setIndent("\t");
     }
 
-    public BackupExporter(File file) throws FileNotFoundException {
-        this(new FileOutputStream(file));
-    }
-
     public void write(Context context) throws IOException {
         begin();
         writeFilters(context);

@@ -14,8 +14,6 @@
     <string name="restore">恢复</string>
     <string name="undo">撤消</string>
     <string name="cancel">取消</string>
-    <string name="share">分享</string>
-    <string name="retry">重试</string>
 
     <!-- Navigation drawer -->
     <string name="open_drawer">扩展导航抽屉</string>
@@ -25,20 +23,15 @@
     <string name="import_export">导入/导出</string>
     <string name="import_from_storage">从外部存储导入</string>
     <string name="export_to_storage">导出到外部存储</string>
-    <string name="import_choose_file">选择备份文件</string>
     <string name="import_confirm_title">导入此备份？</string>
     <string name="import_confirm_message">此操作会覆盖当前所有的过滤规则！</string>
-    <string name="export_file_name">备份文件名</string>
     <string name="import_success">导入成功</string>
-    <string name="import_no_backup">未找到备份文件</string>
     <string name="import_unknown_version">备份文件版本过新，无法导入</string>
     <string name="import_invalid_backup">备份文件已损坏，无法导入</string>
     <string name="import_read_failed">无法读取备份文件</string>
     <string name="export_success">导出成功</string>
     <string name="export_write_failed">无法写入备份文件</string>
-    <string name="need_storage_permission">此功能需要存储读写权限</string>
     <string name="backup_button_import">导入</string>
-    <string name="backup_button_export">导出</string>
     <string name="progress_importing">正在导入数据…</string>
     <string name="progress_exporting">正在导出数据…</string>
 
@@ -106,7 +99,6 @@
     <string name="cleared_blocked_messages">已删除所有信息</string>
     <string name="message_deleted">信息已删除</string>
     <string name="message_restored">信息已恢复到收件箱</string>
-    <string name="message_delete_failed">无法删除信息</string>
     <string name="message_restore_failed">无法恢复信息</string>
     <string name="load_message_failed">无法加载信息</string>
     <string name="message_actions">信息操作</string>
@@ -166,8 +158,6 @@
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s（已拦截）</string>
-    <string name="format_notification_multi_count">%d条已拦截信息</string>
-    <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
     <string name="channel_blocked_messages">信息拦截通知</string>
 
     <!-- App shortcuts -->

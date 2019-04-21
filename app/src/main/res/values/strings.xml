@@ -14,8 +14,6 @@
     <string name="restore">Restore</string>
     <string name="undo">Undo</string>
     <string name="cancel">Cancel</string>
-    <string name="share">Share</string>
-    <string name="retry">Retry</string>
 
     <!-- Navigation drawer -->
     <string name="open_drawer">Open navigation drawer</string>
@@ -25,20 +23,15 @@
     <string name="import_export">Import/export</string>
     <string name="import_from_storage">Import from external storage</string>
     <string name="export_to_storage">Export to external storage</string>
-    <string name="import_choose_file">Choose backup file</string>
     <string name="import_confirm_title">Import backup?</string>
     <string name="import_confirm_message">This will overwrite your existing filter rules!</string>
-    <string name="export_file_name">Backup file name</string>
     <string name="import_success">Import successful</string>
-    <string name="import_no_backup">No backup files found</string>
     <string name="import_unknown_version">Backup file version is too new</string>
     <string name="import_invalid_backup">Invalid backup file</string>
     <string name="import_read_failed">Could not read backup file</string>
     <string name="export_success">Export successful</string>
     <string name="export_write_failed">Could not write backup file</string>
-    <string name="need_storage_permission">Storage permissions required</string>
     <string name="backup_button_import">Import</string>
-    <string name="backup_button_export">Export</string>
     <string name="progress_importing">Importing data from storage…</string>
     <string name="progress_exporting">Exporting data to storage…</string>
 
@@ -106,7 +99,6 @@
     <string name="cleared_blocked_messages">Deleted all blocked messages</string>
     <string name="message_deleted">Message deleted</string>
     <string name="message_restored">Message restored to inbox</string>
-    <string name="message_delete_failed">Message could not be deleted</string>
     <string name="message_restore_failed">Message could not be restored</string>
     <string name="load_message_failed">Could not load message</string>
     <string name="message_actions">Message actions</string>
@@ -166,8 +158,6 @@
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s (blocked)</string>
-    <string name="format_notification_multi_count">%d blocked messages</string>
-    <string name="format_notification_multi_item"><![CDATA[<b>%1$s</b> %2$s]]></string>
     <string name="channel_blocked_messages">Blocked messages</string>
 
     <!-- App shortcuts -->

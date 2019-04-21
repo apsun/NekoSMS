@@ -15,10 +15,6 @@ import java.io.*;
         mJsonStream = in;
     }
 
-    public BackupImporter(File file) throws FileNotFoundException {
-        this(new FileInputStream(file));
-    }
-
     public void read(Context context) throws IOException, InvalidBackupException {
         // We use JSONObject (DOM) instead of JsonReader (SAX) because
         // we need to read the version number from the JSON object before
