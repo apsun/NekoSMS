@@ -122,10 +122,12 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getContext(),
+        return new CursorLoader(
+            getContext(),
             DatabaseContract.BlockedMessages.CONTENT_URI,
             DatabaseContract.BlockedMessages.ALL, null, null,
-            DatabaseContract.BlockedMessages.TIME_SENT + " DESC");
+            DatabaseContract.BlockedMessages.TIME_SENT + " DESC"
+        );
     }
 
     @Override

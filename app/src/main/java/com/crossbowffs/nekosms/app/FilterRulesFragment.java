@@ -1,18 +1,24 @@
 package com.crossbowffs.nekosms.app;
 
-import android.Manifest;
 import android.app.LoaderManager;
-import android.content.*;
+import android.content.ContentUris;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.text.Editable;
-import android.view.*;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
@@ -22,18 +28,13 @@ import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
-import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
-import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
-
-import java.io.File;
 
 public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int IMPORT_BACKUP_REQUEST = 0;
-    private static final int EXPORT_BACKUP_REQUEST = 1;
-    private static final int IMPORT_BACKUP_DIRECT_REQUEST = 2;
+    private static final int IMPORT_BACKUP_REQUEST = 1853;
+    private static final int EXPORT_BACKUP_REQUEST = 1854;
     public static final String EXTRA_ACTION = "action";
     public static final String ARG_IMPORT_URI = "import_uri";
 
@@ -41,7 +42,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private TextView mEmptyView;
     private FilterRulesAdapter mAdapter;
     private SmsFilterAction mAction;
-    private Uri mPendingImportUri;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,17 +104,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         Uri importUri = args.getParcelable(ARG_IMPORT_URI);
         if (importUri != null) {
             args.remove(ARG_IMPORT_URI);
-
-            // If the file is on external storage, make sure we have
-            // permissions to read it first. Note that we just take
-            // file:// URIs to mean external storage, since otherwise
-            // a content:// URI would be used instead.
-            if (ContentResolver.SCHEME_FILE.equals(importUri.getScheme())) {
-                mPendingImportUri = importUri;
-                requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_DIRECT_REQUEST, false);
-            } else {
-                showConfirmImportDialog(importUri);
-            }
+            showConfirmImportDialog(importUri);
         }
     }
 
@@ -158,12 +148,14 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getContext(),
+        return new CursorLoader(
+            getContext(),
             DatabaseContract.FilterRules.CONTENT_URI,
             DatabaseContract.FilterRules.ALL,
             DatabaseContract.FilterRules.ACTION + "=?",
             new String[] {mAction.name()},
-            null);
+            null
+        );
     }
 
     @Override
@@ -176,33 +168,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mAdapter.changeCursor(null);
     }
 
-    @Override
-    public void onRequestPermissionsResult(final int requestCode, boolean granted) {
-        if (!granted) {
-            showSnackbar(R.string.need_storage_permission, R.string.retry, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    requestStoragePermissions(requestCode, true);
-                }
-            });
-        } else if (requestCode == IMPORT_BACKUP_REQUEST) {
-            showImportFileSelectionDialog();
-        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
-            showExportFileNameDialog();
-        } else if (requestCode == IMPORT_BACKUP_DIRECT_REQUEST) {
-            showConfirmImportDialog(mPendingImportUri);
-            mPendingImportUri = null;
-        }
-    }
-
-    private void requestStoragePermissions(int request, boolean openSettings) {
-        if (request == IMPORT_BACKUP_REQUEST) {
-            requestPermissionsCompat(Manifest.permission.READ_EXTERNAL_STORAGE, IMPORT_BACKUP_REQUEST, openSettings);
-        } else if (request == EXPORT_BACKUP_REQUEST) {
-            requestPermissionsCompat(Manifest.permission.WRITE_EXTERNAL_STORAGE, EXPORT_BACKUP_REQUEST, openSettings);
-        }
-    }
-
     private void showImportExportDialog() {
         CharSequence[] items = {getString(R.string.import_from_storage), getString(R.string.export_to_storage)};
         new AlertDialog.Builder(getContext())
@@ -211,37 +176,12 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     if (which == 0) {
-                        requestStoragePermissions(IMPORT_BACKUP_REQUEST, false);
+                        startActivityForResult(BackupLoader.getImportFilePickerIntent(), IMPORT_BACKUP_REQUEST);
                     } else if (which == 1) {
-                        requestStoragePermissions(EXPORT_BACKUP_REQUEST, false);
+                        startActivityForResult(BackupLoader.getExportFilePickerIntent(), EXPORT_BACKUP_REQUEST);
                     }
                 }
             })
-            .show();
-    }
-
-    private void showImportFileSelectionDialog() {
-        final File[] files = BackupLoader.enumerateBackupFiles();
-        if (files == null || files.length == 0) {
-            showSnackbar(R.string.import_no_backup);
-            return;
-        }
-
-        String[] fileNames = new String[files.length];
-        for (int i = 0; i < fileNames.length; ++i) {
-            fileNames[i] = files[i].getName();
-        }
-
-        new AlertDialog.Builder(getContext())
-            .setTitle(R.string.import_choose_file)
-            .setItems(fileNames, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Uri uri = Uri.fromFile(files[which]);
-                    showConfirmImportDialog(uri);
-                }
-            })
-            .setNegativeButton(R.string.cancel, null)
             .show();
     }
 
@@ -260,35 +200,15 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .show();
     }
 
-    private void showExportFileNameDialog() {
-        String defaultName = BackupLoader.getDefaultBackupFileName();
-        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View dialogView = layoutInflater.inflate(R.layout.dialog_edittext, null);
-        final EditText editText = (EditText)dialogView.findViewById(R.id.dialog_edittext_textbox);
-        final AlertDialog dialog = new AlertDialog.Builder(getContext())
-            .setTitle(R.string.export_file_name)
-            .setView(dialogView)
-            .setPositiveButton(R.string.backup_button_export, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String fileName = editText.getText().toString();
-                    File file = new File(BackupLoader.getBackupDirectory(), fileName);
-                    exportFilterRules(file);
-                }
-            })
-            .setNegativeButton(R.string.cancel, null)
-            .create();
-        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        dialog.show();
-        editText.setText(defaultName);
-        editText.setSelection(0, defaultName.length() - BackupLoader.getBackupFileExtension().length());
-        editText.addTextChangedListener(new TextWatcherAdapter() {
-            @Override
-            public void afterTextChanged(Editable s) {
-                Button button = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                button.setEnabled(IOUtils.isValidFileName(s));
-            }
-        });
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IMPORT_BACKUP_REQUEST) {
+            Uri uri = data.getData();
+            importFilterRules(uri);
+        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
+            Uri uri = data.getData();
+            exportFilterRules(uri);
+        }
     }
 
     private void importFilterRules(final Uri uri) {
@@ -323,11 +243,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         }.execute();
     }
 
-    private void exportFilterRules(final File file) {
+    private void exportFilterRules(final Uri uri) {
         new DialogAsyncTask<Void, Void, ExportResult>(getContext(), R.string.progress_exporting) {
             @Override
             protected ExportResult doInBackground(Void... params) {
-                return BackupLoader.exportFilterRules(getContext(), file);
+                return BackupLoader.exportFilterRules(getContext(), uri);
             }
 
             @Override
@@ -344,19 +264,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
                 default:
                     throw new AssertionError("Unknown backup export result code: " + result);
                 }
-
-                if (result == ExportResult.SUCCESS) {
-                    showSnackbar(messageId, R.string.share, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Context context = getContext();
-                            if (context == null) return;
-                            BackupLoader.shareBackupFile(context, file);
-                        }
-                    });
-                } else {
-                    showSnackbar(messageId);
-                }
+                showSnackbar(messageId);
             }
         }.execute();
     }

@@ -7,18 +7,18 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:support-annotations:27.1.1'
     implementation 'com.android.support:design:27.1.1'
-    implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.5'
+    implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.6'
     compileOnly 'de.robv.android.xposed:api:53'
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
-        versionCode 34
-        versionName '0.17.0'
+        versionCode 35
+        versionName '0.18.0'
         minSdkVersion 19
-        targetSdkVersion 27
+        targetSdkVersion 28
         resConfigs 'en', 'zh-rCN'
         buildConfigField('int', 'MODULE_VERSION', '15')
         buildConfigField('int', 'DATABASE_VERSION', '11')
