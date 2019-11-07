@@ -5,7 +5,7 @@ import com.crossbowffs.nekosms.utils.StringUtils;
 
 import java.text.Normalizer;
 
-/* package */ class StringFilterPattern extends SmsFilterPattern {
+/* package */public class StringFilterPattern extends SmsFilterPattern {
     private final String mNormalizedPattern;
 
     public StringFilterPattern(SmsFilterPatternData data) {

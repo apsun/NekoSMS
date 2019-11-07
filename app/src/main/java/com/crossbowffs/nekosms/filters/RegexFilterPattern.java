@@ -7,7 +7,7 @@ import java.text.Normalizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/* package */ class RegexFilterPattern extends SmsFilterPattern {
+/* package */public class RegexFilterPattern extends SmsFilterPattern {
     private final Matcher mMatcher;
 
     public RegexFilterPattern(SmsFilterPatternData data) {

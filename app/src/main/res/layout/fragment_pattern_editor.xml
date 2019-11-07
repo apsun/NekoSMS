@@ -4,6 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="right"
     android:padding="16dp">
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/filter_editor_pattern_inputlayout"
@@ -51,4 +52,20 @@
                 android:layout_height="wrap_content"/>
         </TableRow>
     </TableLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/filter_editor_pattern_test_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="false"
+            android:hint="@string/filter_pattern_test_text"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <Button
+        android:id="@+id/filter_editor_pattern_test_button"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/filter_pattern_test_button" />
 </LinearLayout>

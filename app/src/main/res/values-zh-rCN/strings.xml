@@ -129,6 +129,10 @@
     <string name="filter_field_body">文本</string>
     <string name="filter_case_sensitive">区分</string>
     <string name="filter_case_insensitive">不区分</string>
+    <string name="filter_pattern_test_text">测试内容</string>
+    <string name="filter_pattern_test_button">测试</string>
+    <string name="filter_pattern_test_hit">已命中</string>
+    <string name="filter_pattern_test_not_hit">未命中</string>
 
     <!-- Preferences -->
     <string name="settings">设置</string>
@@ -138,6 +142,8 @@
     <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
     <string name="pref_whitelist_contacts">联系人白名单</string>
     <string name="pref_whitelist_contacts_summary">不拦截来自联系人的信息</string>
+    <string name="pref_whitelist_five_digit_number">五位数号码白名单</string>
+    <string name="pref_whitelist_five_digit_number_summary">不拦截银行运营商等公共单位</string>
     <string name="pref_verbose_logging">详细log模式</string>
     <string name="pref_verbose_logging_summary">将信息内容写到logcat</string>
     <string name="pref_notifications">通知</string>

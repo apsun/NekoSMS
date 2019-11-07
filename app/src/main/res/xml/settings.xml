@@ -14,6 +14,12 @@
             android:defaultValue="false"
             android:widgetLayout="@layout/switch_compat"/>
         <CheckBoxPreference
+            android:key="pref_whitelist_five_digit_number"
+            android:title="@string/pref_whitelist_five_digit_number"
+            android:summary="@string/pref_whitelist_five_digit_number_summary"
+            android:defaultValue="false"
+            android:widgetLayout="@layout/switch_compat"/>
+        <CheckBoxPreference
             android:key="pref_verbose_logging"
             android:title="@string/pref_verbose_logging"
             android:summary="@string/pref_verbose_logging_summary"

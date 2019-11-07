@@ -4,12 +4,16 @@ import android.app.Fragment;
 import android.content.res.Resources;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import com.crossbowffs.nekosms.filters.RegexFilterPattern;
+import com.crossbowffs.nekosms.filters.StringFilterPattern;
 import com.google.android.material.textfield.TextInputLayout;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import com.crossbowffs.nekosms.R;
@@ -48,6 +52,8 @@ public class FilterEditorFragment extends Fragment {
     private EnumAdapter<SmsFilterMode> mModeAdapter;
     private EnumAdapter<CaseSensitivity> mCaseAdapter;
     private SmsFilterPatternData mPatternData;
+    private EditText mTestText;
+    private Button mTestButton;
 
     private FilterEditorActivity getEditorActivity() {
         return (FilterEditorActivity)getActivity();
@@ -66,6 +72,8 @@ public class FilterEditorFragment extends Fragment {
         mPatternEditText = (EditText)view.findViewById(R.id.filter_editor_pattern_edittext);
         mModeSpinner = (Spinner)view.findViewById(R.id.filter_editor_mode_spinner);
         mCaseSpinner = (Spinner)view.findViewById(R.id.filter_editor_case_spinner);
+        mTestText = (EditText)view.findViewById(R.id.filter_editor_pattern_test_text);
+        mTestButton = (Button)view.findViewById(R.id.filter_editor_pattern_test_button);
         return view;
     }
 
@@ -112,6 +120,14 @@ public class FilterEditorFragment extends Fragment {
                 mPatternData.setCaseSensitive(mCaseAdapter.getItem(position).toBoolean());
             }
         });
+
+        // Bind click event
+        mTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                testPattern();
+            }
+        });
     }
 
     private Map<SmsFilterMode, String> getModeMap() {
@@ -132,5 +148,47 @@ public class FilterEditorFragment extends Fragment {
         caseMap.put(CaseSensitivity.INSENSITIVE, resources.getString(R.string.filter_case_insensitive));
         caseMap.put(CaseSensitivity.SENSITIVE, resources.getString(R.string.filter_case_sensitive));
         return caseMap;
+    }
+
+    private void testPattern() {
+        String text = mTestText.getText().toString();
+        boolean matches = false;
+
+        if (mPatternData.hasData()) {
+            switch (mPatternData.getMode()) {
+                case REGEX:
+                case WILDCARD:
+                    FilterEditorActivity filterEditorActivity = (FilterEditorActivity) getActivity();
+                    String patternError = filterEditorActivity.validatePatternString(mPatternData);
+                    if (patternError != null) {
+                        filterEditorActivity.showInvalidPatternDialog(patternError);
+                        return;
+                    } else {
+                        RegexFilterPattern regexFilter = new RegexFilterPattern(mPatternData);
+                        matches = regexFilter.match(text, text);
+                    }
+                    break;
+                case CONTAINS:
+                case PREFIX:
+                case SUFFIX:
+                case EQUALS:
+                    StringFilterPattern Stringfilter = new StringFilterPattern(mPatternData);
+                    matches = Stringfilter.match(text, text);
+                    break;
+            }
+        }
+
+        if (matches) {
+            showPatternTestResult(text + "\n\n" + getString(R.string.filter_pattern_test_hit));
+        } else {
+            showPatternTestResult(text + "\n\n" + getString(R.string.filter_pattern_test_not_hit));
+        }
+    }
+
+    private void showPatternTestResult(String testResult) {
+        new AlertDialog.Builder(getActivity())
+		    .setMessage(testResult)
+            .setPositiveButton(R.string.ok, null)
+            .show();
     }
 }

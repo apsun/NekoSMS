@@ -156,7 +156,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         return mFilter.getPatternForField(field);
     }
 
-    private String validatePatternString(SmsFilterPatternData patternData, int fieldNameId) {
+    public String validatePatternString(SmsFilterPatternData patternData) {
         if (patternData.getMode() != SmsFilterMode.REGEX) {
             return null;
         }
@@ -170,7 +170,7 @@ public class FilterEditorActivity extends AppCompatActivity {
             if (description == null) {
                 description = getString(R.string.invalid_pattern_reason_unknown);
             }
-            return getString(R.string.format_invalid_pattern_message, getString(fieldNameId), description);
+            return description;
         }
         return null;
     }
@@ -192,12 +192,12 @@ public class FilterEditorActivity extends AppCompatActivity {
         if (!patternData.hasData()) {
             return true;
         }
-        String patternError = validatePatternString(patternData, fieldNameId);
+        String patternError = validatePatternString(patternData);
         if (patternError == null) {
             return true;
         }
         mTabLayout.getTabAt(tabIndex).select();
-        showInvalidPatternDialog(patternError);
+        showInvalidPatternDialog(getString(R.string.format_invalid_pattern_message, getString(fieldNameId), patternError));
         return false;
     }
 
@@ -234,7 +234,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         return FilterRuleLoader.get().update(this, mFilterUri, mFilter, true);
     }
 
-    private void showInvalidPatternDialog(String errorMessage) {
+    public void showInvalidPatternDialog(String errorMessage) {
         new AlertDialog.Builder(this)
             .setTitle(R.string.invalid_pattern_title)
             .setMessage(errorMessage)
