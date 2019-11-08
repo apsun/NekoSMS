@@ -142,8 +142,6 @@
     <string name="pref_enable_summary_alt">Please enable the Xposed module first!</string>
     <string name="pref_whitelist_contacts">Whitelist contacts</string>
     <string name="pref_whitelist_contacts_summary">Don\'t block messages from contacts</string>
-    <string name="pref_whitelist_five_digit_number">Whitelist five digit number</string>
-    <string name="pref_whitelist_five_digit_number_summary">Don\'t block messages from public institutions</string>
     <string name="pref_verbose_logging">Verbose logging</string>
     <string name="pref_verbose_logging_summary">Write SMS content to logcat</string>
     <string name="pref_notifications">Notifications</string>

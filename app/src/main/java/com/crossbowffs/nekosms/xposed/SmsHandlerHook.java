@@ -227,16 +227,6 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        // Skip if "whitelist five digit number" is enabled and the message
-        // sender is five digit.
-        boolean allowFiveDigitNumber = getBooleanPref(
-            PreferenceConsts.KEY_WHITELIST_FIVE_DIGIT_NUMBER,
-            PreferenceConsts.KEY_WHITELIST_FIVE_DIGIT_NUMBER_DEFAULT);
-        if (allowFiveDigitNumber && sender.length() == 5) {
-            Xlog.i("Allowing message (five digit number whitelist)");
-            return;
-        }
-
         if (!mFilterLoader.shouldBlockMessage(sender, body)) {
             return;
         }

@@ -12,8 +12,6 @@ public final class PreferenceConsts {
     public static final boolean KEY_ENABLE_DEFAULT = true;
     public static final String KEY_WHITELIST_CONTACTS = "pref_whitelist_contacts";
     public static final boolean KEY_WHITELIST_CONTACTS_DEFAULT = false;
-    public static final String KEY_WHITELIST_FIVE_DIGIT_NUMBER = "pref_whitelist_five_digit_number";
-    public static final boolean KEY_WHITELIST_FIVE_DIGIT_NUMBER_DEFAULT = false;
     public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";
     public static final boolean KEY_NOTIFICATIONS_ENABLE_DEFAULT = false;
     public static final String KEY_VERBOSE_LOGGING = "pref_verbose_logging";
