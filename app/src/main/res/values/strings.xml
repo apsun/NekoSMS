@@ -130,7 +130,7 @@
     <string name="filter_case_sensitive">Sensitive</string>
     <string name="filter_case_insensitive">Insensitive</string>
     <string name="filter_pattern_test_text">Test text</string>
-    <string name="filter_pattern_test_button">Test</string>
+    <string name="filter_pattern_test_button">Test filter</string>
     <string name="filter_pattern_test_hit">hit</string>
     <string name="filter_pattern_test_not_hit">not hit</string>
 
