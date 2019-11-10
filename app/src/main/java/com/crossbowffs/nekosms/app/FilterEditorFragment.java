@@ -155,25 +155,25 @@ public class FilterEditorFragment extends Fragment {
         boolean matches = false;
 
         if (mPatternData.hasData()) {
+            FilterEditorActivity filterEditorActivity = (FilterEditorActivity) getActivity();
+            String patternError = filterEditorActivity.validatePatternString(mPatternData);
+            if (patternError != null) {
+                filterEditorActivity.showInvalidPatternDialog(patternError);
+                return;
+            }
+
             switch (mPatternData.getMode()) {
                 case REGEX:
                 case WILDCARD:
-                    FilterEditorActivity filterEditorActivity = (FilterEditorActivity) getActivity();
-                    String patternError = filterEditorActivity.validatePatternString(mPatternData);
-                    if (patternError != null) {
-                        filterEditorActivity.showInvalidPatternDialog(patternError);
-                        return;
-                    } else {
-                        RegexFilterPattern regexFilter = new RegexFilterPattern(mPatternData);
-                        matches = regexFilter.match(text, text);
-                    }
+                    RegexFilterPattern regexFilter = new RegexFilterPattern(mPatternData);
+                    matches = regexFilter.match(text, text);
                     break;
                 case CONTAINS:
                 case PREFIX:
                 case SUFFIX:
                 case EQUALS:
-                    StringFilterPattern Stringfilter = new StringFilterPattern(mPatternData);
-                    matches = Stringfilter.match(text, text);
+                    StringFilterPattern stringFilter = new StringFilterPattern(mPatternData);
+                    matches = stringFilter.match(text, text);
                     break;
             }
         }
