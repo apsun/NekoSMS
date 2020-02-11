@@ -300,14 +300,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     private void hookDispatchIntent29(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking dispatchIntent() for Android v29+");
         XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
-                /*         intent */ Intent.class,
-                /*     permission */ String.class,
-                /*          appOp */ int.class,
-                /*           opts */ Bundle.class,
-                /* resultReceiver */ BroadcastReceiver.class,
-                /*           user */ UserHandle.class,
-                /*          subid */ int.class,
-                new DispatchIntentHook(4));
+            /*         intent */ Intent.class,
+            /*     permission */ String.class,
+            /*          appOp */ int.class,
+            /*           opts */ Bundle.class,
+            /* resultReceiver */ BroadcastReceiver.class,
+            /*           user */ UserHandle.class,
+            /*          subid */ int.class,
+            new DispatchIntentHook(4));
     }
 
     private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam) {
