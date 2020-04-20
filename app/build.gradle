@@ -1,25 +1,25 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation 'androidx.core:core:1.0.1'
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'androidx.annotation:annotation:1.0.2'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.core:core:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.crossbowffs.remotepreferences:remotepreferences:0.6'
     compileOnly 'de.robv.android.xposed:api:53'
 }
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
-        versionCode 35
-        versionName '0.18.0'
+        versionCode 36
+        versionName '0.19.0'
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         resConfigs 'en', 'zh-rCN'
-        buildConfigField('int', 'MODULE_VERSION', '15')
+        buildConfigField('int', 'MODULE_VERSION', '16')
         buildConfigField('int', 'DATABASE_VERSION', '11')
         buildConfigField('int', 'BACKUP_VERSION', '3')
         buildConfigField('String', 'LOG_TAG', '"NekoSMS"')
