@@ -44,6 +44,7 @@ public final class XposedUtils {
         // This method is hooked by the module to return the
         // value of BuildConfig.MODULE_VERSION, as seen from the
         // module side.
+        Xlog.i("Self Hooking");
         return -1;
     }
 
