@@ -70,9 +70,8 @@
     <string name="format_about_message">
         <![CDATA[
             A pattern-based text message blocker for Android.<br><br>
-            Made with &lt;3 by <a href="%1$s">Andrew Sun</a><br><br>
-            Visit the project on <a href="%2$s">GitHub</a><br><br>
-            Have a question? <a href="%3$s">Read the wiki!</a>
+            Visit the project on <a href="%1$s">GitHub</a><br><br>
+            Have a question? <a href="%2$s">Read the wiki!</a>
         ]]>
     </string>
 
