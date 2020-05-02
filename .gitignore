@@ -12,6 +12,7 @@
 bin/
 gen/
 build/
+app/release/
 
 # libraries
 libs/
