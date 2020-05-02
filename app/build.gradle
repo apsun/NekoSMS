@@ -21,12 +21,12 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        versionCode 35
-        versionName '0.18.0'
+        versionCode 36
+        versionName '0.18.1-dev'
         minSdkVersion 19
         targetSdkVersion 29
         resConfigs 'en', 'zh-rCN'
-        buildConfigField('int', 'MODULE_VERSION', '16')
+        buildConfigField('int', 'MODULE_VERSION', '17')
         buildConfigField('int', 'DATABASE_VERSION', '11')
         buildConfigField('int', 'BACKUP_VERSION', '3')
         buildConfigField('String', 'LOG_TAG', '"NekoSMS"')
