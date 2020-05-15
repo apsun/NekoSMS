@@ -12,6 +12,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.provider.Telephony;
+import android.telephony.SmsMessage;
+import android.telephony.SubscriptionManager;
+
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.consts.BroadcastConsts;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
@@ -188,6 +191,18 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
+    private void putPhoneIdAndSubIdExtra(Object inboundSmsHandler, Intent intent) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            try {
+                Object phone = XposedHelpers.getObjectField(inboundSmsHandler, "mPhone");
+                int phoneId = (Integer)XposedHelpers.callMethod(phone, "getPhoneId");
+                XposedHelpers.callStaticMethod(SubscriptionManager.class, "putPhoneIdAndSubIdExtra", intent, phoneId);
+            } catch (Exception e) {
+                Xlog.e("Could not update intent with subscription id", e);
+            }
+        }
+    }
+
     private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param, int receiverIndex) {
         Intent intent = (Intent)param.args[0];
         String action = intent.getAction();
@@ -203,6 +218,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             Xlog.i("SMS blocking disabled, exiting");
             return;
         }
+
+        // dispatchIntent is where the subscription id gets attached
+        // to the intent, so we have to emulate that behavior ourselves
+        // if we want to use the field.
+        putPhoneIdAndSubIdExtra(param.thisObject, intent);
 
         SmsMessageData message = SmsMessageData.fromIntent(intent);
         String sender = message.getSender();
@@ -296,6 +316,19 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             /*           user */ UserHandle.class,
             new DispatchIntentHook(4));
     }
+    
+    private void hookDispatchIntent29(XC_LoadPackage.LoadPackageParam lpparam) {
+        Xlog.i("Hooking dispatchIntent() for Android v29+");
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
+            /*         intent */ Intent.class,
+            /*     permission */ String.class,
+            /*          appOp */ int.class,
+            /*           opts */ Bundle.class,
+            /* resultReceiver */ BroadcastReceiver.class,
+            /*           user */ UserHandle.class,
+            /*          subId */ int.class,
+            new DispatchIntentHook(4));
+    }
 
     private void hookDispatchIntent29(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking dispatchIntent() for Android v29+");
@@ -320,7 +353,14 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
 
     private void hookDispatchIntent(XC_LoadPackage.LoadPackageParam lpparam) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            hookDispatchIntent29(lpparam);
+            try {
+                hookDispatchIntent29(lpparam);
+            } catch (NoSuchMethodError e) {
+                // Just in case. I have reason to suspect that the function signature
+                // changed in a minor patch, so fall back to the old version if possible.
+                // See commit 6939834098aaf8126da4832453ebf64a85a898a6.
+                hookDispatchIntent23(lpparam);
+            }
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             hookDispatchIntent23(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

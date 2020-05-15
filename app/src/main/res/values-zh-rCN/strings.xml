@@ -70,9 +70,8 @@
     <string name="format_about_message">
         <![CDATA[
             基于表达式的Android短信拦截器<br><br>
-            开发者：<a href="%1$s">Andrew Sun</a><br><br>
-            项目首页：<a href="%2$s">GitHub</a><br><br>
-            有问题？<a href="%3$s">请阅读Wiki</a>
+            项目首页：<a href="%1$s">GitHub</a><br><br>
+            有问题？<a href="%2$s">请阅读Wiki</a>
         ]]>
     </string>
 

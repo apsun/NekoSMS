@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
     private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
-    private static final String TWITTER_URL = "https://twitter.com/crossbowffs";
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String WIKI_URL = GITHUB_URL + "/wiki";
 
@@ -440,7 +439,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void showAboutDialog() {
         Spanned html = Html.fromHtml(getString(R.string.format_about_message,
-            TWITTER_URL, GITHUB_URL, WIKI_URL));
+            GITHUB_URL, WIKI_URL));
 
         AlertDialog dialog = new AlertDialog.Builder(this)
             .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)

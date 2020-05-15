@@ -21,7 +21,6 @@ import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 
 public final class NotificationHelper {
-    private static final String NOTIFICATION_GROUP = "blocked_message";
     private static final String NOTIFICATION_CHANNEL = "blocked_message";
 
     private NotificationHelper() { }
@@ -91,7 +90,6 @@ public final class NotificationHelper {
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
             .setColor(ContextCompat.getColor(context, R.color.main))
-            .setGroup(NOTIFICATION_GROUP)
             .build();
     }
 
