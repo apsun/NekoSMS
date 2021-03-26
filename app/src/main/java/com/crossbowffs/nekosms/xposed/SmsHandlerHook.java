@@ -340,6 +340,19 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             new DispatchIntentHook(4));
     }
 
+    private void hookDispatchIntent30(XC_LoadPackage.LoadPackageParam lpparam) {
+        Xlog.i("Hooking dispatchIntent() for Android v30+");
+        XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
+            /*         intent */ Intent.class,
+            /*     permission */ String.class,
+            /*          appOp */ String.class,
+            /*           opts */ Bundle.class,
+            /* resultReceiver */ BroadcastReceiver.class,
+            /*           user */ UserHandle.class,
+            /*          subId */ int.class,
+            new DispatchIntentHook(4));
+    }
+
     private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             hookConstructor30(lpparam);
@@ -351,7 +364,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookDispatchIntent(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            hookDispatchIntent30(lpparam);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             try {
                 hookDispatchIntent29(lpparam);
             } catch (NoSuchMethodError e) {
