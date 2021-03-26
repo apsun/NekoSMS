@@ -6,7 +6,7 @@ dependencies {
     implementation("androidx.core:core:1.3.2")
     implementation("androidx.appcompat:appcompat:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.1.0")
-    implementation("androidx.annotation:annotation:1.1.0")
+    implementation("androidx.annotation:annotation:1.2.0")
 
     // Material design library is a complete PoS that has reliably fixed and introduced a
     // visible bug in every version, so lock ourselves to this alpha version that is new
@@ -23,12 +23,12 @@ android {
     compileSdkVersion(30)
 
     defaultConfig {
-        versionCode(36)
-        versionName("0.18.1-dev")
+        versionCode(37)
+        versionName("0.19.0")
         minSdkVersion(19)
         targetSdkVersion(30)
         resConfigs("en", "zh-rCN")
-        buildConfigField("int", "MODULE_VERSION", "17")
+        buildConfigField("int", "MODULE_VERSION", "18")
         buildConfigField("int", "DATABASE_VERSION", "11")
         buildConfigField("int", "BACKUP_VERSION", "3")
         buildConfigField("String", "LOG_TAG", "\"NekoSMS\"")
