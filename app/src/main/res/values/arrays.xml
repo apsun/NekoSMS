@@ -14,4 +14,8 @@
         <item>-1</item>
         <item>-2</item>
     </string-array>
+    <string-array name="xposed_scope">
+        <item>com.android.phone</item>
+        <item>com.crossbowffs.nekosms</item>
+    </string-array>
 </resources>
