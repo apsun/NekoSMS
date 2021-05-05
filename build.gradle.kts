@@ -2,11 +2,10 @@ buildscript {
     repositories {
         google()
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.2")
+        classpath("com.android.tools.build:gradle:4.2.0")
     }
 }
 
@@ -14,6 +13,8 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+
+        // TODO: Needed for Xposed API libs
         jcenter()
     }
 }
