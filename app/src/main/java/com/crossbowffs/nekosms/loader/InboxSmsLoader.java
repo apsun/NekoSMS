@@ -33,7 +33,7 @@ public final class InboxSmsLoader {
     }
 
     public static Uri writeMessage(Context context, SmsMessageData messageData) {
-        if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R && !AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
             throw new SecurityException("Do not have permissions to write SMS");
         }
 

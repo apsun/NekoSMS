@@ -187,7 +187,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 PreferenceConsts.REMOTE_PREFS_AUTHORITY,
                 PreferenceConsts.FILE_MAIN,
                 true);
-            grantWriteSmsPermissions(context);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                grantWriteSmsPermissions(context);
+            }
         }
     }
 
