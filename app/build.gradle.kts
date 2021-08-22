@@ -23,8 +23,8 @@ android {
     compileSdkVersion(30)
 
     defaultConfig {
-        versionCode(37)
-        versionName("0.19.0")
+        versionCode(38)
+        versionName("0.19.1")
         minSdkVersion(19)
         targetSdkVersion(30)
         resConfigs("en", "zh-rCN")
