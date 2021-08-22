@@ -40,10 +40,8 @@ public final class InboxSmsLoader {
             id = ContentUris.parseId(uri);
         }
 
-        // An ID of 0 when writing to the SMS inbox could mean we don't have the
+        // An ID of 0 when writing to the SMS inbox means we don't have the
         // OP_WRITE_SMS permission. See ContentProvider#rejectInsert(Uri, ContentValues).
-        // Another explanation would be that this is actually the first message written.
-        // Since it's unlikely to be the latter, assume the write failed.
         if (id <= 0) {
             Xlog.e("Writing to SMS inbox failed");
             throw new DatabaseException("Failed to write message to SMS inbox");
