@@ -10,13 +10,11 @@ public final class AppOpsUtils {
     public static final int OP_WRITE_SMS = 15;
 
     private static final Method sCheckOpMethod;
-    private static final Method sNoteOpMethod;
     private static final Method sSetModeMethod;
 
     static {
         Class<AppOpsManager> cls = AppOpsManager.class;
         sCheckOpMethod = ReflectionUtils.getDeclaredMethod(cls, "checkOpNoThrow", int.class, int.class, String.class);
-        sNoteOpMethod = ReflectionUtils.getDeclaredMethod(cls, "noteOpNoThrow", int.class, int.class, String.class);
         sSetModeMethod = ReflectionUtils.getDeclaredMethod(cls, "setMode", int.class, int.class, String.class, int.class);
     }
 
@@ -30,18 +28,6 @@ public final class AppOpsUtils {
         AppOpsManager appOpsManager = getAppOpsManager(context);
         int result = (Integer)ReflectionUtils.invoke(sCheckOpMethod, appOpsManager, opCode, uid, packageName);
         return result == AppOpsManager.MODE_ALLOWED;
-    }
-
-    public static boolean noteOp(Context context, int opCode, int uid, String packageName) {
-        AppOpsManager appOpsManager = getAppOpsManager(context);
-        int result = (Integer)ReflectionUtils.invoke(sNoteOpMethod, appOpsManager, opCode, uid, packageName);
-        return result == AppOpsManager.MODE_ALLOWED;
-    }
-
-    public static boolean noteOp(Context context, int opCode) {
-        int uid = Process.myUid();
-        String packageName = context.getPackageName();
-        return noteOp(context, opCode, uid, packageName);
     }
 
     public static void allowOp(Context context, int opCode, int uid, String packageName) {

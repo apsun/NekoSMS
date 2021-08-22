@@ -33,10 +33,6 @@ public final class InboxSmsLoader {
     }
 
     public static Uri writeMessage(Context context, SmsMessageData messageData) {
-        if (!AppOpsUtils.noteOp(context, AppOpsUtils.OP_WRITE_SMS)) {
-            throw new SecurityException("Do not have permissions to write SMS");
-        }
-
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = contentResolver.insert(Telephony.Sms.CONTENT_URI, serializeMessage(messageData));
         long id = -1;
@@ -47,13 +43,9 @@ public final class InboxSmsLoader {
         // An ID of 0 when writing to the SMS inbox could mean we don't have the
         // OP_WRITE_SMS permission. See ContentProvider#rejectInsert(Uri, ContentValues).
         // Another explanation would be that this is actually the first message written.
-        // Because we check for permissions before calling this method, we can assume
-        // it's the latter case.
-        if (id == 0) {
-            Xlog.w("Writing to SMS inbox returned row 0");
-            return uri;
-        } else if (id < 0) {
-            Xlog.e("Writing to SMS inbox failed (unknown reason)");
+        // Since it's unlikely to be the latter, assume the write failed.
+        if (id <= 0) {
+            Xlog.e("Writing to SMS inbox failed");
             throw new DatabaseException("Failed to write message to SMS inbox");
         } else {
             return uri;

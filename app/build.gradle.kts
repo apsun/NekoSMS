@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation("androidx.core:core:1.3.2")
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.recyclerview:recyclerview:1.2.0")
+    implementation("androidx.core:core:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.annotation:annotation:1.2.0")
 
     // Material design library is a complete PoS that has reliably fixed and introduced a
