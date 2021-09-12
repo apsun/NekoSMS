@@ -10,6 +10,10 @@ public final class PreferenceConsts {
 
     public static final String KEY_ENABLE = "pref_enable";
     public static final boolean KEY_ENABLE_DEFAULT = true;
+    public static final String KEY_BLACKLIST_SENDER_ID_ALPHANUMERIC = "pref_blacklist_sender_id_alphanumeric";
+    public static final boolean KEY_BLACKLIST_SENDER_ID_ALPHANUMERIC_DEFAULT = false;
+    public static final String KEY_BLACKLIST_SENDER_ID_PHONE = "pref_blacklist_sender_id_phone";
+    public static final boolean KEY_BLACKLIST_SENDER_ID_PHONE_DEFAULT = false;
     public static final String KEY_WHITELIST_CONTACTS = "pref_whitelist_contacts";
     public static final boolean KEY_WHITELIST_CONTACTS_DEFAULT = false;
     public static final String KEY_NOTIFICATIONS_ENABLE = "pref_notifications_enable";

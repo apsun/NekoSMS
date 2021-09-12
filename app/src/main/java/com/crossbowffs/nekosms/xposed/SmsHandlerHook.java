@@ -182,11 +182,11 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         Context context = (Context)param.args[1];
         if (mContext == null) {
             mContext = context;
-            mFilterLoader = new SmsFilterLoader(context);
             mPreferences = new RemotePreferences(context,
                 PreferenceConsts.REMOTE_PREFS_AUTHORITY,
                 PreferenceConsts.FILE_MAIN,
                 true);
+            mFilterLoader = new SmsFilterLoader(context, mPreferences);
             grantWriteSmsPermissions(context);
         }
     }
