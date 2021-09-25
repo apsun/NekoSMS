@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NekoSMS</string>
+
+    <!-- General -->
+    <string name="ok">OK</string>
+    <string name="delete">Удалить</string>
+    <string name="edit">Редактировать</string>
+    <string name="enable">Активировать</string>
+    <string name="reboot">Перезагрузить</string>
+    <string name="about">О приложении</string>
+    <string name="ignore">Закрыть</string>
+    <string name="close">Закрыть</string>
+    <string name="restore">Восстановить</string>
+    <string name="undo">Отменить</string>
+    <string name="cancel">Отмена</string>
+
+    <!-- Navigation drawer -->
+    <string name="open_drawer">Открыть боковое меню</string>
+    <string name="close_drawer">Закрыть боковое меню</string>
+
+    <!-- Import/export -->
+    <string name="import_export">Импорт/экспорт</string>
+    <string name="import_from_storage">Загрузить правила из файла</string>
+    <string name="export_to_storage">Сохранить правила в файл</string>
+    <string name="import_confirm_title">Импортировать правила?</string>
+    <string name="import_confirm_message">Это перезапишет все ваши текущие правила фильтрации!</string>
+    <string name="import_success">Файл успешно загружен</string>
+    <string name="import_unknown_version">Несовместимая версия файла с правилами</string>
+    <string name="import_invalid_backup">Некорректный файл с правилами</string>
+    <string name="import_read_failed">Не получилось прочитать файл с правилами</string>
+    <string name="export_success">Файл успешно сохранён</string>
+    <string name="export_write_failed">Не получилось сохранить файл с правилами</string>
+    <string name="backup_button_import">Импортировать</string>
+    <string name="progress_importing">Загружаю данные из файла…</string>
+    <string name="progress_exporting">Сохраняю данные в файл…</string>
+
+    <!-- Filter rules -->
+    <string name="blacklist_rules">Чёрный список</string>
+    <string name="whitelist_rules">Белый список</string>
+    <string name="blacklist_rules_empty_text">Правила чёрного списка отсутсвуют</string>
+    <string name="whitelist_rules_empty_text">Правила белого списка отсутсвуют</string>
+    <string name="format_filter_info">%1$s %2$s%3$s</string>
+    <string name="filter_info_field_sender">Отправитель</string>
+    <string name="filter_info_field_body">Сообщение</string>
+    <string name="filter_info_mode_regex">соответствует регулярному выражению</string>
+    <string name="filter_info_mode_wildcard">соответствует wildcard выражению</string>
+    <string name="filter_info_mode_contains">содержит</string>
+    <string name="filter_info_mode_prefix">начинается с</string>
+    <string name="filter_info_mode_suffix">заканчивается на</string>
+    <string name="filter_info_mode_equals">равен</string>
+    <string name="filter_info_case_sensitive">\u0020(с учётом регистра)</string>
+    <string name="filter_deleted">Правило удалено</string>
+    <string name="filter_actions">Действия</string>
+    <string name="enable_xposed_module_title">Активируйте модуль Xposed</string>
+    <string name="enable_xposed_module_message">
+        Начиная с версии Android 4.4 приложения, которые не являются в системе приложением SMS по умолчанию,
+        не могут получать доступ к SMS сообщениям и добавлять новые в список полученных.\n\nПожалуйста активируйте модуль Xposed
+        для того чтобы обойти это ограничение, в противном случае приложение не сможет работать.
+    </string>
+    <string name="module_outdated_title">Модуль Xposed обновлён</string>
+    <string name="module_outdated_message">Пожалуйста перезагрузите устройство чтобы изменения вступили в силу.</string>
+    <string name="task_killer_title">Обнаружены приложения по контролю фоновой активности</string>
+    <string name="task_killer_message">
+        На вашем устройстве обнаружены следующие приложения:\n\n%s\n
+        \nПожалуйста добавьте в них приложение NekoSMS в исключения, иначе оно не сможет работать!
+    </string>
+    <string name="task_killer_ok">Понятно</string>
+    <string name="xposed_not_installed">Xposed не найден</string>
+    <string name="format_about_message">
+        <![CDATA[
+            Настраиваемый спам-фильтр для SMS сообщений на Android.<br><br>
+            Исходный код проекта на <a href="%1$s">GitHub</a><br><br>
+            Есть вопросы? <a href="%2$s">Обратитесь к wiki!</a>
+        ]]>
+    </string>
+
+    <!-- Filter rule editor -->
+    <string name="filter_editor">Редактирование правила</string>
+    <string name="save_blacklist_rule">Сохранить в чёрный список</string>
+    <string name="save_whitelist_rule">Сохранить в белый список</string>
+    <string name="discard_changes">Отменить изменения</string>
+    <string name="filter_saved">Правило сохранено</string>
+    <string name="filter_save_failed">Невозможно сохранить правило</string>
+    <string name="invalid_pattern_title">Некорректное значение</string>
+    <string name="format_invalid_pattern_message">Значение %1$s не является корректным регулярным выражением!\n\nПричина: %2$s</string>
+    <string name="invalid_pattern_field_sender">отправитель</string>
+    <string name="invalid_pattern_field_body">получатель</string>
+    <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
+
+    <!-- Blocked messages -->
+    <string name="blocked_messages">Корзина</string>
+    <string name="blocked_messages_empty_text">Нет заблокированных сообщений</string>
+    <string name="must_enable_xposed_module">Модуль Xposed должен быть активирован</string>
+    <string name="clear_blocked_messages">Очистить заблокированные сообщения</string>
+    <string name="confirm_clear_messages_title">Очистить корзину?</string>
+    <string name="confirm_clear_messages_message">Все сообщения в корзине будут безвозвратно удалены!</string>
+    <string name="cleared_blocked_messages">Удалить все заблокированные сообщения</string>
+    <string name="message_deleted">Сообщение удалено</string>
+    <string name="message_restored">Сообщение восстановлено в приложение SMS</string>
+    <string name="message_restore_failed">Сообщение не может быть восстановлено</string>
+    <string name="load_message_failed">Не получилось загрузить сообщение</string>
+    <string name="message_actions">Действия</string>
+    <string name="format_message_details">
+        <![CDATA[
+            <b>Отправитель</b><br>
+            %1$s<br><br>
+
+            <b>Время получения</b><br>
+            %2$s<br><br>
+
+            <b>Сообщение</b><br>
+            %3$s
+        ]]>
+    </string>
+
+    <!-- Filter properties -->
+    <string name="filter_pattern">Значение</string>
+    <string name="filter_mode">Правило</string>
+    <string name="filter_case">Регистр</string>
+    <string name="filter_mode_regex">Регулярное выражение</string>
+    <string name="filter_mode_wildcard">Wildcard</string>
+    <string name="filter_mode_contains">Содержит</string>
+    <string name="filter_mode_prefix">Начинается с</string>
+    <string name="filter_mode_suffix">Заканчивается на</string>
+    <string name="filter_mode_equals">Точное значение</string>
+    <string name="filter_field_sender">Отправитель</string>
+    <string name="filter_field_body">Сообщение</string>
+    <string name="filter_case_sensitive">Учитывать</string>
+    <string name="filter_case_insensitive">Не учитывать</string>
+
+    <!-- Preferences -->
+    <string name="settings">Настройки</string>
+    <string name="pref_general">Общие</string>
+    <string name="pref_enable">Включить NekoSMS</string>
+    <string name="pref_enable_summary">Перезагрузка не требуется</string>
+    <string name="pref_enable_summary_alt">Пожалуйста активируйте модуль Xposed!</string>
+    <string name="pref_whitelist_contacts">Разрешить сообщения от контактов</string>
+    <string name="pref_whitelist_contacts_summary">Не блокировать входящие SMS сообщения от номеров записанных в телефонной книге</string>
+    <string name="pref_verbose_logging">Расширенное логирование</string>
+    <string name="pref_verbose_logging_summary">Отправлять содержимое входящих SMS сообщений в logcat</string>
+    <string name="pref_notifications">Уведомления</string>
+    <string name="pref_notifications_enable">Разрешить уведомления</string>
+    <string name="pref_notifications_enable_summary">Показывать уведомление когда входящее сообщение было заблокировано</string>
+    <string name="pref_notifications_ringtone">Звук</string>
+    <string name="pref_notifications_ringtone_none">Не определён</string>
+    <string name="pref_notifications_vibrate">Вибрация</string>
+    <string name="pref_notifications_lights">Световая индикация</string>
+    <string name="pref_notifications_priority">Приоритет</string>
+    <string name="pref_notifications_priority_max">Очень высокий</string>
+    <string name="pref_notifications_priority_high">Высокий</string>
+    <string name="pref_notifications_priority_default">Средний</string>
+    <string name="pref_notifications_priority_low">Низкий</string>
+    <string name="pref_notifications_priority_min">Очень низкий</string>
+    <string name="pref_notifications_open_settings">Настройки уведомлений</string>
+    <string name="pref_notifications_open_settings_summary">Нажмите чтобы перейти к настройкам уведомлений</string>
+
+    <!-- Notifications -->
+    <string name="format_notification_single_sender">%s (заблокировано)</string>
+    <string name="channel_blocked_messages">Заблокированные сообщения</string>
+
+    <!-- App shortcuts -->
+    <string name="shortcut_new_blacklist_rule">В чёрный список</string>
+    <string name="shortcut_new_whitelist_rule">В белый список</string>
+    <string name="shortcut_blocked_messages">Корзина</string>
+
+    <!-- Debug stuff -->
+    <string name="create_test_message">Тестовое сообщение</string>
+</resources>
