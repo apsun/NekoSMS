@@ -27,7 +27,7 @@ android {
         versionName("0.19.1")
         minSdkVersion(19)
         targetSdkVersion(30)
-        resConfigs("en", "zh-rCN")
+        resConfigs("en", "zh-rCN", "ru")
         buildConfigField("int", "MODULE_VERSION", "18")
         buildConfigField("int", "DATABASE_VERSION", "11")
         buildConfigField("int", "BACKUP_VERSION", "3")
