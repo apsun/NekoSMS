@@ -62,7 +62,11 @@ public final class NotificationHelper {
         Intent intent = new Intent(context, BlockedSmsReceiver.class);
         intent.setAction(action);
         intent.setData(uri);
-        return PendingIntent.getBroadcast(context, 0, intent, 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            return PendingIntent.getBroadcast(context, 0, intent, 0);
+        }
     }
 
     private static Notification buildNotificationSingle(Context context, SmsMessageData messageData) {
@@ -71,7 +75,12 @@ public final class NotificationHelper {
         Intent viewIntent = new Intent(context, MainActivity.class);
         viewIntent.setAction(Intent.ACTION_VIEW);
         viewIntent.setData(uri);
-        PendingIntent viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
+        PendingIntent viewPendingIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, PendingIntent.FLAG_IMMUTABLE);
+        } else {
+            viewPendingIntent = PendingIntent.getActivity(context, 0, viewIntent, 0);
+        }
 
         PendingIntent deleteIntent = createPendingIntent(context, BroadcastConsts.ACTION_DELETE_SMS, uri);
         PendingIntent restoreIntent = createPendingIntent(context, BroadcastConsts.ACTION_RESTORE_SMS, uri);
