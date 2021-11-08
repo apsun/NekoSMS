@@ -377,7 +377,7 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookDispatchIntent(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             hookDispatchIntent31(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             hookDispatchIntent30(lpparam);
