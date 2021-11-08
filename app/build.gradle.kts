@@ -20,13 +20,13 @@ dependencies {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdkVersion(31)
 
     defaultConfig {
         versionCode(38)
         versionName("0.19.1")
         minSdkVersion(19)
-        targetSdkVersion(30)
+        targetSdkVersion(31)
         resConfigs("en", "zh-rCN", "ru")
         buildConfigField("int", "MODULE_VERSION", "18")
         buildConfigField("int", "DATABASE_VERSION", "11")
