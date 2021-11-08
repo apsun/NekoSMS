@@ -63,10 +63,7 @@
         <activity
             android:name=".app.FilterEditorActivity"
             android:label="@string/filter_editor"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-            </intent-filter>
+            android:exported="false">
         </activity>
         <provider
             android:name=".provider.DatabaseProvider"
