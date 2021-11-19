@@ -3,10 +3,10 @@ plugins {
 }
 
 dependencies {
-    implementation("androidx.core:core:1.6.0")
-    implementation("androidx.appcompat:appcompat:1.3.1")
+    implementation("androidx.core:core:1.7.0")
+    implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("androidx.annotation:annotation:1.2.0")
+    implementation("androidx.annotation:annotation:1.3.0")
 
     // Material design library is a complete PoS that has reliably fixed and introduced a
     // visible bug in every version, so lock ourselves to this alpha version that is new
@@ -20,14 +20,14 @@ dependencies {
 }
 
 android {
-    compileSdkVersion(31)
+    compileSdk = 31
 
     defaultConfig {
-        versionCode(38)
-        versionName("0.19.1")
-        minSdkVersion(19)
-        targetSdkVersion(31)
-        resConfigs("en", "zh-rCN", "ru")
+        versionCode = 39
+        versionName = "0.20.0"
+        minSdk = 19
+        targetSdk = 31
+        resourceConfigurations.addAll(listOf("en", "zh-rCN", "ru"))
         buildConfigField("int", "MODULE_VERSION", "18")
         buildConfigField("int", "DATABASE_VERSION", "11")
         buildConfigField("int", "BACKUP_VERSION", "3")
@@ -53,7 +53,7 @@ android {
         }
     }
 
-    lintOptions {
+    lint {
         isAbortOnError = false
     }
 }
