@@ -143,7 +143,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             selectedMsgIds.add(msgid);
         }
 
-        // 如果没有选中任何的item，则退出多选模式；否则更新选中与否的背景
+        // 如果没有选中任何的item，则退出多选模式；否则更新条目背景
         if (selectedMsgIds.size() == 0) {
             actionMode.finish();
         } else {
@@ -177,7 +177,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                refreshQueryResultAndUI(query);
+                refreshList();
                 //点击提交后，隐藏输入法
                 InputMethodManager imm = (InputMethodManager) getMainActivity().getSystemService((Context.INPUT_METHOD_SERVICE));
                 if (imm != null) {
@@ -189,34 +189,23 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
             @Override
             public boolean onQueryTextChange(String query) {
-                refreshQueryResultAndUI(query);
+                refreshList();
                 return true;
             }
         });
     }
 
-    //刷新查询后的列表
-    private void refreshQueryResultAndUI(String query) {
-        if(getContext()==null)return;
-        //查询 发送者 或 短信文本 匹配的条目
-        mAdapter.changeCursor(BlockedSmsLoader.get().query(getContext(),
-                DatabaseContract.BlockedMessages.BODY + " LIKE ? OR " + DatabaseContract.BlockedMessages.SENDER + " LIKE ?",
-                new String[]{"%" + query + "%", "%" + query + "%"},
-                DatabaseContract.BlockedMessages.TIME_SENT + " DESC"));
-    }
-
-    //刷新列表，在搜索删除后等场景
+    //通过restartLoader 刷新列表，通过bundle传递查询条件
     private void refreshList() {
         if(getContext()==null)return;
         CharSequence query="";
         if(searchView!=null){
             query=searchView.getQuery();
         }
-        //mAdapter = new BlockedMessagesAdapter(this);
-        mAdapter.changeCursor(BlockedSmsLoader.get().query(getContext(),
-                DatabaseContract.BlockedMessages.BODY + " LIKE ? OR " + DatabaseContract.BlockedMessages.SENDER + " LIKE ?",
-                new String[]{"%" + query + "%", "%" + query + "%"},
-                DatabaseContract.BlockedMessages.TIME_SENT + " DESC"));
+
+        Bundle bundle=new Bundle();
+        bundle.putCharSequence("query", query);
+        getLoaderManager().restartLoader(0, bundle, this);
     }
 
     @Override
@@ -235,12 +224,26 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
-            getContext(),
-            DatabaseContract.BlockedMessages.CONTENT_URI,
-            DatabaseContract.BlockedMessages.ALL, null, null,
-            DatabaseContract.BlockedMessages.TIME_SENT + " DESC"
-        );
+        if(args==null){//默认查全部
+            return new CursorLoader(
+                    getContext(),
+                    DatabaseContract.BlockedMessages.CONTENT_URI,
+                    DatabaseContract.BlockedMessages.ALL,
+                    null,
+                    null,
+                    DatabaseContract.BlockedMessages.TIME_SENT + " DESC"
+            );
+        }else{//searchView!=null时，根据输入条件来查询。其中query==""时，也是查全部
+            CharSequence query=args.getCharSequence("query");
+            return new CursorLoader(
+                    getContext(),
+                    DatabaseContract.BlockedMessages.CONTENT_URI,
+                    DatabaseContract.BlockedMessages.ALL,
+                    DatabaseContract.BlockedMessages.BODY + " LIKE ? OR " + DatabaseContract.BlockedMessages.SENDER + " LIKE ?",
+                    new String[]{"%" + query + "%", "%" + query + "%"},
+                    DatabaseContract.BlockedMessages.TIME_SENT + " DESC"
+            );
+        }
     }
 
     @Override
@@ -505,7 +508,6 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             ids_str=ids_str+","+smsId;
         }
         int num = BlockedSmsLoader.get().delete(context, DatabaseContract.BlockedMessages._ID + " in("+ids_str+")", null);
-        refreshList();
         showSnackbar(getString(R.string.message_multi_deleted, num));
     }
 
@@ -524,7 +526,6 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         values.put(DatabaseContract.BlockedMessages.SEEN, 1);
         //批量已读
         int num = BlockedSmsLoader.get().update(context, values,DatabaseContract.BlockedMessages._ID + " in("+ids_str+")", null);
-        refreshList();
         //showSnackbar(getString(R.string.xxx, num));
     }
 
