@@ -97,6 +97,7 @@
 
     <!-- Blocked messages -->
     <string name="blocked_messages">Blocked messages</string>
+    <string name="blocked_messages_whith_num">Blocked messages(%1$d)</string>
     <string name="blocked_messages_empty_text">No blocked messages!</string>
     <string name="must_enable_xposed_module">Xposed module must be enabled</string>
     <string name="clear_blocked_messages">Clear blocked messages</string>

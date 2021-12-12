@@ -111,7 +111,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         //registerForContextMenu(mRecyclerView);
         disableFab();
-        setTitle(R.string.blocked_messages);
+        setTitle(R.string.blocked_messages_whith_num,mAdapter.getItemCount());
         onNewArguments(getArguments());
         BlockedSmsLoader.get().markAllSeen(getContext());
 
@@ -249,6 +249,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mAdapter.changeCursor(data);
+        setTitle(R.string.blocked_messages_whith_num,data.getCount());
     }
 
     @Override

@@ -97,6 +97,7 @@
 
     <!-- Blocked messages -->
     <string name="blocked_messages">已拦截的信息</string>
+    <string name="blocked_messages_whith_num">已拦截(%1$d)</string>
     <string name="blocked_messages_empty_text">没有任何垃圾信息！</string>
     <string name="must_enable_xposed_module">需要启用Xposed模块</string>
     <string name="clear_blocked_messages">清空页面信息</string>

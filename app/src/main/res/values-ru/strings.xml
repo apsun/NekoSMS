@@ -97,6 +97,7 @@
 
     <!-- Blocked messages -->
     <string name="blocked_messages">Корзина</string>
+    <string name="blocked_messages_whith_num">Blocked messages(%1$d)</string>
     <string name="blocked_messages_empty_text">Нет заблокированных сообщений</string>
     <string name="must_enable_xposed_module">Модуль Xposed должен быть активирован</string>
     <string name="clear_blocked_messages">Очистить заблокированные сообщения</string>
