@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
         <item name="colorAccent">@color/accent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="alertDialogTheme">@style/AppTheme.Dialog</item>
+
+        <item name="actionModeStyle">@style/AppActionModeStyle</item>
+        <item name="toolbarStyle">@style/AppToolbarStyle</item>
+        <item name="toolbarNavigationButtonStyle">@style/AppToolbarNavigationButtonStyle</item>
     </style>
+
     <style name="AppTheme.Dialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/accent</item>
     </style>
+
+    <style name="AppActionModeStyle" parent="@style/Widget.AppCompat.ActionMode">
+        <item name="background">@color/primary</item>
+    </style>
+
+    <!--标题与NavigationIcon的距离-->
+    <style name="AppToolbarStyle" parent="Base.Widget.AppCompat.Toolbar">
+        <item name="contentInsetStart">0dp</item>
+        <item name="contentInsetStartWithNavigation">0dp</item>
+        <item name="titleTextAppearance">@style/AppToolbarStyle.TitleText</item>
+
+    </style>
+
+    <!--Toolbar标题文字大小-->
+    <style name="AppToolbarStyle.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">18sp</item><!--default:20sp?-->
+    </style>
+
+    <style name="AppToolbarNavigationButtonStyle" parent="@style/Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:minWidth">48dp</item><!--default:56dp?-->
+        <!--<item name="android:padding">0dp</item>-->
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
 </resources>

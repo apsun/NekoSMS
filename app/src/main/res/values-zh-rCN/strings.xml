@@ -14,6 +14,11 @@
     <string name="restore">恢复</string>
     <string name="undo">撤消</string>
     <string name="cancel">取消</string>
+    <string name="read">已读</string>
+    <string name="up">上移</string>
+    <string name="down">下移</string>
+    <string name="select_all">全选</string>
+    <string name="select_invert">反选</string>
 
     <!-- Navigation drawer -->
     <string name="open_drawer">扩展导航抽屉</string>
@@ -36,8 +41,10 @@
     <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter rules -->
-    <string name="blacklist_rules">黑名单规则</string>
-    <string name="whitelist_rules">白名单规则</string>
+    <string name="list_rules">名单规则</string>
+    <string name="blacklist_rules">黑名单</string>
+    <string name="whitelist_rules">白名单</string>
+    <string name="list_rules_empty_text">没有任何名单规则！</string>
     <string name="blacklist_rules_empty_text">没有任何黑名单规则！</string>
     <string name="whitelist_rules_empty_text">没有任何白名单规则！</string>
     <string name="format_filter_info">%1$s%2$s%3$s</string>
@@ -92,11 +99,15 @@
     <string name="blocked_messages">已拦截的信息</string>
     <string name="blocked_messages_empty_text">没有任何垃圾信息！</string>
     <string name="must_enable_xposed_module">需要启用Xposed模块</string>
-    <string name="clear_blocked_messages">清空已拦截的信息</string>
+    <string name="clear_blocked_messages">清空页面信息</string>
     <string name="confirm_clear_messages_title">删除所有信息？</string>
-    <string name="confirm_clear_messages_message">信息被删除后永远无法恢复！</string>
+    <string name="confirm_clear_messages_message">将删除页面上展示的所有信息，信息被删除后永远无法恢复！</string>
     <string name="cleared_blocked_messages">已删除所有信息</string>
     <string name="message_deleted">信息已删除</string>
+    <string name="message_multi_deleted">%1$d条信息已删除</string>
+    <string name="message_multi_selected">%1$d条信息已选择</string>
+    <string name="message_multi_restored">%1$d条信息已恢复</string>
+
     <string name="message_restored">信息已恢复到收件箱</string>
     <string name="message_restore_failed">无法恢复信息</string>
     <string name="load_message_failed">无法加载信息</string>
@@ -105,6 +116,9 @@
         <![CDATA[
             <b>发送者</b><br>
             %1$s<br><br>
+
+            <b>发送给</b><br>
+            SIM %4$d<br><br>
 
             <b>发送时间</b><br>
             %2$s<br><br>
@@ -116,6 +130,9 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">表达式</string>
+    <string name="filter_pattern_sender">发送者表达式</string>
+    <string name="filter_pattern_body">文本表达式</string>
+
     <string name="filter_mode">匹配方式</string>
     <string name="filter_case">大小写</string>
     <string name="filter_mode_regex">正则表达式</string>
@@ -135,6 +152,9 @@
     <string name="pref_enable">启用NekoSMS</string>
     <string name="pref_enable_summary">用此开关不需要重启</string>
     <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
+    <string name="pref_priority_enable">启用规则优先级</string>
+    <string name="pref_priority_enable_summary_on">按顺序逐一匹配全部规则</string>
+    <string name="pref_priority_enable_summary_off">优先匹配白名单规则</string>
     <string name="pref_whitelist_contacts">联系人白名单</string>
     <string name="pref_whitelist_contacts_summary">不拦截来自联系人的信息</string>
     <string name="pref_verbose_logging">详细log模式</string>
@@ -156,10 +176,11 @@
     <string name="pref_notifications_open_settings_summary">点击此处打开通知设置</string>
 
     <!-- Notifications -->
-    <string name="format_notification_single_sender">%s（已拦截）</string>
+    <string name="format_notification_single_sender">%s</string>
     <string name="channel_blocked_messages">信息拦截通知</string>
 
     <!-- App shortcuts -->
+    <string name="shortcut_new_rulelist_rule">新建名单规则</string>
     <string name="shortcut_new_blacklist_rule">新建黑名单规则</string>
     <string name="shortcut_new_whitelist_rule">新建白名单规则</string>
     <string name="shortcut_blocked_messages">已拦截的信息</string>

@@ -118,6 +118,16 @@ public abstract class AutoContentLoader<T> {
         return deletedRows != 0;
     }
 
+    public int delete(Context context,String where,String[] selectionArgs) {
+        ContentResolver contentResolver = context.getContentResolver();
+        return contentResolver.delete(getContentUri(), where, selectionArgs);
+    }
+
+    public Cursor query(Context context, String where, String[] selectionArgs,String orderBy) {
+        ContentResolver contentResolver = context.getContentResolver();
+        return contentResolver.query(getContentUri(), mColumnNames,  where, selectionArgs, orderBy);
+    }
+
     protected void updateAll(Context context, ContentValues values) {
         updateAll(context, values, null, null);
     }
@@ -135,6 +145,12 @@ public abstract class AutoContentLoader<T> {
         ContentResolver contentResolver = context.getContentResolver();
         int updatedRows = contentResolver.update(uri, values, null, null);
         return updatedRows != 0;
+    }
+
+    public int update(Context context, ContentValues values,String where,String[] selectionArgs) {
+        ContentResolver contentResolver = context.getContentResolver();
+        int updatedRows = contentResolver.update(getContentUri(), values, where, selectionArgs);
+        return updatedRows;
     }
 
     protected Uri convertIdToUri(long id) {

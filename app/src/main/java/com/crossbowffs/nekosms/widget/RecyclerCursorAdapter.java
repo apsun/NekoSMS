@@ -2,7 +2,11 @@ package com.crossbowffs.nekosms.widget;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
+
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
     private Cursor mCursor;
@@ -29,6 +33,20 @@ public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder> 
         } else {
             mCursor.moveToPosition(position);
             return mCursor.getLong(mIdColumn);
+        }
+    }
+
+    public Set<Long> getAllItemId() {
+        Set<Long> ids = new HashSet();
+        if (mCursor == null) {
+            return null;
+        } else {
+            if (mCursor.moveToFirst()) {
+                do {
+                    ids.add(mCursor.getLong(mIdColumn));
+                } while (mCursor.moveToNext());
+            }
+            return ids;
         }
     }
 

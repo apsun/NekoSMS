@@ -9,17 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
@@ -27,21 +16,37 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String EXTRA_SECTION = "section";
-    public static final String EXTRA_SECTION_BLACKLIST_RULES = "blacklist_rules";
-    public static final String EXTRA_SECTION_WHITELIST_RULES = "whitelist_rules";
+    public static final String EXTRA_SECTION_LIST_RULES = "list_rules";
     public static final String EXTRA_SECTION_BLOCKED_MESSAGES = "blocked_messages";
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ActionBarDrawerToggle mDrawerToggle;
     private Set<Snackbar> mSnackbars;
     private Fragment mContentFragment;
+
     private String mContentSection;
     private SharedPreferences mInternalPrefs;
 
@@ -128,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             // Set the section that was selected previously
-            String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_BLACKLIST_RULES);
+            String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_LIST_RULES);
             setContentSection(section);
         }
     }
@@ -153,11 +159,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         mDrawerLayout.closeDrawer(mNavigationView);
         switch (item.getItemId()) {
-        case R.id.main_drawer_blacklist_rules:
-            setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
-            return true;
-        case R.id.main_drawer_whitelist_rules:
-            setContentSection(EXTRA_SECTION_WHITELIST_RULES);
+        case R.id.main_drawer_list_rules:
+            setContentSection(EXTRA_SECTION_LIST_RULES);
             return true;
         case R.id.main_drawer_blocked_messages:
             setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES);
@@ -209,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Xlog.i("Got ACTION_VIEW intent with (maybe) backup file URI");
                     Bundle args = new Bundle(1);
                     args.putParcelable(FilterRulesFragment.ARG_IMPORT_URI, uri);
-                    setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
+                    setContentSection(EXTRA_SECTION_LIST_RULES, args);
                 }
 
                 // Kind of a hacky workaround; this ensures that we only execute the
@@ -246,21 +249,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Fragment fragment;
         int navId;
         switch (key) {
-        case EXTRA_SECTION_BLACKLIST_RULES:
+        case EXTRA_SECTION_LIST_RULES:
             fragment = new FilterRulesFragment();
             if (args == null) {
                 args = new Bundle();
             }
-            args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK.name());
-            navId = R.id.main_drawer_blacklist_rules;
-            break;
-        case EXTRA_SECTION_WHITELIST_RULES:
-            fragment = new FilterRulesFragment();
-            if (args == null) {
-                args = new Bundle();
-            }
-            args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW.name());
-            navId = R.id.main_drawer_whitelist_rules;
+            args.putString(FilterRulesFragment.EXTRA_ACTION, null);
+            navId = R.id.main_drawer_list_rules;
             break;
         case EXTRA_SECTION_BLOCKED_MESSAGES:
             fragment = new BlockedMessagesFragment();
@@ -272,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             break;
         default:
             Xlog.e("Unknown context section: %s", key);
-            return setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
+            return setContentSection(EXTRA_SECTION_LIST_RULES);
         }
 
         if (args != null) {
@@ -307,6 +302,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public Snackbar makeSnackbar(int textId) {
         Snackbar snackbar = Snackbar.make(mCoordinatorLayout, textId, Snackbar.LENGTH_LONG);
+        mSnackbars.add(snackbar);
+        return snackbar;
+    }
+
+    public Snackbar makeSnackbar(CharSequence text) {
+        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, text, Snackbar.LENGTH_LONG);
         mSnackbars.add(snackbar);
         return snackbar;
     }
@@ -442,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             GITHUB_URL, WIKI_URL));
 
         AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)
+            .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME )
             .setMessage(html)
             .setPositiveButton(R.string.close, null)
             .show();

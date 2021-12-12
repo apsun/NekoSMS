@@ -1,50 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:longClickable="true"
-    android:background="?android:selectableItemBackground"
+    android:orientation="vertical"
     android:padding="10dp">
+
+    <TextView
+        android:id="@+id/filter_rule_action_info_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/filter_rule_sender_info_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollHorizontally="true"
         android:ellipsize="end"
+        android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/filter_rule_sender_pattern_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollHorizontally="true"
         android:ellipsize="end"
-        android:singleLine="true"
+        android:scrollHorizontally="true"
         android:textColor="?android:textColorPrimary"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
+
     <TextView
         android:id="@+id/filter_rule_body_info_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollHorizontally="true"
         android:ellipsize="end"
+        android:scrollHorizontally="true"
         android:singleLine="true"
         android:textColor="?android:textColorPrimary"
         android:textSize="16sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
     <TextView
         android:id="@+id/filter_rule_body_pattern_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scrollHorizontally="true"
         android:ellipsize="end"
-        android:singleLine="true"
+        android:scrollHorizontally="true"
         android:textColor="?android:textColorPrimary"
-        android:textSize="16sp"/>
+        android:textSize="16sp" />
 </LinearLayout>
+
+

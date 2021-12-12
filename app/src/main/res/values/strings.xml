@@ -14,6 +14,11 @@
     <string name="restore">Restore</string>
     <string name="undo">Undo</string>
     <string name="cancel">Cancel</string>
+    <string name="read">Seen</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="select_all">Select All</string>
+    <string name="select_invert">Select Invert</string>
 
     <!-- Navigation drawer -->
     <string name="open_drawer">Open navigation drawer</string>
@@ -36,8 +41,10 @@
     <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter rules -->
+    <string name="list_rules">List rules</string>
     <string name="blacklist_rules">Blacklist rules</string>
     <string name="whitelist_rules">Whitelist rules</string>
+    <string name="list_rules_empty_text">No list rules yet!</string>
     <string name="blacklist_rules_empty_text">No blacklist rules yet!</string>
     <string name="whitelist_rules_empty_text">No whitelist rules yet!</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
@@ -97,6 +104,10 @@
     <string name="confirm_clear_messages_message">Your messages will be gone forever! (A very long time!)</string>
     <string name="cleared_blocked_messages">Deleted all blocked messages</string>
     <string name="message_deleted">Message deleted</string>
+    <string name="message_multi_deleted">%1$d Message deleted</string>
+    <string name="message_multi_selected">%1$d Message selected</string>
+    <string name="message_multi_restored">%1$d Message restored</string>
+
     <string name="message_restored">Message restored to inbox</string>
     <string name="message_restore_failed">Message could not be restored</string>
     <string name="load_message_failed">Could not load message</string>
@@ -105,6 +116,9 @@
         <![CDATA[
             <b>Sender</b><br>
             %1$s<br><br>
+
+            <b>Send to</b><br>
+            SIM %4$d<br><br>
 
             <b>Time sent</b><br>
             %2$s<br><br>
@@ -116,6 +130,9 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">Pattern</string>
+    <string name="filter_pattern_sender">Sender Pattern</string>
+    <string name="filter_pattern_body">Body Pattern</string>
+
     <string name="filter_mode">Mode</string>
     <string name="filter_case">Case</string>
     <string name="filter_mode_regex">Regular expression</string>
@@ -135,6 +152,9 @@
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">No reboot required</string>
     <string name="pref_enable_summary_alt">Please enable the Xposed module first!</string>
+    <string name="pref_priority_enable">Enable Priority</string>
+    <string name="pref_priority_enable_summary_on">Match all rules in order</string>
+    <string name="pref_priority_enable_summary_off">Match the whitelist rules preferentially</string>
     <string name="pref_whitelist_contacts">Whitelist contacts</string>
     <string name="pref_whitelist_contacts_summary">Don\'t block messages from contacts</string>
     <string name="pref_verbose_logging">Verbose logging</string>
@@ -160,6 +180,7 @@
     <string name="channel_blocked_messages">Blocked messages</string>
 
     <!-- App shortcuts -->
+    <string name="shortcut_new_rulelist_rule">New rule</string>
     <string name="shortcut_new_blacklist_rule">New blacklist rule</string>
     <string name="shortcut_new_whitelist_rule">New whitelist rule</string>
     <string name="shortcut_blocked_messages">Blocked messages</string>

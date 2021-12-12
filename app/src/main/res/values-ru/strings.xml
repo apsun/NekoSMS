@@ -14,6 +14,11 @@
     <string name="restore">Восстановить</string>
     <string name="undo">Отменить</string>
     <string name="cancel">Отмена</string>
+    <string name="read">Seen</string>
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="select_all">Select All</string>
+    <string name="select_invert">Select Invert</string>
 
     <!-- Navigation drawer -->
     <string name="open_drawer">Открыть боковое меню</string>
@@ -36,8 +41,10 @@
     <string name="progress_exporting">Сохраняю данные в файл…</string>
 
     <!-- Filter rules -->
+    <string name="list_rules">List rules</string>
     <string name="blacklist_rules">Чёрный список</string>
     <string name="whitelist_rules">Белый список</string>
+    <string name="list_rules_empty_text">No list rules yet!</string>
     <string name="blacklist_rules_empty_text">Правила чёрного списка отсутсвуют</string>
     <string name="whitelist_rules_empty_text">Правила белого списка отсутсвуют</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
@@ -97,6 +104,10 @@
     <string name="confirm_clear_messages_message">Все сообщения в корзине будут безвозвратно удалены!</string>
     <string name="cleared_blocked_messages">Удалить все заблокированные сообщения</string>
     <string name="message_deleted">Сообщение удалено</string>
+    <string name="message_multi_deleted">%1$d Message deleted</string>
+    <string name="message_multi_selected">%1$d Message selected</string>
+    <string name="message_multi_restored">%1$d Message restored</string>
+
     <string name="message_restored">Сообщение восстановлено в приложение SMS</string>
     <string name="message_restore_failed">Сообщение не может быть восстановлено</string>
     <string name="load_message_failed">Не получилось загрузить сообщение</string>
@@ -105,6 +116,9 @@
         <![CDATA[
             <b>Отправитель</b><br>
             %1$s<br><br>
+
+            <b>Send to</b><br>
+            SIM %4$d<br><br>
 
             <b>Время получения</b><br>
             %2$s<br><br>
@@ -116,6 +130,8 @@
 
     <!-- Filter properties -->
     <string name="filter_pattern">Значение</string>
+    <string name="filter_pattern_sender">Sender Pattern</string>
+    <string name="filter_pattern_body">Body Pattern</string>
     <string name="filter_mode">Правило</string>
     <string name="filter_case">Регистр</string>
     <string name="filter_mode_regex">Регулярное выражение</string>
@@ -135,6 +151,9 @@
     <string name="pref_enable">Включить NekoSMS</string>
     <string name="pref_enable_summary">Перезагрузка не требуется</string>
     <string name="pref_enable_summary_alt">Пожалуйста активируйте модуль Xposed!</string>
+    <string name="pref_priority_enable">Enable Priority</string>
+    <string name="pref_priority_enable_summary_on">Match all rules in order</string>
+    <string name="pref_priority_enable_summary_off">Match the whitelist rules preferentially</string>
     <string name="pref_whitelist_contacts">Разрешить сообщения от контактов</string>
     <string name="pref_whitelist_contacts_summary">Не блокировать входящие SMS сообщения от номеров записанных в телефонной книге</string>
     <string name="pref_verbose_logging">Расширенное логирование</string>
@@ -160,6 +179,7 @@
     <string name="channel_blocked_messages">Заблокированные сообщения</string>
 
     <!-- App shortcuts -->
+    <string name="shortcut_new_rulelist_rule">New rule</string>
     <string name="shortcut_new_blacklist_rule">В чёрный список</string>
     <string name="shortcut_new_whitelist_rule">В белый список</string>
     <string name="shortcut_blocked_messages">Корзина</string>

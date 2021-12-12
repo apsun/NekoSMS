@@ -13,27 +13,16 @@
         </intent>
     </shortcut>
     <shortcut
-        android:shortcutId="create_whitelist_rule"
+        android:shortcutId="create_rulelist_rule"
         android:enabled="true"
-        android:icon="@mipmap/ic_allow_shortcut"
-        android:shortcutShortLabel="@string/shortcut_new_whitelist_rule">
+        android:icon="@mipmap/ic_add_rule_shortcut"
+        android:shortcutShortLabel="@string/shortcut_new_rulelist_rule">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.crossbowffs.nekosms"
             android:targetClass="com.crossbowffs.nekosms.app.FilterEditorActivity">
-            <extra android:name="action" android:value="allow"/>
+            <!--<extra android:name="action" android:value="block"/>-->
         </intent>
     </shortcut>
-    <shortcut
-        android:shortcutId="create_blacklist_rule"
-        android:enabled="true"
-        android:icon="@mipmap/ic_block_shortcut"
-        android:shortcutShortLabel="@string/shortcut_new_blacklist_rule">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetPackage="com.crossbowffs.nekosms"
-            android:targetClass="com.crossbowffs.nekosms.app.FilterEditorActivity">
-            <extra android:name="action" android:value="block"/>
-        </intent>
-    </shortcut>
+
 </shortcuts>

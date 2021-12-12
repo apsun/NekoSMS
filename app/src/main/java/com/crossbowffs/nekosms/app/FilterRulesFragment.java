@@ -1,5 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentUris;
@@ -10,9 +11,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,11 +19,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.backup.ExportResult;
 import com.crossbowffs.nekosms.backup.ImportResult;
-import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
@@ -33,7 +35,9 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
 
-public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class FilterRulesFragment
+        extends MainFragment
+        implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int IMPORT_BACKUP_REQUEST = 1853;
     private static final int EXPORT_BACKUP_REQUEST = 1854;
     public static final String EXTRA_ACTION = "action";
@@ -42,13 +46,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     private ListRecyclerView mRecyclerView;
     private TextView mEmptyView;
     private FilterRulesAdapter mAdapter;
-    private SmsFilterAction mAction;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        mAction = SmsFilterAction.parse(getArguments().getString(EXTRA_ACTION));
     }
 
     @Override
@@ -78,20 +80,13 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), FilterEditorActivity.class);
-                intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
+                //intent.putExtra(FilterEditorActivity.EXTRA_ACTION, null);
                 startActivity(intent);
             }
         });
-
-        // Set strings according to which section we're displaying
-        if (mAction == SmsFilterAction.BLOCK) {
-            setTitle(R.string.blacklist_rules);
-            mEmptyView.setText(R.string.blacklist_rules_empty_text);
-        } else if (mAction == SmsFilterAction.ALLOW) {
-            setTitle(R.string.whitelist_rules);
-            mEmptyView.setText(R.string.whitelist_rules_empty_text);
-        }
-
+        
+        setTitle(R.string.list_rules);
+        mEmptyView.setText(R.string.list_rules_empty_text);
         // Handle import requests as necessary
         onNewArguments(getArguments());
     }
@@ -114,20 +109,35 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.context_filter_rules, menu);
         menu.setHeaderTitle(R.string.filter_actions);
+
+        int clickPosition = ((ListRecyclerView.ContextMenuInfo)menuInfo).mPosition;
+        if(clickPosition==0){
+            menu.findItem(R.id.menu_item_up).setEnabled(false);
+        }else if(clickPosition==mAdapter.getItemCount()-1){
+            menu.findItem(R.id.menu_item_down).setEnabled(false);
+        }
+
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        ListRecyclerView.ContextMenuInfo info = (ListRecyclerView.ContextMenuInfo)item.getMenuInfo();
+        ListRecyclerView.ContextMenuInfo info = (ListRecyclerView.ContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()) {
-        case R.id.menu_item_edit_filter:
-            startFilterEditorActivity(info.mId);
-            return true;
-        case R.id.menu_item_delete_filter:
-            deleteFilter(info.mId);
-            return true;
-        default:
-            return super.onContextItemSelected(item);
+            case R.id.menu_item_edit_filter:
+                startFilterEditorActivity(info.mId);
+                return true;
+            case R.id.menu_item_delete_filter:
+                deleteFilter(info.mId);
+                return true;
+            case R.id.menu_item_up:
+                FilterRuleLoader.get().swapId(getContext(), info.mId, mAdapter.getItemId(info.mPosition - 1));
+                return true;
+            case R.id.menu_item_down:
+                FilterRuleLoader.get().swapId(getContext(), info.mId, mAdapter.getItemId(info.mPosition + 1));
+                return true;
+
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 
@@ -150,12 +160,12 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
-            getContext(),
-            DatabaseContract.FilterRules.CONTENT_URI,
-            DatabaseContract.FilterRules.ALL,
-            DatabaseContract.FilterRules.ACTION + "=?",
-            new String[] {mAction.name()},
-            null
+                getContext(),
+                DatabaseContract.FilterRules.CONTENT_URI,
+                DatabaseContract.FilterRules.ALL,
+                null,
+                null,
+                null
         );
     }
 
@@ -214,6 +224,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .show();
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void importFilterRules(final Uri uri) {
         new DialogAsyncTask<Void, Void, ImportResult>(getContext(), R.string.progress_importing) {
             @Override
@@ -246,6 +257,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         }.execute();
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void exportFilterRules(final Uri uri) {
         new DialogAsyncTask<Void, Void, ExportResult>(getContext(), R.string.progress_exporting) {
             @Override

@@ -2,6 +2,12 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/menu_item_up"
+        android:title="@string/up"/>
+    <item
+        android:id="@+id/menu_item_down"
+        android:title="@string/down"/>
+    <item
         android:id="@+id/menu_item_edit_filter"
         android:title="@string/edit"/>
     <item

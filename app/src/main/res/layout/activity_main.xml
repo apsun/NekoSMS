@@ -42,6 +42,7 @@
             android:layout_gravity="start"
             app:itemIconTint="?android:textColorPrimary"
             app:itemTextColor="?android:textColorPrimary"
+            app:headerLayout="@layout/nav_header_main"
             app:menu="@menu/main_drawer"/>
         </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>

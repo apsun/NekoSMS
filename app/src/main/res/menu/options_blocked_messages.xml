@@ -3,8 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/app_bar_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/menu_item_clear_blocked"
         android:title="@string/clear_blocked_messages"
         android:icon="@drawable/ic_delete_sweep_white_24dp"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>

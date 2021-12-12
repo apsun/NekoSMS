@@ -1,16 +1,23 @@
 package com.crossbowffs.nekosms.filters;
 
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
+
 import com.crossbowffs.nekosms.BuildConfig;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.CursorWrapper;
+import com.crossbowffs.remotepreferences.RemotePreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,11 +68,16 @@ public class SmsFilterLoader {
         return false;
     }
 
-    private List<SmsFilter> getFilters() {
+    private List<SmsFilter> getFilters() {//boolean priority_enable
         List<SmsFilter> filters = mCachedFilters;
         if (filters == null) {
             Xlog.i("Cached SMS filters dirty, loading from database");
-            filters = mCachedFilters = loadFilters();
+            RemotePreferences mPreferences = new RemotePreferences(mContext, PreferenceConsts.REMOTE_PREFS_AUTHORITY, PreferenceConsts.FILE_MAIN, true);
+            if (mPreferences.getBoolean(PreferenceConsts.KEY_PRIORITY_ENABLE, PreferenceConsts.KEY_PRIORITY_DEFAULT)) {
+                filters = mCachedFilters = loadFiltersByPriority();
+            } else {
+                filters = mCachedFilters = loadFilters();
+            }
         }
         return filters;
     }
@@ -91,6 +103,8 @@ public class SmsFilterLoader {
             // rules to go into the blacklist, but all rules will
             // be merged into the whitelist list in the end (with
             // whitelist rules coming first).
+
+            // 白名单优先
             ArrayList<SmsFilter> whitelist = new ArrayList<>(count);
             ArrayList<SmsFilter> blacklist = new ArrayList<>(count);
 
@@ -117,6 +131,47 @@ public class SmsFilterLoader {
             whitelist.addAll(blacklist);
             whitelist.trimToSize();
             return whitelist;
+        }
+    }
+
+    private List<SmsFilter> loadFiltersByPriority() {
+        try (CursorWrapper<SmsFilterData> filterCursor = FilterRuleLoader.get().queryAll(mContext)) {
+            if (filterCursor == null) {
+                // This might occur if the app has been uninstalled (removing the DB),
+                // but the user has not rebooted their device yet. We should not filter
+                // any messages in this state.
+                Xlog.e("Failed to load SMS filters (queryAll returned null)");
+                return null;
+            }
+
+            int count = filterCursor.getCount();
+            Xlog.i("filterCursor.getCount() = %d", count);
+
+            // It's better to just over-reserve since we expect most
+            // rules to go into the blacklist, but all rules will
+            // be merged into the whitelist list in the end (with
+            // whitelist rules coming first).
+
+            // 按照_id顺序作为优先级
+            ArrayList<SmsFilter> rulelist = new ArrayList<>(count);
+
+            SmsFilterData data = new SmsFilterData();
+            while (filterCursor.moveToNext()) {
+                SmsFilter filter;
+                try {
+                    data = filterCursor.get(data);
+                    filter = new SmsFilter(data);
+                } catch (Exception e) {
+                    Xlog.e("Failed to load SMS filter", e);
+                    continue;
+                }
+
+                rulelist.add(filter);
+            }
+
+            Xlog.i("Loaded %d rulelist filters", rulelist.size());
+            rulelist.trimToSize();
+            return rulelist;
         }
     }
 

@@ -1,12 +1,17 @@
 package com.crossbowffs.nekosms.loader;
 
+import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
+
 import android.content.ContentProviderOperation;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.RemoteException;
+
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
@@ -18,8 +23,6 @@ import com.crossbowffs.nekosms.widget.AutoContentLoader;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
 public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
     private static FilterRuleLoader sInstance;
@@ -105,6 +108,58 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
             values.putNull(FilterRules.BODY_CASE_SENSITIVE);
         }
         return values;
+    }
+
+    public void swapId(Context context, long firstId, long secondId) {
+        Uri firstUri = ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, firstId);
+        Uri secondUri = ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, secondId);
+
+        SmsFilterData firstData = query(context, firstUri);
+        SmsFilterData secondData = query(context, secondUri);
+
+        firstData.setId(secondId);
+        secondData.setId(firstId);
+
+        update(context, firstUri, secondData, false);
+        update(context, secondUri, firstData, false);
+    }
+
+    public void swapId(Context context, SmsFilterData firstData, SmsFilterData secondData) {
+        long firstId = firstData.getId();
+        long secondId = secondData.getId();
+
+        Uri firstUri = ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, firstId);
+        Uri secondUri = ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, secondId);
+
+        firstData.setId(secondId);
+        secondData.setId(firstId);
+
+        update(context, firstUri, secondData, false);
+        update(context, secondUri, firstData, false);
+    }
+
+
+    static String whereClause(SmsFilterData data) {
+        return FilterRules.ACTION + " = " + DatabaseUtils.sqlEscapeString(data.getAction().name())
+                + " AND " + whereClauseForOther(FilterRules.SENDER_MODE, data.getSenderPattern().getMode())
+                + " AND " + whereClauseForOther(FilterRules.SENDER_PATTERN, data.getSenderPattern().getPattern())
+                + " AND " + whereClauseForOther(FilterRules.BODY_MODE, data.getBodyPattern().getMode())
+                + " AND " + whereClauseForOther(FilterRules.BODY_PATTERN, data.getBodyPattern().getPattern())
+                ;  //whereClauseForIssuer(index.getIssuer())
+    }
+
+    private static String whereClauseForOther(String column,String value) {
+        if (value != null) {
+            return column + " = " + DatabaseUtils.sqlEscapeString(value);
+        }
+        return column + " IS NULL";
+    }
+
+    private static String whereClauseForOther(String column,Enum value) {
+        if (value != null) {
+            return column + " = " + DatabaseUtils.sqlEscapeString(value.name());
+        }
+        return column + " IS NULL";
     }
 
     public Uri update(Context context, Uri filterUri, SmsFilterData filterData, boolean insertIfError) {

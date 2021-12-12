@@ -1,18 +1,19 @@
 package com.crossbowffs.nekosms.provider;
 
+import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
+import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
-
-import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
-import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
 /* package */ class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "nekosms.db";
@@ -130,7 +131,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
                 values.put(BlockedMessages.TIME_RECEIVED, messagesCursor.getLong(3));
                 values.put(BlockedMessages.READ, 1);
                 values.put(BlockedMessages.SEEN, 1);
-                values.put(BlockedMessages.SUB_ID, 0);
+                values.put(BlockedMessages.SUB_ID, 1);
                 db.insert(BlockedMessages.TABLE, null, values);
             }
             messagesCursor.close();
