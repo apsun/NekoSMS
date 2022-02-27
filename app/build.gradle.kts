@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     implementation("androidx.core:core:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.annotation:annotation:1.3.0")
 
@@ -51,9 +51,5 @@ android {
             buildConfigField("int", "LOG_LEVEL", "4")
             buildConfigField("boolean", "LOG_TO_XPOSED", "true")
         }
-    }
-
-    lint {
-        isAbortOnError = false
     }
 }
