@@ -5,12 +5,16 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import com.crossbowffs.nekosms.BuildConfig;
+import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
+import com.crossbowffs.nekosms.utils.SenderIdUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.CursorWrapper;
+import com.crossbowffs.remotepreferences.RemotePreferenceAccessException;
+import com.crossbowffs.remotepreferences.RemotePreferences;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +23,14 @@ public class SmsFilterLoader {
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
 
     private final Context mContext;
+    private final RemotePreferences mPreferences;
     private final ContentObserver mContentObserver;
     private final BroadcastReceiver mBroadcastReceiver;
     private List<SmsFilter> mCachedFilters;
 
-    public SmsFilterLoader(Context context) {
+    public SmsFilterLoader(Context context, RemotePreferences preferences) {
         mContext = context;
+        mPreferences = preferences;
         mContentObserver = registerContentObserver();
         mBroadcastReceiver = registerBroadcastReceiver();
     }
@@ -55,6 +61,22 @@ public class SmsFilterLoader {
                     return true;
                 }
             }
+        }
+
+        boolean blockAllSendersAlphanumeric = getBooleanPref(
+                PreferenceConsts.KEY_BLACKLIST_SENDER_ID_ALPHANUMERIC,
+                PreferenceConsts.KEY_BLACKLIST_SENDER_ID_ALPHANUMERIC_DEFAULT);
+        if (blockAllSendersAlphanumeric && SenderIdUtils.isSenderIdAlphanumeric(sender)) {
+            Xlog.i("Blocking message (alphanumeric senders blacklisted by default)");
+            return true;
+        }
+
+        boolean blockAllSendersPhone = getBooleanPref(
+                PreferenceConsts.KEY_BLACKLIST_SENDER_ID_PHONE,
+                PreferenceConsts.KEY_BLACKLIST_SENDER_ID_PHONE_DEFAULT);
+        if (blockAllSendersPhone && SenderIdUtils.isSenderIdPhone(sender)) {
+            Xlog.i("Blocking message (phone number senders blacklisted by default)");
+            return true;
         }
 
         Xlog.i("Allowing message (did not match any rules)");
@@ -189,5 +211,14 @@ public class SmsFilterLoader {
 
     private void unregisterBroadcastReceiver(BroadcastReceiver receiver) {
         mContext.unregisterReceiver(receiver);
+    }
+
+    private boolean getBooleanPref(String key, boolean defValue) {
+        try {
+            return mPreferences.getBoolean(key, defValue);
+        } catch (RemotePreferenceAccessException e) {
+            Xlog.e("Failed to read preference: %s", key, e);
+            return defValue;
+        }
     }
 }

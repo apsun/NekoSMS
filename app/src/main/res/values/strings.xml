@@ -135,6 +135,10 @@
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">No reboot required</string>
     <string name="pref_enable_summary_alt">Please enable the Xposed module first!</string>
+    <string name="pref_blacklist_sender_id_alphanumeric">Blacklist alphanumeric senders</string>
+    <string name="pref_blacklist_sender_id_alphanumeric_summary">Block all incoming messages from non-phone-number senders by default. Typically - enterprise notifications and advertising mailings. Exceptions can be manually added as whitelist rules</string>
+    <string name="pref_blacklist_sender_id_phone">Blacklist phone number senders</string>
+    <string name="pref_blacklist_sender_id_phone_summary">Block all incoming messages from any phone number by default, except explicitly whitelisted</string>
     <string name="pref_whitelist_contacts">Whitelist contacts</string>
     <string name="pref_whitelist_contacts_summary">Don\'t block messages from contacts</string>
     <string name="pref_verbose_logging">Verbose logging</string>

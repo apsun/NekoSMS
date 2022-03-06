@@ -8,6 +8,18 @@
             android:defaultValue="true"
             android:widgetLayout="@layout/switch_compat"/>
         <CheckBoxPreference
+            android:key="pref_blacklist_sender_id_alphanumeric"
+            android:title="@string/pref_blacklist_sender_id_alphanumeric"
+            android:summary="@string/pref_blacklist_sender_id_alphanumeric_summary"
+            android:defaultValue="false"
+            android:widgetLayout="@layout/switch_compat"/>
+        <CheckBoxPreference
+            android:key="pref_blacklist_sender_id_phone"
+            android:title="@string/pref_blacklist_sender_id_phone"
+            android:summary="@string/pref_blacklist_sender_id_phone_summary"
+            android:defaultValue="false"
+            android:widgetLayout="@layout/switch_compat"/>
+        <CheckBoxPreference
             android:key="pref_whitelist_contacts"
             android:title="@string/pref_whitelist_contacts"
             android:summary="@string/pref_whitelist_contacts_summary"
