@@ -20,16 +20,21 @@ import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.filters.SmsFilterLoader;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
-import com.crossbowffs.nekosms.utils.*;
+import com.crossbowffs.nekosms.utils.AppOpsUtils;
+import com.crossbowffs.nekosms.utils.ContactUtils;
+import com.crossbowffs.nekosms.utils.ReflectionUtils;
+import com.crossbowffs.nekosms.utils.StringUtils;
+import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.remotepreferences.RemotePreferenceAccessException;
 import com.crossbowffs.remotepreferences.RemotePreferences;
+
+import java.lang.reflect.Method;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
-
-import java.lang.reflect.Method;
 
 public class SmsHandlerHook implements IXposedHookLoadPackage {
     private class ConstructorHook extends XC_MethodHook {
@@ -202,6 +207,20 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         }
     }
 
+    // override the subId value in the intent with the values from tracker as they can be
+    // different, specifically if the message is coming from SmsBroadcastUndelivered
+    private void putSubscriptionIdExtra(Intent intent, int subId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                if((boolean) XposedHelpers.callStaticMethod(SubscriptionManager.class, "isValidSubscriptionId", subId)){
+                    XposedHelpers.callStaticMethod(SubscriptionManager.class, "putSubscriptionIdExtra", intent, subId);
+                }
+            } catch (Exception e) {
+                Xlog.e("Could not update intent with subId", e);
+            }
+        }
+    }
+
     private void beforeDispatchIntentHandler(XC_MethodHook.MethodHookParam param, int receiverIndex) {
         Intent intent = (Intent)param.args[0];
         String action = intent.getAction();
@@ -222,6 +241,12 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         // to the intent, so we have to emulate that behavior ourselves
         // if we want to use the field.
         putPhoneIdAndSubIdExtra(param.thisObject, intent);
+
+        // android 11+ new
+        // see http://www.aospxref.com/android-11.0.0_r21/xref/frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java#1266
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+            putSubscriptionIdExtra(intent, (int) param.args[6]);
+        }
 
         SmsMessageData message = SmsMessageData.fromIntent(intent);
         String sender = message.getSender();
