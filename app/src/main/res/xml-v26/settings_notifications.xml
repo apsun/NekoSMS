@@ -4,6 +4,13 @@
         <Preference
             android:key="pref_notifications_open_settings"
             android:title="@string/pref_notifications_open_settings"
-            android:summary="@string/pref_notifications_open_settings_summary"/>
+            android:summary="@string/pref_notifications_open_settings_summary">
+            <intent
+                android:action="android.settings.APP_NOTIFICATION_SETTINGS">
+                <extra
+                    android:name="android.provider.extra.APP_PACKAGE"
+                    android:value="com.crossbowffs.nekosms" />
+            </intent>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>
