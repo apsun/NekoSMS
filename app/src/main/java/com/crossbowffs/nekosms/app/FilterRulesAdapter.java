@@ -1,13 +1,16 @@
 package com.crossbowffs.nekosms.app;
 
 import android.database.Cursor;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.recyclerview.widget.RecyclerView;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.data.*;
+import com.crossbowffs.nekosms.data.SmsFilterData;
+import com.crossbowffs.nekosms.data.SmsFilterField;
+import com.crossbowffs.nekosms.data.SmsFilterMode;
+import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 

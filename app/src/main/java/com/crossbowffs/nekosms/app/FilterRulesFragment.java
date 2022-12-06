@@ -1,26 +1,20 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.ContentUris;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.*;
+import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.backup.ExportResult;
@@ -66,7 +60,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         // Initialize filter list
         FilterRulesAdapter adapter = new FilterRulesAdapter(this);
         mAdapter = adapter;
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         loaderManager.initLoader(0, null, this);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setEmptyView(mEmptyView);

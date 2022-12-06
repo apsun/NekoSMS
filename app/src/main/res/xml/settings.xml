@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_general">
-        <CheckBoxPreference
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory android:title="@string/pref_general">
+        <androidx.preference.SwitchPreferenceCompat
             android:key="pref_enable"
             android:title="@string/pref_enable"
             android:summary="@string/pref_enable_summary"
-            android:defaultValue="true"
-            android:widgetLayout="@layout/switch_compat"/>
-        <CheckBoxPreference
+            android:defaultValue="true"/>
+        <androidx.preference.SwitchPreferenceCompat
             android:key="pref_whitelist_contacts"
             android:title="@string/pref_whitelist_contacts"
             android:summary="@string/pref_whitelist_contacts_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/switch_compat"/>
-        <CheckBoxPreference
+            android:defaultValue="false"/>
+        <androidx.preference.SwitchPreferenceCompat
             android:key="pref_verbose_logging"
             android:title="@string/pref_verbose_logging"
             android:summary="@string/pref_verbose_logging_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/switch_compat"/>
-    </PreferenceCategory>
-</PreferenceScreen>
+            android:defaultValue="false"/>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

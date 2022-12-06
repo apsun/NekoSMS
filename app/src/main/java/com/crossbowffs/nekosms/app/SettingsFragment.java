@@ -3,21 +3,20 @@ package com.crossbowffs.nekosms.app;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.provider.Settings;
+import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 
-public class SettingsFragment extends PreferenceFragment {
+public class SettingsFragment extends PreferenceFragmentCompat {
     private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // General settings
         addPreferencesFromResource(R.xml.settings);
         if (!XposedUtils.isModuleEnabled()) {

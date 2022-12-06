@@ -2,7 +2,6 @@ package com.crossbowffs.nekosms.utils;
 
 import android.app.AppOpsManager;
 import android.content.Context;
-import android.os.Process;
 
 import java.lang.reflect.Method;
 

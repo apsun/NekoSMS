@@ -12,9 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.UserHandle;
 import android.provider.Telephony;
-import android.telephony.SmsMessage;
 import android.telephony.SubscriptionManager;
-
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.consts.BroadcastConsts;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;

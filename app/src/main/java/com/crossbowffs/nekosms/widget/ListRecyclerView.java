@@ -5,10 +5,10 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.View;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ListRecyclerView extends RecyclerView {
     private static class ListDividerDecoration extends ItemDecoration {

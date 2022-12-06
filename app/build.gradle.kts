@@ -3,30 +3,30 @@ plugins {
 }
 
 dependencies {
-    implementation("androidx.core:core:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("androidx.core:core:1.9.0")
+    implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
-    implementation("androidx.annotation:annotation:1.3.0")
-
-    // Material design library is a complete PoS that has reliably fixed and introduced a
-    // visible bug in every version, so lock ourselves to this alpha version that is new
-    // enough to have the disappearing icon bug fixed but old enough to not have the
-    // broken snackbar/FAB animation that was added in 1.1.0-alpha10.
-    // See: https://github.com/material-components/material-components-android/issues/1036
-    implementation("com.google.android.material:material:1.1.0-alpha09")
-
+    implementation("androidx.annotation:annotation:1.5.0")
+    implementation("androidx.preference:preference:1.2.0")
+    // HACK: androidx.preference:preference depends on androidx.fragment:fragment-ktx
+    // which currently pulls in androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1, which
+    // is incompatible with androidx.lifecycle:lifecycle-viewmodel:2.5.1. Therefore, we
+    // have to manually import androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1.
+    implementation("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
+    implementation("com.google.android.material:material:1.7.0")
     implementation("com.crossbowffs.remotepreferences:remotepreferences:0.8")
     compileOnly("de.robv.android.xposed:api:53")
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 33
 
     defaultConfig {
         versionCode = 39
         versionName = "0.20.0"
         minSdk = 19
-        targetSdk = 31
+        targetSdk = 33
         resourceConfigurations.addAll(listOf("en", "zh-rCN", "ru"))
         buildConfigField("int", "MODULE_VERSION", "18")
         buildConfigField("int", "DATABASE_VERSION", "11")

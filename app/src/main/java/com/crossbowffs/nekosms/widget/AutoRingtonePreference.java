@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.preference.RingtonePreference;
 import android.util.AttributeSet;
 
+// TODO: This is broken, need to port RingtonePreference to androidx.preference.Preference
 public class AutoRingtonePreference extends RingtonePreference {
     private final CharSequence mNoneSummary;
 

@@ -2,12 +2,12 @@ package com.crossbowffs.nekosms.app;
 
 import android.database.Cursor;
 import android.graphics.Typeface;
-import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.recyclerview.widget.RecyclerView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;

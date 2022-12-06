@@ -43,5 +43,5 @@
             app:itemIconTint="?android:textColorPrimary"
             app:itemTextColor="?android:textColorPrimary"
             app:menu="@menu/main_drawer"/>
-        </androidx.drawerlayout.widget.DrawerLayout>
+    </androidx.drawerlayout.widget.DrawerLayout>
 </LinearLayout>

@@ -1,10 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
-import android.app.Fragment;
 import android.content.res.Resources;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import com.google.android.material.textfield.TextInputLayout;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.Spinner;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
@@ -20,6 +19,7 @@ import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.widget.EnumAdapter;
 import com.crossbowffs.nekosms.widget.OnItemSelectedListenerAdapter;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,11 +1,11 @@
 package com.crossbowffs.nekosms.app;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import com.google.android.material.snackbar.Snackbar;
 import android.view.View;
+import androidx.fragment.app.Fragment;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MainFragment extends Fragment {
     public MainActivity getMainActivity() {

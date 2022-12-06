@@ -1,30 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/pref_notifications">
-        <CheckBoxPreference
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory android:title="@string/pref_notifications">
+        <androidx.preference.SwitchPreferenceCompat
             android:key="pref_notifications_enable"
             android:title="@string/pref_notifications_enable"
             android:summary="@string/pref_notifications_enable_summary"
-            android:defaultValue="false"
-            android:widgetLayout="@layout/switch_compat"/>
-        <com.crossbowffs.nekosms.widget.AutoRingtonePreference
+            android:defaultValue="false"/>
+        <!--
+        <androidx.preference.Preference
             android:key="pref_notifications_ringtone"
             android:title="@string/pref_notifications_ringtone"
             android:dependency="pref_notifications_enable"
             android:defaultValue="content://settings/system/notification_sound"
             android:ringtoneType="notification"
             android:summary="@string/pref_notifications_ringtone_none"/>
-        <CheckBoxPreference
+        -->
+        <androidx.preference.SwitchPreferenceCompat
             android:key="pref_notifications_vibrate"
             android:title="@string/pref_notifications_vibrate"
             android:dependency="pref_notifications_enable"
             android:defaultValue="true"/>
-        <CheckBoxPreference
+        <androidx.preference.SwitchPreferenceCompat
             android:key="pref_notifications_lights"
             android:title="@string/pref_notifications_lights"
             android:dependency="pref_notifications_enable"
             android:defaultValue="true"/>
-        <ListPreference
+        <androidx.preference.ListPreference
             android:key="pref_notifications_priority"
             android:title="@string/pref_notifications_priority"
             android:summary="%s"
@@ -32,5 +33,5 @@
             android:entries="@array/pref_notifications_priority_entries"
             android:entryValues="@array/pref_notifications_priority_values"
             android:defaultValue="0"/>
-    </PreferenceCategory>
-</PreferenceScreen>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

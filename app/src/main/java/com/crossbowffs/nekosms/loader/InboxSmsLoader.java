@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Telephony;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 

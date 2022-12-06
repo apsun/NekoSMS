@@ -1,17 +1,22 @@
 package com.crossbowffs.nekosms.app;
 
-import android.app.LoaderManager;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.view.*;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.consts.BroadcastConsts;
@@ -50,7 +55,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mAdapter = new BlockedMessagesAdapter(this);
-        LoaderManager loaderManager = getLoaderManager();
+        LoaderManager loaderManager = LoaderManager.getInstance(this);
         loaderManager.initLoader(0, null, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setEmptyView(mEmptyView);
