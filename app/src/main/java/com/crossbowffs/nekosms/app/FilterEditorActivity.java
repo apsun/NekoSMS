@@ -119,8 +119,10 @@ public class FilterEditorActivity extends AppCompatActivity {
         // Set up toolbar
         if (mFilter.getAction() == SmsFilterAction.BLOCK) {
             mToolbar.setTitle(R.string.save_blacklist_rule);
+            mToolbar.setNavigationContentDescription(R.string.save_blacklist_rule);
         } else if (mFilter.getAction() == SmsFilterAction.ALLOW) {
             mToolbar.setTitle(R.string.save_whitelist_rule);
+            mToolbar.setNavigationContentDescription(R.string.save_whitelist_rule);
         }
         mToolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
         setSupportActionBar(mToolbar);
