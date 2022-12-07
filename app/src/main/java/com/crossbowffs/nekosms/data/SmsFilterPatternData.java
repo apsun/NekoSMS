@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.data;
 
 import android.text.TextUtils;
+import androidx.annotation.NonNull;
 import com.crossbowffs.nekosms.utils.StringUtils;
 
 public class SmsFilterPatternData {
@@ -54,6 +55,7 @@ public class SmsFilterPatternData {
         return mCaseSensitive;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SmsFilterPatternData{" +

@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -30,6 +31,7 @@ public class FilterEditorActivity extends AppCompatActivity {
             super(fragmentActivity);
         }
 
+        @NonNull
         @Override
         public Fragment createFragment(int position) {
             FilterEditorFragment fragment = new FilterEditorFragment();
@@ -73,7 +75,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         mViewPager.setAdapter(new FilterEditorPageAdapter(this));
         new TabLayoutMediator(mTabLayout, mViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 if (position == 0) {
                     tab.setText(R.string.filter_field_sender);
                 } else if (position == 1) {

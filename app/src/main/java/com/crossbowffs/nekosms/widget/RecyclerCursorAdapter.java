@@ -2,6 +2,7 @@ package com.crossbowffs.nekosms.widget;
 
 import android.database.Cursor;
 import android.provider.BaseColumns;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
@@ -33,7 +34,7 @@ public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(VH vh, int i) {
+    public void onBindViewHolder(@NonNull VH vh, int i) {
         mCursor.moveToPosition(i);
         onBindViewHolder(vh, mCursor);
     }

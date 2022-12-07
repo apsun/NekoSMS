@@ -2,6 +2,7 @@ package com.crossbowffs.nekosms.data;
 
 import android.content.ContentUris;
 import android.net.Uri;
+import androidx.annotation.NonNull;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 
 public class SmsFilterData {
@@ -62,6 +63,7 @@ public class SmsFilterData {
         return ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, id);
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "SmsFilterData{" +

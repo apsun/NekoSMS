@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterData;
@@ -37,8 +38,9 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         mFragment = fragment;
     }
 
+    @NonNull
     @Override
-    public UserFiltersItemHolder onCreateViewHolder(ViewGroup group, int i) {
+    public UserFiltersItemHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(mFragment.getContext());
         View view = layoutInflater.inflate(R.layout.listitem_filter_rules, group, false);
         return new UserFiltersItemHolder(view);

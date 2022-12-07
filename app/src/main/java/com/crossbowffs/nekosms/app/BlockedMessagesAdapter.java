@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsMessageData;
@@ -14,7 +15,7 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
 /* package */ class BlockedMessagesAdapter extends RecyclerCursorAdapter<BlockedMessagesAdapter.BlockedSmsItemHolder> {
-    public class BlockedSmsItemHolder extends RecyclerView.ViewHolder {
+    public static class BlockedSmsItemHolder extends RecyclerView.ViewHolder {
         public final TextView mSenderTextView;
         public final TextView mTimeSentTextView;
         public final TextView mBodyTextView;
@@ -35,8 +36,9 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         mFragment = fragment;
     }
 
+    @NonNull
     @Override
-    public BlockedSmsItemHolder onCreateViewHolder(ViewGroup group, int i) {
+    public BlockedSmsItemHolder onCreateViewHolder(@NonNull ViewGroup group, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(mFragment.getContext());
         View view = layoutInflater.inflate(R.layout.listitem_blocked_messages, group, false);
         return new BlockedSmsItemHolder(view);

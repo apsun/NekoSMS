@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.ContextMenu;
 import android.view.View;
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ListRecyclerView extends RecyclerView {
@@ -21,7 +22,7 @@ public class ListRecyclerView extends RecyclerView {
         }
 
         @Override
-        public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+        public void onDrawOver(@NonNull Canvas c, RecyclerView parent, @NonNull RecyclerView.State state) {
             int left = parent.getPaddingLeft();
             int right = parent.getWidth() - parent.getPaddingRight();
             int childCount = parent.getChildCount();
@@ -36,7 +37,7 @@ public class ListRecyclerView extends RecyclerView {
         }
 
         @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+        public void getItemOffsets(Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
             outRect.set(0, 0, 0, mDivider.getIntrinsicHeight());
         }
     }
