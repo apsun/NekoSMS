@@ -5,7 +5,8 @@
             android:key="pref_notifications_enable"
             android:title="@string/pref_notifications_enable"
             android:summary="@string/pref_notifications_enable_summary"
-            android:defaultValue="false"/>
+            android:defaultValue="false"
+            android:widgetLayout="@layout/material_switch"/>
         <!--
         <androidx.preference.Preference
             android:key="pref_notifications_ringtone"
@@ -19,12 +20,14 @@
             android:key="pref_notifications_vibrate"
             android:title="@string/pref_notifications_vibrate"
             android:dependency="pref_notifications_enable"
-            android:defaultValue="true"/>
+            android:defaultValue="true"
+            android:widgetLayout="@layout/material_switch"/>
         <androidx.preference.SwitchPreferenceCompat
             android:key="pref_notifications_lights"
             android:title="@string/pref_notifications_lights"
             android:dependency="pref_notifications_enable"
-            android:defaultValue="true"/>
+            android:defaultValue="true"
+            android:widgetLayout="@layout/material_switch"/>
         <androidx.preference.ListPreference
             android:key="pref_notifications_priority"
             android:title="@string/pref_notifications_priority"
