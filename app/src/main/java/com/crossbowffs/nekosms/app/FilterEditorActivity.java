@@ -12,24 +12,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
-import com.crossbowffs.nekosms.widget.FragmentPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class FilterEditorActivity extends AppCompatActivity {
-    private class FilterEditorPageAdapter extends FragmentPagerAdapter {
-        public FilterEditorPageAdapter() {
-            super(getSupportFragmentManager());
+    private static class FilterEditorPageAdapter extends FragmentStateAdapter {
+        public FilterEditorPageAdapter(FragmentActivity fragmentActivity) {
+            super(fragmentActivity);
         }
 
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             FilterEditorFragment fragment = new FilterEditorFragment();
             Bundle args = new Bundle(1);
             SmsFilterField field;
@@ -46,19 +48,8 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            if (position == 0) {
-                return getString(R.string.filter_field_sender);
-            } else if (position == 1) {
-                return getString(R.string.filter_field_body);
-            } else {
-                throw new AssertionError("Invalid adapter position: " + position);
-            }
         }
     }
 
@@ -66,7 +57,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
     private TabLayout mTabLayout;
-    private ViewPager mViewPager;
+    private ViewPager2 mViewPager;
     private Uri mFilterUri;
     private SmsFilterData mFilter;
 
@@ -76,11 +67,22 @@ public class FilterEditorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_filter_editor);
         mToolbar = (Toolbar)findViewById(R.id.toolbar);
         mTabLayout = (TabLayout)findViewById(R.id.filter_editor_tablayout);
-        mViewPager = (ViewPager)findViewById(R.id.filter_editor_viewpager);
+        mViewPager = (ViewPager2)findViewById(R.id.filter_editor_viewpager);
 
         // Set up tab pages
-        mViewPager.setAdapter(new FilterEditorPageAdapter());
-        mTabLayout.setupWithViewPager(mViewPager);
+        mViewPager.setAdapter(new FilterEditorPageAdapter(this));
+        new TabLayoutMediator(mTabLayout, mViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(TabLayout.Tab tab, int position) {
+                if (position == 0) {
+                    tab.setText(R.string.filter_field_sender);
+                } else if (position == 1) {
+                    tab.setText(R.string.filter_field_body);
+                } else {
+                    throw new AssertionError("Invalid adapter position: " + position);
+                }
+            }
+        }).attach();
 
         // Process intent for modifying existing filter if it exists
         mFilterUri = getIntent().getData();
