@@ -5,14 +5,15 @@ plugins {
 dependencies {
     implementation("androidx.core:core:1.9.0")
     implementation("androidx.appcompat:appcompat:1.5.1")
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.annotation:annotation:1.5.0")
+    implementation("androidx.loader:loader:1.1.0")
+    implementation("androidx.fragment:fragment:1.5.4")
     implementation("androidx.preference:preference:1.2.0")
-    // HACK: androidx.preference:preference depends on androidx.fragment:fragment-ktx
-    // which currently pulls in androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1, which
-    // is incompatible with androidx.lifecycle:lifecycle-viewmodel:2.5.1. Therefore, we
-    // have to manually import androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1.
-    implementation("androidx.lifecycle:lifecycle-viewmodel:2.5.1")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+    implementation("androidx.drawerlayout:drawerlayout:1.1.1")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    // HACK: Workaround for https://issuetracker.google.com/issues/242384116
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("com.google.android.material:material:1.7.0")
     implementation("com.crossbowffs.remotepreferences:remotepreferences:0.8")
