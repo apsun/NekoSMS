@@ -62,10 +62,10 @@ public class FilterEditorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pattern_editor, container, false);
-        mPatternTextInputLayout = (TextInputLayout)view.findViewById(R.id.filter_editor_pattern_inputlayout);
-        mPatternEditText = (EditText)view.findViewById(R.id.filter_editor_pattern_edittext);
-        mModeSpinner = (Spinner)view.findViewById(R.id.filter_editor_mode_spinner);
-        mCaseSpinner = (Spinner)view.findViewById(R.id.filter_editor_case_spinner);
+        mPatternTextInputLayout = view.findViewById(R.id.filter_editor_pattern_inputlayout);
+        mPatternEditText = view.findViewById(R.id.filter_editor_pattern_edittext);
+        mModeSpinner = view.findViewById(R.id.filter_editor_mode_spinner);
+        mCaseSpinner = view.findViewById(R.id.filter_editor_case_spinner);
         return view;
     }
 

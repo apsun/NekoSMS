@@ -2,7 +2,6 @@ package com.crossbowffs.nekosms.app;
 
 import android.app.Activity;
 import android.content.ContentUris;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -49,8 +48,8 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_filter_rules, container, false);
-        mRecyclerView = (ListRecyclerView)view.findViewById(R.id.filter_rules_recyclerview);
-        mEmptyView = (TextView)view.findViewById(android.R.id.empty);
+        mRecyclerView = view.findViewById(R.id.filter_rules_recyclerview);
+        mEmptyView = view.findViewById(android.R.id.empty);
         return view;
     }
 
@@ -69,13 +68,10 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         registerForContextMenu(mRecyclerView);
 
         // Display create FAB
-        enableFab(R.drawable.ic_create_white_24dp, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), FilterEditorActivity.class);
-                intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
-                startActivity(intent);
-            }
+        enableFab(R.drawable.ic_create_white_24dp, v -> {
+            Intent intent = new Intent(getContext(), FilterEditorActivity.class);
+            intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
+            startActivity(intent);
         });
 
         // Set strings according to which section we're displaying
@@ -182,14 +178,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         CharSequence[] items = {getString(R.string.import_from_storage), getString(R.string.export_to_storage)};
         new AlertDialog.Builder(getContext())
             .setTitle(R.string.import_export)
-            .setItems(items, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (which == 0) {
-                        startActivityForResult(BackupLoader.getImportFilePickerIntent(), IMPORT_BACKUP_REQUEST);
-                    } else if (which == 1) {
-                        startActivityForResult(BackupLoader.getExportFilePickerIntent(), EXPORT_BACKUP_REQUEST);
-                    }
+            .setItems(items, (dialog, which) -> {
+                if (which == 0) {
+                    startActivityForResult(BackupLoader.getImportFilePickerIntent(), IMPORT_BACKUP_REQUEST);
+                } else if (which == 1) {
+                    startActivityForResult(BackupLoader.getExportFilePickerIntent(), EXPORT_BACKUP_REQUEST);
                 }
             })
             .show();
@@ -200,12 +193,7 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.import_confirm_title)
             .setMessage(R.string.import_confirm_message)
-            .setPositiveButton(R.string.backup_button_import, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    importFilterRules(uri);
-                }
-            })
+            .setPositiveButton(R.string.backup_button_import, (dialog, which) -> importFilterRules(uri))
             .setNegativeButton(R.string.cancel, null)
             .show();
     }
@@ -275,11 +263,8 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             return;
         }
 
-        showSnackbar(R.string.filter_deleted, R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FilterRuleLoader.get().insert(getContext(), filterData);
-            }
+        showSnackbar(R.string.filter_deleted, R.string.undo, v -> {
+            FilterRuleLoader.get().insert(getContext(), filterData);
         });
     }
 

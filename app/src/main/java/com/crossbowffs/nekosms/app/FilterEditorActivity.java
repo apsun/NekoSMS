@@ -67,22 +67,19 @@ public class FilterEditorActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
-        mTabLayout = (TabLayout)findViewById(R.id.filter_editor_tablayout);
-        mViewPager = (ViewPager2)findViewById(R.id.filter_editor_viewpager);
+        mToolbar = findViewById(R.id.toolbar);
+        mTabLayout = findViewById(R.id.filter_editor_tablayout);
+        mViewPager = findViewById(R.id.filter_editor_viewpager);
 
         // Set up tab pages
         mViewPager.setAdapter(new FilterEditorPageAdapter(this));
-        new TabLayoutMediator(mTabLayout, mViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
-            @Override
-            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                if (position == 0) {
-                    tab.setText(R.string.filter_field_sender);
-                } else if (position == 1) {
-                    tab.setText(R.string.filter_field_body);
-                } else {
-                    throw new AssertionError("Invalid adapter position: " + position);
-                }
+        new TabLayoutMediator(mTabLayout, mViewPager, (tab, position) -> {
+            if (position == 0) {
+                tab.setText(R.string.filter_field_sender);
+            } else if (position == 1) {
+                tab.setText(R.string.filter_field_body);
+            } else {
+                throw new AssertionError("Invalid adapter position: " + position);
             }
         }).attach();
 

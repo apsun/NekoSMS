@@ -24,9 +24,9 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         public BlockedSmsItemHolder(View itemView) {
             super(itemView);
 
-            mSenderTextView = (TextView)itemView.findViewById(R.id.blocked_message_sender_textview);
-            mTimeSentTextView = (TextView)itemView.findViewById(R.id.blocked_message_time_sent_textview);
-            mBodyTextView = (TextView)itemView.findViewById(R.id.blocked_message_body_textview);
+            mSenderTextView = itemView.findViewById(R.id.blocked_message_sender_textview);
+            mTimeSentTextView = itemView.findViewById(R.id.blocked_message_time_sent_textview);
+            mBodyTextView = itemView.findViewById(R.id.blocked_message_body_textview);
         }
     }
 
@@ -72,11 +72,6 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
             holder.mBodyTextView.setTypeface(null, Typeface.BOLD);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFragment.showMessageDetailsDialog(messageData);
-            }
-        });
+        holder.itemView.setOnClickListener(v -> mFragment.showMessageDetailsDialog(messageData));
     }
 }

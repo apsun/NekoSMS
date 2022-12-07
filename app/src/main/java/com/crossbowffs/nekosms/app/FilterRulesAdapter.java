@@ -25,10 +25,10 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
 
         public UserFiltersItemHolder(View itemView) {
             super(itemView);
-            mSenderInfoTextView = (TextView)itemView.findViewById(R.id.filter_rule_sender_info_textview);
-            mSenderPatternTextView = (TextView)itemView.findViewById(R.id.filter_rule_sender_pattern_textview);
-            mBodyInfoTextView = (TextView)itemView.findViewById(R.id.filter_rule_body_info_textview);
-            mBodyPatternTextView = (TextView)itemView.findViewById(R.id.filter_rule_body_pattern_textview);
+            mSenderInfoTextView = itemView.findViewById(R.id.filter_rule_sender_info_textview);
+            mSenderPatternTextView = itemView.findViewById(R.id.filter_rule_sender_pattern_textview);
+            mBodyInfoTextView = itemView.findViewById(R.id.filter_rule_body_info_textview);
+            mBodyPatternTextView = itemView.findViewById(R.id.filter_rule_body_pattern_textview);
         }
     }
 
@@ -60,12 +60,7 @@ import com.crossbowffs.nekosms.widget.RecyclerCursorAdapter;
         SmsFilterPatternData bodyPattern = filterData.getBodyPattern();
         bindTextViews(senderPattern, holder.mSenderInfoTextView, holder.mSenderPatternTextView);
         bindTextViews(bodyPattern, holder.mBodyInfoTextView, holder.mBodyPatternTextView);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mFragment.startFilterEditorActivity(id);
-            }
-        });
+        holder.itemView.setOnClickListener(v -> mFragment.startFilterEditorActivity(id));
     }
 
     private void bindTextViews(SmsFilterPatternData pattern, TextView infoView, TextView patternView) {

@@ -2,7 +2,6 @@ package com.crossbowffs.nekosms.app;
 
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -47,7 +46,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_blocked_messages, container, false);
-        mRecyclerView = (ListRecyclerView)view.findViewById(R.id.blocked_messages_recyclerview);
+        mRecyclerView = view.findViewById(R.id.blocked_messages_recyclerview);
         mEmptyView = view.findViewById(android.R.id.empty);
         return view;
     }
@@ -164,12 +163,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             .setIcon(R.drawable.ic_warning_white_24dp)
             .setTitle(R.string.confirm_clear_messages_title)
             .setMessage(R.string.confirm_clear_messages_message)
-            .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    clearAllMessages();
-                }
-            })
+            .setPositiveButton(R.string.delete, (dialog, which) -> clearAllMessages())
             .setNegativeButton(R.string.cancel, null)
             .show();
     }
@@ -203,18 +197,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         new AlertDialog.Builder(context)
             .setMessage(html)
             .setNeutralButton(R.string.close, null)
-            .setPositiveButton(R.string.restore, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    restoreSms(smsId);
-                }
-            })
-            .setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    deleteSms(smsId);
-                }
-            })
+            .setPositiveButton(R.string.restore, (dialog, which) -> restoreSms(smsId))
+            .setNegativeButton(R.string.delete, (dialog, which) -> deleteSms(smsId))
             .show();
 
         BlockedSmsLoader.get().setReadStatus(context, messageData.getId(), true);
@@ -250,11 +234,8 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (SecurityException e) {
             Xlog.e("Do not have permissions to write SMS");
-            showSnackbar(R.string.must_enable_xposed_module, R.string.enable, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startXposedActivity(XposedUtils.Section.MODULES);
-                }
+            showSnackbar(R.string.must_enable_xposed_module, R.string.enable, v -> {
+                startXposedActivity(XposedUtils.Section.MODULES);
             });
             return;
         } catch (DatabaseException e) {
@@ -266,14 +247,11 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         // Delete the message after we successfully write it to the inbox
         BlockedSmsLoader.get().delete(context, smsId);
 
-        showSnackbar(R.string.message_restored, R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context2 = getContext();
-                if (context2 == null) return;
-                BlockedSmsLoader.get().insert(context2, messageData);
-                InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
-            }
+        showSnackbar(R.string.message_restored, R.string.undo, v -> {
+            Context context2 = getContext();
+            if (context2 == null) return;
+            BlockedSmsLoader.get().insert(context2, messageData);
+            InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
         });
     }
 
@@ -292,13 +270,10 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             return;
         }
 
-        showSnackbar(R.string.message_deleted, R.string.undo, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Context context2 = getContext();
-                if (context2 == null) return;
-                BlockedSmsLoader.get().insert(context2, messageData);
-            }
+        showSnackbar(R.string.message_deleted, R.string.undo, v -> {
+            Context context2 = getContext();
+            if (context2 == null) return;
+            BlockedSmsLoader.get().insert(context2, messageData);
         });
     }
 

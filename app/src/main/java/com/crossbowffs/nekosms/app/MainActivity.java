@@ -1,6 +1,5 @@
 package com.crossbowffs.nekosms.app;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -72,11 +71,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mCoordinatorLayout = (CoordinatorLayout)findViewById(R.id.main_coordinator);
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.main_drawer);
-        mNavigationView = (NavigationView)findViewById(R.id.main_navigation);
-        mToolbar = (Toolbar)findViewById(R.id.toolbar);
-        mFloatingActionButton = (FloatingActionButton)findViewById(R.id.main_fab);
+        mCoordinatorLayout = findViewById(R.id.main_coordinator);
+        mDrawerLayout = findViewById(R.id.main_drawer);
+        mNavigationView = findViewById(R.id.main_navigation);
+        mToolbar = findViewById(R.id.toolbar);
+        mFloatingActionButton = findViewById(R.id.main_fab);
 
         // Load preferences
         mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // This is used to cache displayed snackbars, so we can
         // dismiss them when switching between fragments.
-        mSnackbars = Collections.newSetFromMap(new WeakHashMap<Snackbar, Boolean>());
+        mSnackbars = Collections.newSetFromMap(new WeakHashMap<>());
 
         // Create the notification channel immediately so user can
         // configure them immediately without needing to receive
@@ -393,15 +392,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .setTitle(R.string.task_killer_title)
             .setMessage(message)
             .setIcon(R.drawable.ic_warning_white_24dp)
-            .setPositiveButton(R.string.task_killer_ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    HashSet<String> knownTaskKillers = new HashSet<>();
-                    for (PackageInfo pkgInfo : taskKillers) {
-                        knownTaskKillers.add(pkgInfo.packageName);
-                    }
-                    mInternalPrefs.edit().putStringSet(PreferenceConsts.KEY_KNOWN_TASK_KILLERS, knownTaskKillers).apply();
+            .setPositiveButton(R.string.task_killer_ok, (dialog, which) -> {
+                HashSet<String> knownTaskKillers = new HashSet<>();
+                for (PackageInfo pkgInfo : taskKillers) {
+                    knownTaskKillers.add(pkgInfo.packageName);
                 }
+                mInternalPrefs.edit().putStringSet(PreferenceConsts.KEY_KNOWN_TASK_KILLERS, knownTaskKillers).apply();
             })
             .setNegativeButton(R.string.ignore, null)
             .show();
@@ -412,11 +408,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
             .setIcon(R.drawable.ic_warning_white_24dp)
-            .setPositiveButton(R.string.enable, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startXposedActivity(XposedUtils.Section.MODULES);
-                }
+            .setPositiveButton(R.string.enable, (dialog, which) -> {
+                startXposedActivity(XposedUtils.Section.MODULES);
             })
             .setNegativeButton(R.string.ignore, null)
             .show();
@@ -427,11 +420,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)
             .setIcon(R.drawable.ic_warning_white_24dp)
-            .setPositiveButton(R.string.reboot, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    startXposedActivity(XposedUtils.Section.INSTALL);
-                }
+            .setPositiveButton(R.string.reboot, (dialog, which) -> {
+                startXposedActivity(XposedUtils.Section.INSTALL);
             })
             .setNegativeButton(R.string.ignore, null)
             .show();
@@ -447,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .setPositiveButton(R.string.close, null)
             .show();
 
-        TextView textView = (TextView)dialog.findViewById(android.R.id.message);
+        TextView textView = dialog.findViewById(android.R.id.message);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

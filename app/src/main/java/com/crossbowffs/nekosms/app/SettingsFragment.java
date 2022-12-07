@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -30,14 +29,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             addPreferencesFromResource(R.xml.settings_notifications_v26);
             Preference settingsPreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_OPEN_SETTINGS);
-            settingsPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(@NonNull Preference preference) {
-                    Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-                    intent.putExtra(Settings.EXTRA_APP_PACKAGE, NEKOSMS_PACKAGE);
-                    startActivity(intent);
-                    return true;
-                }
+            settingsPreference.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, NEKOSMS_PACKAGE);
+                startActivity(intent);
+                return true;
             });
         } else {
             addPreferencesFromResource(R.xml.settings_notifications);
