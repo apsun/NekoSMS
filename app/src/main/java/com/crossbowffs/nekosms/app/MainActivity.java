@@ -153,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
                     // file error.
                     Xlog.i("Got ACTION_VIEW intent with (maybe) backup file URI");
                     Bundle args = new Bundle(1);
-                    args.putParcelable(FilterRulesFragment.ARG_IMPORT_URI, uri);
-                    setContentSection(EXTRA_SECTION_BLACKLIST_RULES, args);
+                    args.putParcelable(SettingsFragment.ARG_IMPORT_URI, uri);
+                    setContentSection(EXTRA_SECTION_SETTINGS, args);
                 }
 
                 // Kind of a hacky workaround; this ensures that we only execute the
@@ -181,8 +181,8 @@ public class MainActivity extends AppCompatActivity {
         // its arguments and return.
         if (key.equals(mContentSection)) {
             if (args != null) {
-                if (mContentFragment instanceof MainFragment) {
-                    ((MainFragment)mContentFragment).onNewArguments(args);
+                if (mContentFragment instanceof OnNewArgumentsListener) {
+                    ((OnNewArgumentsListener)mContentFragment).onNewArguments(args);
                 }
             }
             return false;
@@ -388,5 +388,9 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = dialog.findViewById(android.R.id.message);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
+    }
+
+    public static MainActivity from(Fragment fragment) {
+        return (MainActivity)fragment.getActivity();
     }
 }

@@ -13,6 +13,7 @@ import android.view.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
@@ -29,7 +30,7 @@ import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
 
-public class BlockedMessagesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BlockedMessagesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnNewArgumentsListener {
     private static final boolean DEBUG_MODE = BuildConfig.DEBUG;
     public static final String ARG_MESSAGE_URI = "message_uri";
 
@@ -54,6 +55,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         mAdapter = new BlockedMessagesAdapter(this);
         LoaderManager loaderManager = LoaderManager.getInstance(this);
         loaderManager.initLoader(0, null, this);
@@ -61,10 +63,14 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
-        disableFab();
-        setTitle(R.string.blocked_messages);
-        onNewArguments(getArguments());
+
+        MainActivity activity = MainActivity.from(this);
+        activity.disableFab();
+        activity.setTitle(R.string.blocked_messages);
+
         BlockedSmsLoader.get().markAllSeen(getContext());
+
+        onNewArguments(getArguments());
     }
 
     @Override
@@ -152,7 +158,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
 
         NotificationHelper.cancelAllNotifications(context);
         BlockedSmsLoader.get().deleteAll(context);
-        showSnackbar(R.string.cleared_blocked_messages);
+        MainActivity.from(this).makeSnackbar(R.string.cleared_blocked_messages).show();
     }
 
     private void showConfirmClearDialog() {
@@ -175,7 +181,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             showMessageDetailsDialog(messageData);
         } else {
             // This can occur if the user deletes the message, then opens the notification
-            showSnackbar(R.string.load_message_failed);
+            MainActivity.from(this).makeSnackbar(R.string.load_message_failed).show();
         }
     }
 
@@ -209,7 +215,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         if (context == null) return;
 
         if (!XposedUtils.startXposedActivity(context, section)) {
-            showSnackbar(R.string.xposed_not_installed);
+            MainActivity.from(this).makeSnackbar(R.string.xposed_not_installed).show();
         }
     }
 
@@ -224,7 +230,7 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         final SmsMessageData messageData = BlockedSmsLoader.get().query(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to restore message: could not load data");
-            showSnackbar(R.string.load_message_failed);
+            MainActivity.from(this).makeSnackbar(R.string.load_message_failed).show();
             return;
         }
 
@@ -234,25 +240,31 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
             inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (SecurityException e) {
             Xlog.e("Do not have permissions to write SMS");
-            showSnackbar(R.string.must_enable_xposed_module, R.string.enable, v -> {
-                startXposedActivity(XposedUtils.Section.MODULES);
-            });
+            MainActivity.from(this)
+                .makeSnackbar(R.string.must_enable_xposed_module)
+                .setAction(R.string.enable, v -> {
+                    startXposedActivity(XposedUtils.Section.MODULES);
+                })
+                .show();
             return;
         } catch (DatabaseException e) {
             Xlog.e("Failed to restore message: could not write to SMS inbox");
-            showSnackbar(R.string.message_restore_failed);
+            MainActivity.from(this).makeSnackbar(R.string.message_restore_failed).show();
             return;
         }
 
         // Delete the message after we successfully write it to the inbox
         BlockedSmsLoader.get().delete(context, smsId);
 
-        showSnackbar(R.string.message_restored, R.string.undo, v -> {
-            Context context2 = getContext();
-            if (context2 == null) return;
-            BlockedSmsLoader.get().insert(context2, messageData);
-            InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
-        });
+        MainActivity.from(this)
+            .makeSnackbar(R.string.message_restored)
+            .setAction(R.string.undo, v -> {
+                Context context2 = getContext();
+                if (context2 == null) return;
+                BlockedSmsLoader.get().insert(context2, messageData);
+                InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
+            })
+            .show();
     }
 
     private void deleteSms(long smsId) {
@@ -266,15 +278,18 @@ public class BlockedMessagesFragment extends MainFragment implements LoaderManag
         final SmsMessageData messageData = BlockedSmsLoader.get().queryAndDelete(context, smsId);
         if (messageData == null) {
             Xlog.e("Failed to delete message: could not load data");
-            showSnackbar(R.string.load_message_failed);
+            MainActivity.from(this).makeSnackbar(R.string.load_message_failed).show();
             return;
         }
 
-        showSnackbar(R.string.message_deleted, R.string.undo, v -> {
-            Context context2 = getContext();
-            if (context2 == null) return;
-            BlockedSmsLoader.get().insert(context2, messageData);
-        });
+        MainActivity.from(this)
+            .makeSnackbar(R.string.message_deleted)
+            .setAction(R.string.undo, v -> {
+                Context context2 = getContext();
+                if (context2 == null) return;
+                BlockedSmsLoader.get().insert(context2, messageData);
+            })
+            .show();
     }
 
     private void createTestSms() {

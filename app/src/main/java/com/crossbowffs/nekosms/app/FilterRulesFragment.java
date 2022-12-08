@@ -1,6 +1,5 @@
 package com.crossbowffs.nekosms.app;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,28 +9,21 @@ import android.view.*;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.crossbowffs.nekosms.R;
-import com.crossbowffs.nekosms.backup.BackupLoader;
-import com.crossbowffs.nekosms.backup.ExportResult;
-import com.crossbowffs.nekosms.backup.ImportResult;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
-import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
 
-public class FilterRulesFragment extends MainFragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    private static final int IMPORT_BACKUP_REQUEST = 1853;
-    private static final int EXPORT_BACKUP_REQUEST = 1854;
+public class FilterRulesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String EXTRA_ACTION = "action";
-    public static final String ARG_IMPORT_URI = "import_uri";
 
     private ListRecyclerView mRecyclerView;
     private TextView mEmptyView;
@@ -41,7 +33,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         mAction = SmsFilterAction.parse(getArguments().getString(EXTRA_ACTION));
     }
 
@@ -67,8 +58,10 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
 
+        MainActivity activity = MainActivity.from(this);
+
         // Display create FAB
-        enableFab(R.drawable.ic_create_white_24dp, v -> {
+        activity.enableFab(R.drawable.ic_create_white_24dp, v -> {
             Intent intent = new Intent(getContext(), FilterEditorActivity.class);
             intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
             startActivity(intent);
@@ -76,27 +69,11 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
 
         // Set strings according to which section we're displaying
         if (mAction == SmsFilterAction.BLOCK) {
-            setTitle(R.string.blacklist_rules);
+            activity.setTitle(R.string.blacklist_rules);
             mEmptyView.setText(R.string.blacklist_rules_empty_text);
         } else if (mAction == SmsFilterAction.ALLOW) {
-            setTitle(R.string.whitelist_rules);
+            activity.setTitle(R.string.whitelist_rules);
             mEmptyView.setText(R.string.whitelist_rules_empty_text);
-        }
-
-        // Handle import requests as necessary
-        onNewArguments(getArguments());
-    }
-
-    @Override
-    public void onNewArguments(Bundle args) {
-        if (args == null) {
-            return;
-        }
-
-        Uri importUri = args.getParcelable(ARG_IMPORT_URI);
-        if (importUri != null) {
-            args.remove(ARG_IMPORT_URI);
-            showConfirmImportDialog(importUri);
         }
     }
 
@@ -119,22 +96,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             return true;
         default:
             return super.onContextItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.options_filter_rules, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.menu_item_import_export_filters:
-            showImportExportDialog();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -161,101 +122,6 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
         mAdapter.changeCursor(null);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode != Activity.RESULT_OK) {
-            return;
-        }
-
-        if (requestCode == IMPORT_BACKUP_REQUEST) {
-            showConfirmImportDialog(data.getData());
-        } else if (requestCode == EXPORT_BACKUP_REQUEST) {
-            exportFilterRules(data.getData());
-        }
-    }
-
-    private void showImportExportDialog() {
-        CharSequence[] items = {getString(R.string.import_from_storage), getString(R.string.export_to_storage)};
-        new AlertDialog.Builder(getContext())
-            .setTitle(R.string.import_export)
-            .setItems(items, (dialog, which) -> {
-                if (which == 0) {
-                    startActivityForResult(BackupLoader.getImportFilePickerIntent(), IMPORT_BACKUP_REQUEST);
-                } else if (which == 1) {
-                    startActivityForResult(BackupLoader.getExportFilePickerIntent(), EXPORT_BACKUP_REQUEST);
-                }
-            })
-            .show();
-    }
-
-    private void showConfirmImportDialog(final Uri uri) {
-        new AlertDialog.Builder(getContext())
-            .setIcon(R.drawable.ic_warning_white_24dp)
-            .setTitle(R.string.import_confirm_title)
-            .setMessage(R.string.import_confirm_message)
-            .setPositiveButton(R.string.backup_button_import, (dialog, which) -> importFilterRules(uri))
-            .setNegativeButton(R.string.cancel, null)
-            .show();
-    }
-
-    private void importFilterRules(final Uri uri) {
-        new DialogAsyncTask<Void, Void, ImportResult>(getContext(), R.string.progress_importing) {
-            @Override
-            protected ImportResult doInBackground(Void... params) {
-                return BackupLoader.importFilterRules(getContext(), uri);
-            }
-
-            @Override
-            protected void onPostExecute(ImportResult result) {
-                super.onPostExecute(result);
-                int messageId;
-                switch (result) {
-                case SUCCESS:
-                    messageId = R.string.import_success;
-                    break;
-                case UNKNOWN_VERSION:
-                    messageId = R.string.import_unknown_version;
-                    break;
-                case INVALID_BACKUP:
-                    messageId = R.string.import_invalid_backup;
-                    break;
-                case READ_FAILED:
-                    messageId = R.string.import_read_failed;
-                    break;
-                default:
-                    throw new AssertionError("Unknown backup import result code: " + result);
-                }
-                showSnackbar(messageId);
-            }
-        }.execute();
-    }
-
-    private void exportFilterRules(final Uri uri) {
-        new DialogAsyncTask<Void, Void, ExportResult>(getContext(), R.string.progress_exporting) {
-            @Override
-            protected ExportResult doInBackground(Void... params) {
-                return BackupLoader.exportFilterRules(getContext(), uri);
-            }
-
-            @Override
-            protected void onPostExecute(ExportResult result) {
-                super.onPostExecute(result);
-                int messageId;
-                switch (result) {
-                case SUCCESS:
-                    messageId = R.string.export_success;
-                    break;
-                case WRITE_FAILED:
-                    messageId = R.string.export_write_failed;
-                    break;
-                default:
-                    throw new AssertionError("Unknown backup export result code: " + result);
-                }
-                showSnackbar(messageId);
-            }
-        }.execute();
-    }
-
     private void deleteFilter(long filterId) {
         final SmsFilterData filterData = FilterRuleLoader.get().queryAndDelete(getContext(), filterId);
         if (filterData == null) {
@@ -263,9 +129,12 @@ public class FilterRulesFragment extends MainFragment implements LoaderManager.L
             return;
         }
 
-        showSnackbar(R.string.filter_deleted, R.string.undo, v -> {
-            FilterRuleLoader.get().insert(getContext(), filterData);
-        });
+        MainActivity.from(this)
+            .makeSnackbar(R.string.filter_deleted)
+            .setAction(R.string.undo, v -> {
+                FilterRuleLoader.get().insert(getContext(), filterData);
+            })
+            .show();
     }
 
     public void startFilterEditorActivity(long id) {

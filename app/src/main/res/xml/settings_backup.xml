@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory android:title="@string/import_export">
+        <androidx.preference.Preference
+            android:key="pref_import_backup"
+            android:title="@string/import_from_storage"/>
+        <androidx.preference.Preference
+            android:key="pref_export_backup"
+            android:title="@string/export_to_storage"/>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

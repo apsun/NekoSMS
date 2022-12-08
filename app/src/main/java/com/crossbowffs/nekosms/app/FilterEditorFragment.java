@@ -49,10 +49,6 @@ public class FilterEditorFragment extends Fragment {
     private EnumAdapter<CaseSensitivity> mCaseAdapter;
     private SmsFilterPatternData mPatternData;
 
-    private FilterEditorActivity getEditorActivity() {
-        return (FilterEditorActivity)getActivity();
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,16 +70,17 @@ public class FilterEditorFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // Set up spinner adapters
-        mModeAdapter = new EnumAdapter<>(getEditorActivity(), android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
+        mModeAdapter = new EnumAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
         mModeAdapter.setStringMap(getModeMap());
         mModeSpinner.setAdapter(mModeAdapter);
 
-        mCaseAdapter = new EnumAdapter<>(getEditorActivity(), android.R.layout.simple_spinner_dropdown_item, CaseSensitivity.class);
+        mCaseAdapter = new EnumAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, CaseSensitivity.class);
         mCaseAdapter.setStringMap(getCaseMap());
         mCaseSpinner.setAdapter(mCaseAdapter);
 
         // Load pattern data corresponding to the current tab
-        mPatternData = getEditorActivity().getPatternData(mField);
+        FilterEditorActivity activity = (FilterEditorActivity)getActivity();
+        mPatternData = activity.getPatternData(mField);
 
         // Disable hint animation as workaround for drawing issue during activity creation
         // See https://code.google.com/p/android/issues/detail?id=179776
