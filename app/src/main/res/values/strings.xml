@@ -15,10 +15,6 @@
     <string name="undo">Undo</string>
     <string name="cancel">Cancel</string>
 
-    <!-- Navigation drawer -->
-    <string name="open_drawer">Open navigation drawer</string>
-    <string name="close_drawer">Close navigation drawer</string>
-
     <!-- Import/export -->
     <string name="import_export">Import/export</string>
     <string name="import_from_storage">Import from external storage</string>

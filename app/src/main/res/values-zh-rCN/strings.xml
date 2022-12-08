@@ -15,10 +15,6 @@
     <string name="undo">撤消</string>
     <string name="cancel">取消</string>
 
-    <!-- Navigation drawer -->
-    <string name="open_drawer">扩展导航抽屉</string>
-    <string name="close_drawer">隐藏导航抽屉</string>
-
     <!-- Import/export -->
     <string name="import_export">导入/导出</string>
     <string name="import_from_storage">从外部存储导入</string>
