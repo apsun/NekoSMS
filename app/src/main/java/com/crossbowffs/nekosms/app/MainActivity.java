@@ -4,24 +4,16 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
@@ -31,13 +23,13 @@ import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.*;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_SECTION = "section";
     public static final String EXTRA_SECTION_BLACKLIST_RULES = "blacklist_rules";
     public static final String EXTRA_SECTION_WHITELIST_RULES = "whitelist_rules";
@@ -56,12 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         "com.click369.controlbp",
     };
 
-    private CoordinatorLayout mCoordinatorLayout;
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
-    private Toolbar mToolbar;
+    private BottomNavigationView mBottomNavBar;
     private FloatingActionButton mFloatingActionButton;
-    private ActionBarDrawerToggle mDrawerToggle;
     private Set<Snackbar> mSnackbars;
     private Fragment mContentFragment;
     private String mContentSection;
@@ -71,27 +59,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mCoordinatorLayout = findViewById(R.id.main_coordinator);
-        mDrawerLayout = findViewById(R.id.main_drawer);
-        mNavigationView = findViewById(R.id.main_navigation);
-        mToolbar = findViewById(R.id.toolbar);
         mFloatingActionButton = findViewById(R.id.main_fab);
+
+        mBottomNavBar = findViewById(R.id.bottom_nav);
+        mBottomNavBar.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+            case R.id.bottom_nav_blacklist:
+                setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
+                return true;
+            case R.id.bottom_nav_whitelist:
+                setContentSection(EXTRA_SECTION_WHITELIST_RULES);
+                return true;
+            case R.id.bottom_nav_blocked:
+                setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES);
+                return true;
+            case R.id.bottom_nav_settings:
+                setContentSection(EXTRA_SECTION_SETTINGS);
+                return true;
+            default:
+                return false;
+            }
+        });
 
         // Load preferences
         mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
         mInternalPrefs.edit().putInt(PreferenceConsts.KEY_APP_VERSION, VERSION_CODE).apply();
 
         // Setup toolbar
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Setup navigation drawer
-        mNavigationView.setNavigationItemSelectedListener(this);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.open_drawer, R.string.close_drawer);
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.addDrawerListener(mDrawerToggle);
-        mDrawerToggle.syncState();
+        setSupportActionBar(findViewById(R.id.toolbar));
 
         // This is used to cache displayed snackbars, so we can
         // dismiss them when switching between fragments.
@@ -129,55 +124,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Set the section that was selected previously
             String section = mInternalPrefs.getString(PreferenceConsts.KEY_SELECTED_SECTION, EXTRA_SECTION_BLACKLIST_RULES);
             setContentSection(section);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Workaround for a weird issue where the drawer state
-        // hasn't been restored in onPostCreate, leaving the arrow
-        // state out-of-sync if the drawer is open.
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        mDrawerToggle.onConfigurationChanged(newConfig);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        mDrawerLayout.closeDrawer(mNavigationView);
-        switch (item.getItemId()) {
-        case R.id.main_drawer_blacklist_rules:
-            setContentSection(EXTRA_SECTION_BLACKLIST_RULES);
-            return true;
-        case R.id.main_drawer_whitelist_rules:
-            setContentSection(EXTRA_SECTION_WHITELIST_RULES);
-            return true;
-        case R.id.main_drawer_blocked_messages:
-            setContentSection(EXTRA_SECTION_BLOCKED_MESSAGES);
-            return true;
-        case R.id.main_drawer_settings:
-            setContentSection(EXTRA_SECTION_SETTINGS);
-            return true;
-        case R.id.main_drawer_about:
-            showAboutDialog();
-            return true;
-        default:
-            return false;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
-            mDrawerLayout.closeDrawer(mNavigationView);
-        } else {
-            super.onBackPressed();
         }
     }
 
@@ -251,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 args = new Bundle();
             }
             args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.BLOCK.name());
-            navId = R.id.main_drawer_blacklist_rules;
+            navId = R.id.bottom_nav_blacklist;
             break;
         case EXTRA_SECTION_WHITELIST_RULES:
             fragment = new FilterRulesFragment();
@@ -259,15 +205,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 args = new Bundle();
             }
             args.putString(FilterRulesFragment.EXTRA_ACTION, SmsFilterAction.ALLOW.name());
-            navId = R.id.main_drawer_whitelist_rules;
+            navId = R.id.bottom_nav_whitelist;
             break;
         case EXTRA_SECTION_BLOCKED_MESSAGES:
             fragment = new BlockedMessagesFragment();
-            navId = R.id.main_drawer_blocked_messages;
+            navId = R.id.bottom_nav_blocked;
             break;
         case EXTRA_SECTION_SETTINGS:
             fragment = new SettingsFragment();
-            navId = R.id.main_drawer_settings;
+            navId = R.id.bottom_nav_settings;
             break;
         default:
             Xlog.e("Unknown context section: %s", key);
@@ -284,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .commit();
         mContentFragment = fragment;
         mContentSection = key;
-        mNavigationView.setCheckedItem(navId);
+        mBottomNavBar.setSelectedItemId(navId);
         mInternalPrefs.edit().putString(PreferenceConsts.KEY_SELECTED_SECTION, key).apply();
         return true;
     }
@@ -305,7 +251,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public Snackbar makeSnackbar(int textId) {
-        Snackbar snackbar = Snackbar.make(mCoordinatorLayout, textId, Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(mFloatingActionButton, textId, Snackbar.LENGTH_LONG);
+        if (mFloatingActionButton.getVisibility() == View.VISIBLE) {
+            snackbar.setAnchorView(mFloatingActionButton);
+        }
         mSnackbars.add(snackbar);
         return snackbar;
     }
@@ -325,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void startXposedActivity(XposedUtils.Section section) {
         if (!XposedUtils.startXposedActivity(this, section)) {
-            Toast.makeText(this, R.string.xposed_not_installed, Toast.LENGTH_SHORT).show();
+            makeSnackbar(R.string.xposed_not_installed).show();
         }
     }
 

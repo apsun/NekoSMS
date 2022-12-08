@@ -36,8 +36,8 @@
     <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter rules -->
-    <string name="blacklist_rules">Blacklist rules</string>
-    <string name="whitelist_rules">Whitelist rules</string>
+    <string name="blacklist_rules">Blacklist</string>
+    <string name="whitelist_rules">Whitelist</string>
     <string name="blacklist_rules_empty_text">No blacklist rules yet!</string>
     <string name="whitelist_rules_empty_text">No whitelist rules yet!</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
@@ -80,8 +80,6 @@
     <string name="save_blacklist_rule">Save blacklist rule</string>
     <string name="save_whitelist_rule">Save whitelist rule</string>
     <string name="discard_changes">Discard changes</string>
-    <string name="filter_saved">Filter rule saved</string>
-    <string name="filter_save_failed">Unable to save filter rule</string>
     <string name="invalid_pattern_title">Invalid pattern</string>
     <string name="format_invalid_pattern_message">The %1$s pattern you have entered is not a legal regular expression!\n\nReason: %2$s</string>
     <string name="invalid_pattern_field_sender">sender</string>
@@ -89,7 +87,7 @@
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
-    <string name="blocked_messages">Blocked messages</string>
+    <string name="blocked_messages">Blocked</string>
     <string name="blocked_messages_empty_text">No blocked messages!</string>
     <string name="must_enable_xposed_module">Xposed module must be enabled</string>
     <string name="clear_blocked_messages">Clear blocked messages</string>

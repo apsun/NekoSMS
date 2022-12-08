@@ -36,8 +36,8 @@
     <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter rules -->
-    <string name="blacklist_rules">黑名单规则</string>
-    <string name="whitelist_rules">白名单规则</string>
+    <string name="blacklist_rules">黑名单</string>
+    <string name="whitelist_rules">白名单</string>
     <string name="blacklist_rules_empty_text">没有任何黑名单规则！</string>
     <string name="whitelist_rules_empty_text">没有任何白名单规则！</string>
     <string name="format_filter_info">%1$s%2$s%3$s</string>
@@ -76,12 +76,10 @@
     </string>
 
     <!-- Filter rule editor -->
-    <string name="filter_editor">过滤规则编辑器</string>
+    <string name="filter_editor">编辑过滤规则</string>
     <string name="save_blacklist_rule">保存黑名单规则</string>
     <string name="save_whitelist_rule">保存白名单规则</string>
     <string name="discard_changes">放弃更改</string>
-    <string name="filter_saved">过滤规则已保存</string>
-    <string name="filter_save_failed">无法保存过滤规则</string>
     <string name="invalid_pattern_title">表达式不合法</string>
     <string name="format_invalid_pattern_message">您输入的%1$s表达式不合法！\n\n原因：%2$s</string>
     <string name="invalid_pattern_field_sender">发送者</string>
@@ -89,7 +87,7 @@
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
-    <string name="blocked_messages">已拦截的信息</string>
+    <string name="blocked_messages">已拦截</string>
     <string name="blocked_messages_empty_text">没有任何垃圾信息！</string>
     <string name="must_enable_xposed_module">需要启用Xposed模块</string>
     <string name="clear_blocked_messages">清空已拦截的信息</string>

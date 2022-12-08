@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -220,8 +219,6 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     private void saveAndFinish() {
         Uri filterUri = persistFilterData();
-        int messageId = (filterUri != null) ? R.string.filter_saved : R.string.filter_save_failed;
-        Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent();
         intent.setData(filterUri);
         setResult(RESULT_OK, intent);

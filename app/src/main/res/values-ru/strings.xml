@@ -80,8 +80,6 @@
     <string name="save_blacklist_rule">Сохранить в чёрный список</string>
     <string name="save_whitelist_rule">Сохранить в белый список</string>
     <string name="discard_changes">Отменить изменения</string>
-    <string name="filter_saved">Правило сохранено</string>
-    <string name="filter_save_failed">Невозможно сохранить правило</string>
     <string name="invalid_pattern_title">Некорректное значение</string>
     <string name="format_invalid_pattern_message">Значение %1$s не является корректным регулярным выражением!\n\nПричина: %2$s</string>
     <string name="invalid_pattern_field_sender">отправитель</string>
