@@ -60,12 +60,6 @@
     </string>
     <string name="module_outdated_title">Модуль Xposed обновлён</string>
     <string name="module_outdated_message">Пожалуйста перезагрузите устройство чтобы изменения вступили в силу.</string>
-    <string name="task_killer_title">Обнаружены приложения по контролю фоновой активности</string>
-    <string name="task_killer_message">
-        На вашем устройстве обнаружены следующие приложения:\n\n%s\n
-        \nПожалуйста добавьте в них приложение NekoSMS в исключения, иначе оно не сможет работать!
-    </string>
-    <string name="task_killer_ok">Понятно</string>
     <string name="xposed_not_installed">Xposed не найден</string>
     <string name="format_about_message">
         <![CDATA[

@@ -41,13 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String WIKI_URL = GITHUB_URL + "/wiki";
 
-    private static final String[] TASK_KILLER_PACKAGES = {
-        "me.piebridge.forcestopgb",
-        "com.oasisfeng.greenify",
-        "me.piebridge.brevent",
-        "com.click369.controlbp",
-    };
-
     private BottomNavigationView mBottomNavBar;
     private FloatingActionButton mFloatingActionButton;
     private Set<Snackbar> mSnackbars;
@@ -117,8 +110,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else if (XposedUtils.isModuleUpdated()) {
                 showModuleUpdatedDialog();
-            } else {
-                showTaskKillerDialogIfNecessary();
             }
 
             // Set the section that was selected previously
@@ -276,80 +267,6 @@ public class MainActivity extends AppCompatActivity {
         if (!XposedUtils.startXposedActivity(this, section)) {
             makeSnackbar(R.string.xposed_not_installed).show();
         }
-    }
-
-    private boolean shouldShowTaskKillerDialog(List<PackageInfo> taskKillers) {
-        if (taskKillers.isEmpty()) {
-            return false;
-        }
-
-        Set<String> knownTaskKillers = mInternalPrefs.getStringSet(PreferenceConsts.KEY_KNOWN_TASK_KILLERS, null);
-        if (knownTaskKillers == null) {
-            return true;
-        }
-
-        for (PackageInfo pkgInfo : taskKillers) {
-            if (!knownTaskKillers.contains(pkgInfo.packageName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private List<PackageInfo> getInstalledTaskKillers() {
-        PackageManager packageManager = getPackageManager();
-        ArrayList<PackageInfo> apps = new ArrayList<>();
-        for (String pkgName : TASK_KILLER_PACKAGES) {
-            PackageInfo pkgInfo;
-            try {
-                pkgInfo = packageManager.getPackageInfo(pkgName, 0);
-            } catch (PackageManager.NameNotFoundException e) {
-                continue;
-            }
-            apps.add(pkgInfo);
-        }
-        return apps;
-    }
-
-    private String getAppDisplayName(PackageInfo pkgInfo) {
-        PackageManager packageManager = getPackageManager();
-        CharSequence name = packageManager.getApplicationLabel(pkgInfo.applicationInfo);
-        if (name != null) {
-            return name.toString();
-        } else {
-            return pkgInfo.packageName;
-        }
-    }
-
-    private void showTaskKillerDialogIfNecessary() {
-        final List<PackageInfo> taskKillers = getInstalledTaskKillers();
-        if (!shouldShowTaskKillerDialog(taskKillers)) {
-            return;
-        }
-
-        // Build dialog content (note that the list is definitely not empty
-        // so we don't need to check for the empty list edge case here)
-        StringBuilder sb = new StringBuilder();
-        for (PackageInfo pkgInfo : taskKillers) {
-            sb.append(getAppDisplayName(pkgInfo));
-            sb.append('\n');
-        }
-        sb.setLength(sb.length() - 1);
-        String message = getString(R.string.task_killer_message, sb.toString());
-
-        new AlertDialog.Builder(this)
-            .setTitle(R.string.task_killer_title)
-            .setMessage(message)
-            .setIcon(R.drawable.ic_warning_white_24dp)
-            .setPositiveButton(R.string.task_killer_ok, (dialog, which) -> {
-                HashSet<String> knownTaskKillers = new HashSet<>();
-                for (PackageInfo pkgInfo : taskKillers) {
-                    knownTaskKillers.add(pkgInfo.packageName);
-                }
-                mInternalPrefs.edit().putStringSet(PreferenceConsts.KEY_KNOWN_TASK_KILLERS, knownTaskKillers).apply();
-            })
-            .setNegativeButton(R.string.ignore, null)
-            .show();
     }
 
     private void showEnableModuleDialog() {

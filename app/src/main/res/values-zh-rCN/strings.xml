@@ -59,13 +59,6 @@
     </string>
     <string name="module_outdated_title">Xposed模块已更新</string>
     <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
-    <string name="task_killer_title">已检测到进程阻止应用</string>
-    <string name="task_killer_message">
-        在设备上检测到了下列应用：\n
-        \n%s\n
-        \n请将NekoSMS加到白名单上，否则此应用将无法工作。
-    </string>
-    <string name="task_killer_ok">我明白了</string>
     <string name="xposed_not_installed">Xposed未安装</string>
     <string name="format_about_message">
         <![CDATA[
