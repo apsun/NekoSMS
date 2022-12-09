@@ -8,17 +8,13 @@
     <string name="edit">Edit</string>
     <string name="enable">Enable</string>
     <string name="reboot">Reboot</string>
-    <string name="about">About</string>
     <string name="ignore">Ignore</string>
     <string name="close">Close</string>
     <string name="restore">Restore</string>
     <string name="undo">Undo</string>
     <string name="cancel">Cancel</string>
 
-    <!-- Import/export -->
-    <string name="import_export">Import/export</string>
-    <string name="import_from_storage">Import from external storage</string>
-    <string name="export_to_storage">Export to external storage</string>
+    <!-- Backup -->
     <string name="import_confirm_title">Import backup?</string>
     <string name="import_confirm_message">This will overwrite your existing filter rules!</string>
     <string name="import_success">Import successful</string>
@@ -32,8 +28,10 @@
     <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter rules -->
-    <string name="blacklist_rules">Blacklist</string>
-    <string name="whitelist_rules">Whitelist</string>
+    <string name="blacklist_rules">Blacklist rules</string>
+    <string name="blacklist_rules_short">Blacklist</string>
+    <string name="whitelist_rules">Whitelist rules</string>
+    <string name="whitelist_rules_short">Whitelist</string>
     <string name="blacklist_rules_empty_text">No blacklist rules yet!</string>
     <string name="whitelist_rules_empty_text">No whitelist rules yet!</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
@@ -57,13 +55,6 @@
     <string name="module_outdated_title">Xposed module updated</string>
     <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
     <string name="xposed_not_installed">Xposed not installed</string>
-    <string name="format_about_message">
-        <![CDATA[
-            A pattern-based text message blocker for Android.<br><br>
-            Visit the project on <a href="%1$s">GitHub</a><br><br>
-            Have a question? <a href="%2$s">Read the wiki!</a>
-        ]]>
-    </string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">Filter rule editor</string>
@@ -77,7 +68,8 @@
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
-    <string name="blocked_messages">Blocked</string>
+    <string name="blocked_messages">Blocked messages</string>
+    <string name="blocked_messages_short">Blocked</string>
     <string name="blocked_messages_empty_text">No blocked messages!</string>
     <string name="must_enable_xposed_module">Xposed module must be enabled</string>
     <string name="clear_blocked_messages">Clear blocked messages</string>
@@ -117,8 +109,11 @@
     <string name="filter_case_sensitive">Sensitive</string>
     <string name="filter_case_insensitive">Insensitive</string>
 
-    <!-- Preferences -->
+    <!-- Settings -->
     <string name="settings">Settings</string>
+    <string name="settings_short">Settings</string>
+
+    <!-- Settings/General -->
     <string name="pref_general">General</string>
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">No reboot required</string>
@@ -127,9 +122,11 @@
     <string name="pref_whitelist_contacts_summary">Don\'t block messages from contacts</string>
     <string name="pref_verbose_logging">Verbose logging</string>
     <string name="pref_verbose_logging_summary">Write SMS content to logcat</string>
+
+    <!-- Settings/Notifications -->
     <string name="pref_notifications">Notifications</string>
     <string name="pref_notifications_enable">Enable notifications</string>
-    <string name="pref_notifications_enable_summary">Display notification when a message is blocked</string>
+    <string name="pref_notifications_enable_summary">Show notification when a message is blocked</string>
     <string name="pref_notifications_ringtone">Ringtone</string>
     <string name="pref_notifications_ringtone_none">None</string>
     <string name="pref_notifications_vibrate">Vibration</string>
@@ -142,6 +139,22 @@
     <string name="pref_notifications_priority_min">Very low</string>
     <string name="pref_notifications_open_settings">Notification settings</string>
     <string name="pref_notifications_open_settings_summary">Click to open notification settings</string>
+
+    <!-- Settings/Backup -->
+    <string name="pref_backup">Backup</string>
+    <string name="pref_import_backup">Import backup</string>
+    <string name="pref_import_backup_summary">Load filter rules from .nsbak file</string>
+    <string name="pref_export_backup">Export backup</string>
+    <string name="pref_export_backup_summary">Save filter rules to .nsbak file</string>
+
+    <!-- Settings/About -->
+    <string name="pref_about">About</string>
+    <string name="pref_about_help">Help</string>
+    <string name="pref_about_help_summary">Click to view user guide (opens in browser)</string>
+    <string name="pref_about_github">GitHub</string>
+    <string name="pref_about_github_summary">github.com/apsun/NekoSMS</string>
+    <string name="pref_about_version">Version</string>
+    <string name="format_pref_about_version_summary">%s (%d)</string>
 
     <!-- Notifications -->
     <string name="format_notification_single_sender">%s (blocked)</string>

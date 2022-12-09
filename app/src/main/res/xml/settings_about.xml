@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.preference.PreferenceCategory
+        android:title="@string/pref_about"
+        app:iconSpaceReserved="false">
+        <androidx.preference.Preference
+            android:key="pref_about_help"
+            android:title="@string/pref_about_help"
+            android:summary="@string/pref_about_help_summary"
+            app:iconSpaceReserved="false"/>
+        <androidx.preference.Preference
+            android:key="pref_about_github"
+            android:title="@string/pref_about_github"
+            android:summary="@string/pref_about_github_summary"
+            app:iconSpaceReserved="false"/>
+        <androidx.preference.Preference
+            android:key="pref_about_version"
+            android:title="@string/pref_about_version"
+            app:iconSpaceReserved="false"/>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

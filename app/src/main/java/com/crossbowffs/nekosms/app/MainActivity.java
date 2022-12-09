@@ -4,11 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,10 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_SECTION_BLOCKED_MESSAGES = "blocked_messages";
     public static final String EXTRA_SECTION_SETTINGS = "settings";
 
-    private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
     private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
-    private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
-    private static final String WIKI_URL = GITHUB_URL + "/wiki";
 
     private BottomNavigationView mBottomNavBar;
     private FloatingActionButton mFloatingActionButton;
@@ -258,11 +251,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startBrowserActivity(String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        startActivity(intent);
-    }
-
     private void startXposedActivity(XposedUtils.Section section) {
         if (!XposedUtils.startXposedActivity(this, section)) {
             makeSnackbar(R.string.xposed_not_installed).show();
@@ -291,20 +279,6 @@ public class MainActivity extends AppCompatActivity {
             })
             .setNegativeButton(R.string.ignore, null)
             .show();
-    }
-
-    private void showAboutDialog() {
-        Spanned html = Html.fromHtml(getString(R.string.format_about_message,
-            GITHUB_URL, WIKI_URL));
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.app_name) + ' ' + VERSION_NAME)
-            .setMessage(html)
-            .setPositiveButton(R.string.close, null)
-            .show();
-
-        TextView textView = dialog.findViewById(android.R.id.message);
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
     public static MainActivity from(Fragment fragment) {

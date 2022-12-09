@@ -20,14 +20,19 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnNewArgumentsListener {
-    private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
     private static final int IMPORT_BACKUP_REQUEST = 1853;
     private static final int EXPORT_BACKUP_REQUEST = 1854;
     public static final String ARG_IMPORT_URI = "import_uri";
 
+    private static final String NEKOSMS_PACKAGE = BuildConfig.APPLICATION_ID;
+    private static final String VERSION_NAME = BuildConfig.VERSION_NAME;
+    private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
+    private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
+    private static final String WIKI_URL = GITHUB_URL + "/wiki";
+
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        // General settings
+        // General
         addPreferencesFromResource(R.xml.settings_general);
         if (!XposedUtils.isModuleEnabled()) {
             Preference enablePreference = findPreference(PreferenceConsts.KEY_ENABLE);
@@ -35,7 +40,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
             enablePreference.setSummary(R.string.pref_enable_summary_alt);
         }
 
-        // Notification settings
+        // Notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             addPreferencesFromResource(R.xml.settings_notifications_v26);
             Preference settingsPreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_OPEN_SETTINGS);
@@ -49,7 +54,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
             addPreferencesFromResource(R.xml.settings_notifications);
         }
 
-        // Backup settings
+        // Backup
         addPreferencesFromResource(R.xml.settings_backup);
         findPreference(PreferenceConsts.KEY_IMPORT_BACKUP).setOnPreferenceClickListener(preference -> {
             startActivityForResult(BackupLoader.getImportFilePickerIntent(), IMPORT_BACKUP_REQUEST);
@@ -59,6 +64,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
             startActivityForResult(BackupLoader.getExportFilePickerIntent(), EXPORT_BACKUP_REQUEST);
             return true;
         });
+
+        // About
+        addPreferencesFromResource(R.xml.settings_about);
+        findPreference(PreferenceConsts.KEY_ABOUT_HELP).setOnPreferenceClickListener(preference -> {
+            startBrowserActivity(WIKI_URL);
+            return true;
+        });
+        findPreference(PreferenceConsts.KEY_ABOUT_GITHUB).setOnPreferenceClickListener(preference -> {
+            startBrowserActivity(GITHUB_URL);
+            return true;
+        });
+        String versionSummary = getString(R.string.format_pref_about_version_summary, VERSION_NAME, VERSION_CODE);
+        findPreference(PreferenceConsts.KEY_ABOUT_VERSION).setSummary(versionSummary);
 
         // Handle import requests as necessary
         onNewArguments(getArguments());
@@ -167,5 +185,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
                 MainActivity.from(SettingsFragment.this).makeSnackbar(messageId).show();
             }
         }.execute();
+    }
+
+    private void startBrowserActivity(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
     }
 }

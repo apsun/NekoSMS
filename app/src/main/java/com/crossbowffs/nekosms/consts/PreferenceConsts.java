@@ -16,8 +16,7 @@ public final class PreferenceConsts {
     public static final boolean KEY_NOTIFICATIONS_ENABLE_DEFAULT = false;
     public static final String KEY_VERBOSE_LOGGING = "pref_verbose_logging";
     public static final boolean KEY_VERBOSE_LOGGING_DEFAULT = false;
-    public static final String KEY_IMPORT_BACKUP = "pref_import_backup";
-    public static final String KEY_EXPORT_BACKUP = "pref_export_backup";
+
     public static final String KEY_NOTIFICATIONS_RINGTONE = "pref_notifications_ringtone";
     public static final String KEY_NOTIFICATIONS_RINGTONE_DEFAULT = "content://settings/system/notification_sound";
     public static final String KEY_NOTIFICATIONS_VIBRATE = "pref_notifications_vibrate";
@@ -27,6 +26,13 @@ public final class PreferenceConsts {
     public static final String KEY_NOTIFICATIONS_PRIORITY = "pref_notifications_priority";
     public static final String KEY_NOTIFICATIONS_PRIORITY_DEFAULT = "0";
     public static final String KEY_NOTIFICATIONS_OPEN_SETTINGS = "pref_notifications_open_settings";
+
+    public static final String KEY_IMPORT_BACKUP = "pref_import_backup";
+    public static final String KEY_EXPORT_BACKUP = "pref_export_backup";
+
+    public static final String KEY_ABOUT_HELP = "pref_about_help";
+    public static final String KEY_ABOUT_GITHUB = "pref_about_github";
+    public static final String KEY_ABOUT_VERSION = "pref_about_version";
 
     public static final String KEY_APP_VERSION = "pref_app_version";
     public static final String KEY_SELECTED_SECTION = "pref_selected_section";
