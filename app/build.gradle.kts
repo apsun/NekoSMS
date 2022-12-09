@@ -11,7 +11,6 @@ dependencies {
     implementation("androidx.preference:preference:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
-    implementation("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation("androidx.viewpager2:viewpager2:1.0.0")
     // HACK: Workaround for https://issuetracker.google.com/issues/242384116
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
