@@ -20,6 +20,7 @@ import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnNewArgumentsListener {
+    private static final int PICK_RINGTONE_REQUEST = 1852;
     private static final int IMPORT_BACKUP_REQUEST = 1853;
     private static final int EXPORT_BACKUP_REQUEST = 1854;
     public static final String ARG_IMPORT_URI = "import_uri";
@@ -52,6 +53,12 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
             });
         } else {
             addPreferencesFromResource(R.xml.settings_notifications);
+            RingtonePreference ringtonePreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE);
+            ringtonePreference.setOnPreferenceClickListener(preference -> {
+                Intent intent = ((RingtonePreference)preference).getRingtonePickerIntent();
+                startActivityForResult(intent, PICK_RINGTONE_REQUEST);
+                return true;
+            });
         }
 
         // Backup
@@ -97,7 +104,10 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
             return;
         }
 
-        if (requestCode == IMPORT_BACKUP_REQUEST) {
+        if (requestCode == PICK_RINGTONE_REQUEST) {
+            RingtonePreference ringtonePreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE);
+            ringtonePreference.onRingtonePickerResult(data);
+        } else if (requestCode == IMPORT_BACKUP_REQUEST) {
             importFilterRules(data.getData());
         } else if (requestCode == EXPORT_BACKUP_REQUEST) {
             exportFilterRules(data.getData());
