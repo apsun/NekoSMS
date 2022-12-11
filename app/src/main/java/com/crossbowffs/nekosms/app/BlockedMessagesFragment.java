@@ -144,7 +144,9 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         mAdapter.changeCursor(data);
-        mRecyclerView.setAdapter(mAdapter);
+        if (mRecyclerView.getAdapter() == null) {
+            mRecyclerView.setAdapter(mAdapter);
+        }
     }
 
     @Override
