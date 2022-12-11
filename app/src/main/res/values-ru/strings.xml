@@ -29,9 +29,9 @@
 
     <!-- Filter rules -->
     <string name="blacklist_rules">Чёрный список</string>
-    <string name="blacklist_rules_short">Чёрный список</string>
+    <string name="blacklist_rules_short">запрещать</string>
     <string name="whitelist_rules">Белый список</string>
-    <string name="whitelist_rules_short">Белый список</string>
+    <string name="whitelist_rules_short">разрешать</string>
     <string name="blacklist_rules_empty_text">Правила чёрного списка отсутсвуют</string>
     <string name="whitelist_rules_empty_text">Правила белого списка отсутсвуют</string>
     <string name="format_filter_info">%1$s %2$s%3$s</string>
@@ -142,16 +142,16 @@
     <string name="pref_notifications_open_settings_summary">Нажмите чтобы перейти к настройкам уведомлений</string>
 
     <!-- Settings/Backup -->
-    <!--string name="pref_backup"></string-->
-    <!--string name="pref_import_backup"></string-->
-    <!--string name="pref_import_backup_summary"></string-->
-    <!--string name="pref_export_backup"></string-->
-    <!--string name="pref_export_backup_summary"></string-->
+    <string name="pref_backup">резервное копирование</string>
+    <string name="pref_import_backup">Импорт резервной копии</string>
+    <string name="pref_import_backup_summary">загрузить правила фильтрации из файла .nsbak</string>
+    <string name="pref_export_backup">экспорт резервной копии</string>
+    <string name="pref_export_backup_summary">Сохранить правила фильтрации в файл .nsbak</string>
 
     <!-- Settings/About -->
     <string name="pref_about">О приложении</string>
-    <!--string name="pref_about_help"></string-->
-    <!--string name="pref_about_help_summary"></string-->
+    <string name="pref_about_help">Получить</string>
+    <string name="pref_about_help_summary">нажмите здесь, чтобы открыть руководство пользователя</string>
     <string name="pref_about_github">GitHub</string>
     <string name="pref_about_github_summary">github.com/apsun/NekoSMS</string>
     <string name="pref_about_version">версия</string>

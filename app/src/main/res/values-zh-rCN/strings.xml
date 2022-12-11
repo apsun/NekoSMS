@@ -67,7 +67,7 @@
     <string name="invalid_pattern_reason_unknown">¯\\_(ツ)_/¯</string>
 
     <!-- Blocked messages -->
-    <string name="blocked_messages">已拦截信息</string>
+    <string name="blocked_messages">已拦截的信息</string>
     <string name="blocked_messages_short">已拦截</string>
     <string name="blocked_messages_empty_text">没有任何垃圾信息！</string>
     <string name="must_enable_xposed_module">需要启用Xposed模块</string>
@@ -143,14 +143,14 @@
     <!-- Settings/Backup -->
     <string name="pref_backup">备份</string>
     <string name="pref_import_backup">导入备份</string>
-    <!--string name="pref_import_backup_summary"></string-->
+    <string name="pref_import_backup_summary">从.nsbak文件导入过滤规则</string>
     <string name="pref_export_backup">导出备份</string>
-    <!--string name="pref_export_backup_summary"></string-->
+    <string name="pref_export_backup_summary">将过滤规则保存到.nsbak文件</string>
 
     <!-- Settings/About -->
     <string name="pref_about">关于</string>
-    <!--string name="pref_about_help"></string-->
-    <!--string name="pref_about_help_summary"></string-->
+    <string name="pref_about_help">帮助</string>
+    <string name="pref_about_help_summary">点击此处打开用户手册</string>
     <string name="pref_about_github">GitHub</string>
     <string name="pref_about_github_summary">github.com/apsun/NekoSMS</string>
     <string name="pref_about_version">版本</string>
