@@ -15,7 +15,6 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
-import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.widget.EnumAdapter;
 import com.crossbowffs.nekosms.widget.OnItemSelectedListenerAdapter;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
