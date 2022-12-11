@@ -247,6 +247,9 @@ public class MainActivity extends AppCompatActivity {
         // Items will be automatically removed from the cache
         // once the references are GC'd
         for (Snackbar snackbar : mSnackbars) {
+            // Hack to prevent FAB from jumping around when switching tabs
+            snackbar.getView().setVisibility(View.GONE);
+
             snackbar.dismiss();
         }
     }
