@@ -8,8 +8,6 @@ import android.telephony.SmsMessage;
 import java.lang.reflect.Method;
 
 public final class SmsMessageUtils {
-    private static final int SMS_CHARACTER_LIMIT = 160;
-
     private static final Method sGetSubId;
 
     static {
@@ -45,7 +43,7 @@ public final class SmsMessageUtils {
         if (messageParts.length == 1) {
             return messageParts[0].getDisplayMessageBody();
         } else {
-            StringBuilder sb = new StringBuilder(SMS_CHARACTER_LIMIT * messageParts.length);
+            StringBuilder sb = new StringBuilder();
             for (SmsMessage messagePart : messageParts) {
                 sb.append(messagePart.getDisplayMessageBody());
             }

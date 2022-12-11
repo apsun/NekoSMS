@@ -55,7 +55,7 @@ public final class StringUtils {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder(str.length() + 2);
+        StringBuilder sb = new StringBuilder();
         sb.append('"');
         for (int i = 0; i < str.length(); ++i) {
             char c = str.charAt(i);

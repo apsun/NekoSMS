@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.data.SmsFilterField;
-import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 import static com.crossbowffs.nekosms.provider.DatabaseContract.BlockedMessages;
@@ -97,7 +96,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
         // Copy filters to new table
         if (filtersCursor != null) {
-            ContentValues values = MapUtils.contentValuesForSize(7);
+            ContentValues values = new ContentValues();
             while (filtersCursor.moveToNext()) {
                 values.put(FilterRules.ACTION, SmsFilterAction.BLOCK.name());
                 if (filtersCursor.getString(0).equals(SmsFilterField.SENDER.name())) {
@@ -122,7 +121,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
 
         // Copy messages to new table
         if (messagesCursor != null) {
-            ContentValues values = MapUtils.contentValuesForSize(7);
+            ContentValues values = new ContentValues();
             while (messagesCursor.moveToNext()) {
                 values.put(BlockedMessages.SENDER, messagesCursor.getString(0));
                 values.put(BlockedMessages.BODY, messagesCursor.getString(1));

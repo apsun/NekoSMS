@@ -12,7 +12,6 @@ import com.crossbowffs.nekosms.data.SmsFilterData;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
-import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.widget.AutoContentLoader;
 
@@ -79,7 +78,7 @@ public class FilterRuleLoader extends AutoContentLoader<SmsFilterData> {
 
     @Override
     protected ContentValues serialize(SmsFilterData data) {
-        ContentValues values = MapUtils.contentValuesForSize(8);
+        ContentValues values = new ContentValues();
         if (data.getId() >= 0) {
             values.put(FilterRules._ID, data.getId());
         }

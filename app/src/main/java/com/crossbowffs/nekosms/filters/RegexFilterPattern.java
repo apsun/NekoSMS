@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
     }
 
     private static String wildcardToRegex(String wildcardString) {
-        StringBuilder sb = new StringBuilder(wildcardString.length() + 16);
+        StringBuilder sb = new StringBuilder();
         sb.append('^');
         for (int i = 0; i < wildcardString.length(); ++i) {
             char c = wildcardString.charAt(i);

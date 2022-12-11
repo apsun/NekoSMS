@@ -8,14 +8,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Telephony;
 import com.crossbowffs.nekosms.data.SmsMessageData;
-import com.crossbowffs.nekosms.utils.MapUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 
 public final class InboxSmsLoader {
     private InboxSmsLoader() { }
 
     private static ContentValues serializeMessage(SmsMessageData messageData) {
-        ContentValues values = MapUtils.contentValuesForSize(7);
+        ContentValues values = new ContentValues();
         values.put(Telephony.Sms.ADDRESS, messageData.getSender());
         values.put(Telephony.Sms.BODY, messageData.getBody());
         values.put(Telephony.Sms.DATE, messageData.getTimeReceived());
