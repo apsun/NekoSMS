@@ -59,7 +59,6 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         mAdapter = new BlockedMessagesAdapter(this);
         LoaderManager loaderManager = LoaderManager.getInstance(this);
         loaderManager.initLoader(0, null, this);
-        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
@@ -145,10 +144,12 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         mAdapter.changeCursor(data);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mRecyclerView.setAdapter(null);
         mAdapter.changeCursor(null);
     }
 
