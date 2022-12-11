@@ -49,11 +49,9 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
         super.onActivityCreated(savedInstanceState);
 
         // Initialize filter list
-        FilterRulesAdapter adapter = new FilterRulesAdapter(this);
-        mAdapter = adapter;
+        mAdapter = new FilterRulesAdapter(this);
         LoaderManager loaderManager = LoaderManager.getInstance(this);
         loaderManager.initLoader(0, null, this);
-        mRecyclerView.setAdapter(adapter);
         mRecyclerView.setEmptyView(mEmptyView);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
@@ -115,10 +113,12 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
         mAdapter.changeCursor(data);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
+        mRecyclerView.setAdapter(null);
         mAdapter.changeCursor(null);
     }
 

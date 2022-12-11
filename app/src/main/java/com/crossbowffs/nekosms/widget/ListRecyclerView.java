@@ -97,7 +97,7 @@ public class ListRecyclerView extends RecyclerView {
 
     @Override
     public void setAdapter(Adapter adapter) {
-        Adapter oldAdapter = getAdapter();
+        Adapter<?> oldAdapter = getAdapter();
         if (oldAdapter != null) {
             oldAdapter.unregisterAdapterDataObserver(mAdapterObserver);
         }
@@ -122,11 +122,10 @@ public class ListRecyclerView extends RecyclerView {
     }
 
     private void updateEmptyView() {
-        Adapter adapter = getAdapter();
-        if (mEmptyView != null && adapter != null) {
-            boolean emptyViewVisible = adapter.getItemCount() == 0;
+        Adapter<?> adapter = getAdapter();
+        boolean emptyViewVisible = adapter != null && adapter.getItemCount() == 0;
+        if (mEmptyView != null) {
             mEmptyView.setVisibility(emptyViewVisible ? VISIBLE : GONE);
-            setVisibility(emptyViewVisible ? GONE : VISIBLE);
         }
     }
 }
