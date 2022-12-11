@@ -90,13 +90,12 @@ public class RingtonePreference extends Preference {
         return intent;
     }
 
-    public boolean onRingtonePickerResult(Intent data) {
+    public void onRingtonePickerResult(Intent data) {
         if (data != null) {
             Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
             if (callChangeListener(ringtoneUriToString(uri))) {
                 saveRingtoneUri(uri);
             }
         }
-        return true;
     }
 }

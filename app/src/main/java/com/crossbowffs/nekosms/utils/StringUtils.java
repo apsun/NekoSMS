@@ -50,19 +50,6 @@ public final class StringUtils {
         return false;
     }
 
-    public static String join(String delimiter, Object[] parts) {
-        if (parts.length == 0) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (Object part : parts) {
-            sb.append(part);
-            sb.append(delimiter);
-        }
-        sb.setLength(sb.length() - delimiter.length());
-        return sb.toString();
-    }
-
     public static String escape(String str) {
         if (str == null) {
             return null;
