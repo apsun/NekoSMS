@@ -168,7 +168,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         if (context == null) return;
 
         new AlertDialog.Builder(context)
-            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_24dp)
             .setTitle(R.string.confirm_clear_messages_title)
             .setMessage(R.string.confirm_clear_messages_message)
             .setPositiveButton(R.string.delete, (dialog, which) -> clearAllMessages())

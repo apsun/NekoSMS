@@ -236,7 +236,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
             .setTitle(R.string.invalid_pattern_title)
             .setMessage(errorMessage)
-            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_24dp)
             .setPositiveButton(R.string.ok, null)
             .show();
     }

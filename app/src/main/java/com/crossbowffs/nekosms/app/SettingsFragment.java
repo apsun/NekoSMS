@@ -128,7 +128,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
 
     private void showConfirmImportDialog(final Uri uri) {
         new AlertDialog.Builder(getContext())
-            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_24dp)
             .setTitle(R.string.import_confirm_title)
             .setMessage(R.string.import_confirm_message)
             .setPositiveButton(R.string.backup_button_import, (dialog, which) -> importFilterRules(uri))

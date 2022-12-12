@@ -5,7 +5,6 @@
     <item
         android:id="@+id/menu_item_clear_blocked"
         android:title="@string/clear_blocked_messages"
-        android:icon="@drawable/ic_delete_sweep_white_24dp"
-        app:iconTint="?attr/colorOnSurface"
+        android:icon="@drawable/ic_delete_all_24dp"
         app:showAsAction="ifRoom"/>
 </menu>

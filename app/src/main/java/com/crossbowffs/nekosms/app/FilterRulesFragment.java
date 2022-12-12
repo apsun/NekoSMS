@@ -59,7 +59,7 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
         MainActivity activity = MainActivity.from(this);
 
         // Display create FAB
-        activity.enableFab(R.drawable.ic_create_white_24dp, v -> {
+        activity.enableFab(R.drawable.ic_create_24dp, v -> {
             Intent intent = new Intent(getContext(), FilterEditorActivity.class);
             intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
             startActivity(intent);

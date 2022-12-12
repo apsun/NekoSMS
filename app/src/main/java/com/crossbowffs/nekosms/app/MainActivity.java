@@ -267,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
-            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_24dp)
             .setPositiveButton(R.string.enable, (dialog, which) -> {
                 startXposedActivity(XposedUtils.Section.MODULES);
             })
@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)
-            .setIcon(R.drawable.ic_warning_white_24dp)
+            .setIcon(R.drawable.ic_warning_24dp)
             .setPositiveButton(R.string.reboot, (dialog, which) -> {
                 startXposedActivity(XposedUtils.Section.INSTALL);
             })
