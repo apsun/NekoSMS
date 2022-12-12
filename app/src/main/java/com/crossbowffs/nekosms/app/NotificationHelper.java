@@ -93,12 +93,12 @@ public final class NotificationHelper {
             .setStyle(new NotificationCompat.BigTextStyle().bigText(messageData.getBody()))
             .setContentIntent(viewPendingIntent)
             .addAction(R.drawable.ic_delete_24dp, context.getString(R.string.delete), deleteIntent)
-            .addAction(R.drawable.ic_unarchive_24dp, context.getString(R.string.restore), restoreIntent)
+            .addAction(R.drawable.ic_restore_24dp, context.getString(R.string.restore), restoreIntent)
             .setDeleteIntent(dismissIntent)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
-            .setColor(ContextCompat.getColor(context, R.color.notification_bg))
+            .setColor(ContextCompat.getColor(context, R.color.main))
             .build();
     }
 

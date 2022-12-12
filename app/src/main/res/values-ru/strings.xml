@@ -161,11 +161,6 @@
     <string name="format_notification_single_sender">%s (заблокировано)</string>
     <string name="channel_blocked_messages">Заблокированные сообщения</string>
 
-    <!-- App shortcuts -->
-    <string name="shortcut_new_blacklist_rule">В чёрный список</string>
-    <string name="shortcut_new_whitelist_rule">В белый список</string>
-    <string name="shortcut_blocked_messages">Корзина</string>
-
     <!-- Debug stuff -->
     <string name="create_test_message">Тестовое сообщение</string>
 </resources>

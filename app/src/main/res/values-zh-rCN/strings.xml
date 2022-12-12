@@ -160,11 +160,6 @@
     <string name="format_notification_single_sender">%s（已拦截）</string>
     <string name="channel_blocked_messages">信息拦截通知</string>
 
-    <!-- App shortcuts -->
-    <string name="shortcut_new_blacklist_rule">新建黑名单规则</string>
-    <string name="shortcut_new_whitelist_rule">新建白名单规则</string>
-    <string name="shortcut_blocked_messages">已拦截的信息</string>
-
     <!-- Debug stuff -->
     <string name="create_test_message">创建测试信息</string>
 </resources>

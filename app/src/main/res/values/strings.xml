@@ -161,11 +161,6 @@
     <string name="format_notification_single_sender">%s (blocked)</string>
     <string name="channel_blocked_messages">Blocked messages</string>
 
-    <!-- App shortcuts -->
-    <string name="shortcut_new_blacklist_rule">New blacklist rule</string>
-    <string name="shortcut_new_whitelist_rule">New whitelist rule</string>
-    <string name="shortcut_blocked_messages">Blocked messages</string>
-
     <!-- Debug stuff -->
     <string name="create_test_message">Create test message</string>
 </resources>
