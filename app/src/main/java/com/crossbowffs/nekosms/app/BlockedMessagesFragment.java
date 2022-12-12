@@ -64,7 +64,6 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         registerForContextMenu(mRecyclerView);
 
         MainActivity activity = MainActivity.from(this);
-        activity.disableFab();
         activity.setTitle(R.string.blocked_messages);
 
         BlockedSmsLoader.get().markAllSeen(getContext());

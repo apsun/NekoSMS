@@ -94,7 +94,6 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
         super.onActivityCreated(savedInstanceState);
 
         MainActivity activity = MainActivity.from(this);
-        activity.disableFab();
         activity.setTitle(R.string.settings);
     }
 

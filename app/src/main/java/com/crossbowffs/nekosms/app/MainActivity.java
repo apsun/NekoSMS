@@ -45,7 +45,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mFloatingActionButton = findViewById(R.id.main_fab);
+        mFloatingActionButton.hide();
 
         mBottomNavBar = findViewById(R.id.bottom_nav);
         mBottomNavBar.setOnItemSelectedListener(item -> {
@@ -207,6 +209,7 @@ public class MainActivity extends AppCompatActivity {
         if (args != null) {
             fragment.setArguments(args);
         }
+        disableFab();
         dismissSnackbar();
         getSupportFragmentManager()
             .beginTransaction()

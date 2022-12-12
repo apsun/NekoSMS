@@ -116,6 +116,7 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
 
         // Set up toolbar
+        setSupportActionBar(mToolbar);
         if (mFilter.getAction() == SmsFilterAction.BLOCK) {
             mToolbar.setTitle(R.string.save_blacklist_rule);
             mToolbar.setNavigationContentDescription(R.string.save_blacklist_rule);
@@ -123,9 +124,6 @@ public class FilterEditorActivity extends AppCompatActivity {
             mToolbar.setTitle(R.string.save_whitelist_rule);
             mToolbar.setNavigationContentDescription(R.string.save_whitelist_rule);
         }
-        mToolbar.setNavigationIcon(R.drawable.ic_done_white_24dp);
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

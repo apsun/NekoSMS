@@ -98,7 +98,7 @@ public final class NotificationHelper {
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setAutoCancel(true)
-            .setColor(ContextCompat.getColor(context, R.color.main))
+            .setColor(ContextCompat.getColor(context, R.color.notification_bg))
             .build();
     }
 

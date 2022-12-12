@@ -13,7 +13,9 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"/>
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_done_white_24dp"
+            app:navigationIconTint="?attr/colorOnSurface"/>
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/filter_editor_tablayout"
             android:layout_width="match_parent"
