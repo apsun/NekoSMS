@@ -7,9 +7,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -56,7 +56,6 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     public static final String EXTRA_ACTION = "action";
 
-    private Toolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager;
     private Uri mFilterUri;
@@ -66,7 +65,6 @@ public class FilterEditorActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
-        mToolbar = findViewById(R.id.toolbar);
         mTabLayout = findViewById(R.id.filter_editor_tablayout);
         mViewPager = findViewById(R.id.filter_editor_viewpager);
 
@@ -116,13 +114,14 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
 
         // Set up toolbar
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(findViewById(R.id.toolbar));
+        ActionBar actionBar = getSupportActionBar();
         if (mFilter.getAction() == SmsFilterAction.BLOCK) {
-            mToolbar.setTitle(R.string.save_blacklist_rule);
-            mToolbar.setNavigationContentDescription(R.string.save_blacklist_rule);
+            actionBar.setTitle(R.string.save_blacklist_rule);
+            actionBar.setHomeActionContentDescription(R.string.save_blacklist_rule);
         } else if (mFilter.getAction() == SmsFilterAction.ALLOW) {
-            mToolbar.setTitle(R.string.save_whitelist_rule);
-            mToolbar.setNavigationContentDescription(R.string.save_whitelist_rule);
+            actionBar.setTitle(R.string.save_whitelist_rule);
+            actionBar.setHomeActionContentDescription(R.string.save_whitelist_rule);
         }
     }
 
