@@ -118,9 +118,13 @@ public class FilterEditorActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (mFilter.getAction() == SmsFilterAction.BLOCK) {
             actionBar.setTitle(R.string.save_blacklist_rule);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_done_24dp);
             actionBar.setHomeActionContentDescription(R.string.save_blacklist_rule);
         } else if (mFilter.getAction() == SmsFilterAction.ALLOW) {
             actionBar.setTitle(R.string.save_whitelist_rule);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAsUpIndicator(R.drawable.ic_done_24dp);
             actionBar.setHomeActionContentDescription(R.string.save_whitelist_rule);
         }
     }

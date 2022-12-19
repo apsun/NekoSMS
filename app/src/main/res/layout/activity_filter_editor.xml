@@ -14,11 +14,14 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_done_24dp"/>
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"/>
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/filter_editor_tablayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="?attr/colorSurface"
+            android:elevation="4dp"/>
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/filter_editor_viewpager"
