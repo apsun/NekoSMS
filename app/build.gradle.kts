@@ -7,7 +7,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("androidx.annotation:annotation:1.5.0")
     implementation("androidx.loader:loader:1.1.0")
-    implementation("androidx.fragment:fragment:1.5.4")
+    implementation("androidx.fragment:fragment:1.5.5")
     implementation("androidx.preference:preference:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
