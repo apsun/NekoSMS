@@ -19,6 +19,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.shape.MaterialShapeUtils;
 import com.google.android.material.tabs.TabLayout;
@@ -59,6 +60,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     public static final String EXTRA_ACTION = "action";
 
+    private AppBarLayout mAppBar;
     private MaterialToolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager;
@@ -69,6 +71,7 @@ public class FilterEditorActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
+        mAppBar = findViewById(R.id.appbar);
         mToolbar = findViewById(R.id.toolbar);
         mTabLayout = findViewById(R.id.filter_editor_tablayout);
         mViewPager = findViewById(R.id.filter_editor_viewpager);
@@ -76,8 +79,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
         // HACK: Fix toolbar tinting on API < 21
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            MaterialShapeUtils.setElevation(mToolbar, 4f * getResources().getDisplayMetrics().density);
-            MaterialShapeUtils.setElevation(mTabLayout, 4f * getResources().getDisplayMetrics().density);
+            MaterialShapeUtils.setElevation(mAppBar, 4f * getResources().getDisplayMetrics().density);
         }
 
         // Set up tab pages

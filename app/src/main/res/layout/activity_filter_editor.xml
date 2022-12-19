@@ -9,19 +9,19 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        app:liftOnScroll="false"
+        app:elevation="4dp">
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorSurface"
-            android:elevation="4dp"/>
+            android:background="@android:color/transparent"/>
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/filter_editor_tablayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorSurface"
-            android:elevation="4dp"/>
+            android:background="@android:color/transparent"/>
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/filter_editor_viewpager"

@@ -18,6 +18,7 @@ import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
 
+    private AppBarLayout mAppBar;
     private MaterialToolbar mToolbar;
     private BottomNavigationView mBottomNavBar;
     private FloatingActionButton mFloatingActionButton;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mAppBar = findViewById(R.id.appbar);
         mToolbar = findViewById(R.id.toolbar);
         mBottomNavBar = findViewById(R.id.bottom_nav);
         mFloatingActionButton = findViewById(R.id.main_fab);
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         // HACK: Fix toolbar tinting on API < 21
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            MaterialShapeUtils.setElevation(mToolbar, 4f * getResources().getDisplayMetrics().density);
+            MaterialShapeUtils.setElevation(mAppBar, 4f * getResources().getDisplayMetrics().density);
         }
 
         mFloatingActionButton.hide();
