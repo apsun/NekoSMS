@@ -3,6 +3,7 @@ package com.crossbowffs.nekosms.app;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.Nullable;
@@ -17,8 +18,10 @@ import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.nekosms.utils.XposedUtils;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.shape.MaterialShapeUtils;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Collections;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int VERSION_CODE = BuildConfig.VERSION_CODE;
 
+    private MaterialToolbar mToolbar;
     private BottomNavigationView mBottomNavBar;
     private FloatingActionButton mFloatingActionButton;
     private Set<Snackbar> mSnackbars;
@@ -45,11 +49,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mToolbar = findViewById(R.id.toolbar);
+        mBottomNavBar = findViewById(R.id.bottom_nav);
         mFloatingActionButton = findViewById(R.id.main_fab);
+        setSupportActionBar(mToolbar);
+
+        // HACK: Fix toolbar tinting on API < 21
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            MaterialShapeUtils.setElevation(mToolbar, 4f * getResources().getDisplayMetrics().density);
+        }
+
         mFloatingActionButton.hide();
 
-        mBottomNavBar = findViewById(R.id.bottom_nav);
         mBottomNavBar.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
             case R.id.bottom_nav_blacklist:
@@ -72,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
         // Load preferences
         mInternalPrefs = getSharedPreferences(PreferenceConsts.FILE_INTERNAL, MODE_PRIVATE);
         mInternalPrefs.edit().putInt(PreferenceConsts.KEY_APP_VERSION, VERSION_CODE).apply();
-
-        // Setup toolbar
-        setSupportActionBar(findViewById(R.id.toolbar));
 
         // This is used to cache displayed snackbars, so we can
         // dismiss them when switching between fragments.

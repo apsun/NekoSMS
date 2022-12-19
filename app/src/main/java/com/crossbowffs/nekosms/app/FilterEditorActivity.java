@@ -2,6 +2,7 @@ package com.crossbowffs.nekosms.app;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,8 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.*;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.shape.MaterialShapeUtils;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -56,6 +59,7 @@ public class FilterEditorActivity extends AppCompatActivity {
 
     public static final String EXTRA_ACTION = "action";
 
+    private MaterialToolbar mToolbar;
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager;
     private Uri mFilterUri;
@@ -65,8 +69,16 @@ public class FilterEditorActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_editor);
+        mToolbar = findViewById(R.id.toolbar);
         mTabLayout = findViewById(R.id.filter_editor_tablayout);
         mViewPager = findViewById(R.id.filter_editor_viewpager);
+        setSupportActionBar(mToolbar);
+
+        // HACK: Fix toolbar tinting on API < 21
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            MaterialShapeUtils.setElevation(mToolbar, 4f * getResources().getDisplayMetrics().density);
+            MaterialShapeUtils.setElevation(mTabLayout, 4f * getResources().getDisplayMetrics().density);
+        }
 
         // Set up tab pages
         mViewPager.setAdapter(new FilterEditorPageAdapter(this));
@@ -114,7 +126,6 @@ public class FilterEditorActivity extends AppCompatActivity {
         }
 
         // Set up toolbar
-        setSupportActionBar(findViewById(R.id.toolbar));
         ActionBar actionBar = getSupportActionBar();
         if (mFilter.getAction() == SmsFilterAction.BLOCK) {
             actionBar.setTitle(R.string.save_blacklist_rule);
