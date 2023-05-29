@@ -402,19 +402,25 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
         hookDispatchIntent(lpparam);
     }
 
-    private static void printDeviceInfo() {
+    private static void printDeviceInfo(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Phone manufacturer: %s", Build.MANUFACTURER);
         Xlog.i("Phone model: %s", Build.MODEL);
         Xlog.i("Android version: %s", Build.VERSION.RELEASE);
         Xlog.i("Xposed bridge version: %d", XposedBridge.XPOSED_BRIDGE_VERSION);
         Xlog.i("NekoSMS version: %s (%d)", BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE);
+        try {
+            Class<?> cls = XposedHelpers.findClass(SMS_HANDLER_CLASS, lpparam.classLoader);
+            Xlog.i("SMS handler class signature:\n%s", ReflectionUtils.dumpClass(cls));
+        } catch (Exception e) {
+            Xlog.e("Failed to dump SMS handler class", e);
+        }
     }
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if ("com.android.phone".equals(lpparam.packageName)) {
             Xlog.i("NekoSMS initializing...");
-            printDeviceInfo();
+            printDeviceInfo(lpparam);
             try {
                 hookSmsHandler(lpparam);
             } catch (Throwable e) {

@@ -1,8 +1,6 @@
 package com.crossbowffs.nekosms.utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 
 public final class ReflectionUtils {
     private ReflectionUtils() { }
@@ -88,5 +86,121 @@ public final class ReflectionUtils {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String dumpModifiers(int mod) {
+        String modString = Modifier.toString(mod);
+        if (modString.isEmpty()) {
+            return modString;
+        } else {
+            return modString + " ";
+        }
+    }
+
+    private static String dumpParameterList(Class<?>[] ps) {
+        StringBuilder sb = new StringBuilder();
+        sb.append('(');
+        boolean first = true;
+        for (Class<?> p : ps) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(p.getCanonicalName());
+        }
+        sb.append(')');
+        return sb.toString();
+    }
+
+    private static String dumpConstructor(Constructor<?> c) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dumpModifiers(c.getModifiers()));
+        sb.append(c.getDeclaringClass().getSimpleName());
+        sb.append(dumpParameterList(c.getParameterTypes()));
+        sb.append(';');
+        return sb.toString();
+    }
+
+    private static String dumpMethod(Method m) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dumpModifiers(m.getModifiers()));
+        sb.append(m.getReturnType().getName());
+        sb.append(' ');
+        sb.append(m.getName());
+        sb.append(dumpParameterList(m.getParameterTypes()));
+        sb.append(';');
+        return sb.toString();
+    }
+
+    private static String dumpField(Field f) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dumpModifiers(f.getModifiers()));
+        sb.append(f.getType().getName());
+        sb.append(' ');
+        sb.append(f.getName());
+        sb.append(';');
+        return sb.toString();
+    }
+
+    private static String dumpSuperclass(Class<?> cls) {
+        StringBuilder sb = new StringBuilder();
+        if (cls != null) {
+            sb.append(" extends ");
+            sb.append(cls.getName());
+        }
+        return sb.toString();
+    }
+
+    private static String dumpInterfaces(Class<?>[] ifaces) {
+        StringBuilder sb = new StringBuilder();
+        if (ifaces.length > 0) {
+            sb.append(" implements ");
+            boolean first = true;
+            for (Class<?> iface : ifaces) {
+                if (first) {
+                    first = false;
+                } else {
+                    sb.append(", ");
+                }
+                sb.append(iface.getName());
+            }
+        }
+        return sb.toString();
+    }
+
+    public static String dumpClass(Class<?> cls) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dumpModifiers(cls.getModifiers()));
+        sb.append("class ");
+        sb.append(cls.getName());
+        sb.append(dumpSuperclass(cls.getSuperclass()));
+        sb.append(dumpInterfaces(cls.getInterfaces()));
+        sb.append(" {\n");
+        for (Constructor<?> c : cls.getDeclaredConstructors()) {
+            if (!c.isSynthetic()) {
+                sb.append("    ");
+                sb.append(dumpConstructor(c));
+                sb.append('\n');
+            }
+        }
+        sb.append("\n");
+        for (Method m : cls.getDeclaredMethods()) {
+            if (!m.isSynthetic()) {
+                sb.append("    ");
+                sb.append(dumpMethod(m));
+                sb.append('\n');
+            }
+        }
+        sb.append("\n");
+        for (Field f : cls.getDeclaredFields()) {
+            if (!f.isSynthetic()) {
+                sb.append("    ");
+                sb.append(dumpField(f));
+                sb.append('\n');
+            }
+        }
+        sb.append('}');
+        return sb.toString();
     }
 }
