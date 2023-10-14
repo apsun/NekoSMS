@@ -9,6 +9,7 @@ import com.crossbowffs.nekosms.widget.CursorWrapper;
 import com.crossbowffs.nekosms.loader.FilterRuleLoader;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /* package */ class BackupExporter implements Closeable {
     private static final int BACKUP_VERSION = BuildConfig.BACKUP_VERSION;
@@ -16,11 +17,7 @@ import java.io.*;
 
     public BackupExporter(OutputStream out) {
         OutputStreamWriter streamWriter;
-        try {
-            streamWriter = new OutputStreamWriter(out, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new AssertionError(e);
-        }
+        streamWriter = new OutputStreamWriter(out, StandardCharsets.UTF_8);
         mJsonWriter = new JsonWriter(streamWriter);
         mJsonWriter.setIndent("\t");
     }
