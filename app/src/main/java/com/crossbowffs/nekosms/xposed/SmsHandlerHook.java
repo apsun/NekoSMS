@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.UserHandle;
 import android.provider.Telephony;
 import android.telephony.SubscriptionManager;
@@ -292,6 +293,17 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             new ConstructorHook());
     }
 
+    private void hookConstructor34(XC_LoadPackage.LoadPackageParam lpparam) {
+        Xlog.i("Hooking InboundSmsHandler constructor for Android v34+");
+        XposedHelpers.findAndHookConstructor(SMS_HANDLER_CLASS, lpparam.classLoader,
+            /*                 name */ String.class,
+            /*              context */ Context.class,
+            /*       storageMonitor */ TELEPHONY_PACKAGE + ".SmsStorageMonitor",
+            /*                phone */ TELEPHONY_PACKAGE + ".Phone",
+            /*               looper */ Looper.class,
+            new ConstructorHook());
+    }
+
     private void hookDispatchIntent19(XC_LoadPackage.LoadPackageParam lpparam) {
         Xlog.i("Hooking dispatchIntent() for Android v19+");
         XposedHelpers.findAndHookMethod(SMS_HANDLER_CLASS, lpparam.classLoader, "dispatchIntent",
@@ -365,7 +377,9 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
     }
 
     private void hookConstructor(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            hookConstructor34(lpparam);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             hookConstructor30(lpparam);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             hookConstructor24(lpparam);
