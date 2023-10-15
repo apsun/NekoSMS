@@ -9,10 +9,6 @@ Write your issue description here.
 - Xposed version: 
 - NekoSMS version: 
 
-Please paste your Xposed logs (Xposed Installer -> Logs -> Menu -> Save to SD card) below:
+Please upload your Xposed logs below (drag & drop into this box):
 
-```
-Replace this line with your logs. Do not remove the backticks.
-```
 
-Thank you for helping us help you help us all.
