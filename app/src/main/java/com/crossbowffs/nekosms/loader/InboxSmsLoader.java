@@ -24,7 +24,10 @@ public final class InboxSmsLoader {
 
         // Also write subscription ID (aka SIM card number) on Android 5.1+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-            values.put(Telephony.Sms.SUBSCRIPTION_ID, messageData.getSubId());
+            int subId = messageData.getSubId();
+            if (subId != 0){
+                values.put(Telephony.Sms.SUBSCRIPTION_ID, messageData.getSubId());
+            }
         }
 
         return values;
