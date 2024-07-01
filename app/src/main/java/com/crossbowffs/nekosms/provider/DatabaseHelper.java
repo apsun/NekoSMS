@@ -54,14 +54,30 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Xlog.i("Upgrading database from v%d to v%d", oldVersion, newVersion);
+
         if (oldVersion < 8) {
             upgradePre8(db);
-        } else if (oldVersion == 8) {
-            upgrade8To11(db);
-        } else if (oldVersion == 9) {
-            upgrade9To11(db);
-        } else if (oldVersion == 10) {
+            oldVersion = newVersion;
+        }
+
+        if (oldVersion == 8 && newVersion >= 12) {
+            upgrade8To12(db);
+            oldVersion = 12;
+        }
+
+        if (oldVersion == 9 && newVersion >= 10) {
+            upgrade9To10(db);
+            oldVersion = 10;
+        }
+
+        if (oldVersion == 10 && newVersion >= 11) {
             upgrade10To11(db);
+            oldVersion = 11;
+        }
+
+        if (oldVersion == 11 && newVersion >= 12) {
+            upgrade11To12(db);
+            oldVersion = 12;
         }
     }
 
@@ -73,7 +89,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         onCreate(db);
     }
 
-    private void upgrade8To11(SQLiteDatabase db) {
+    private void upgrade8To12(SQLiteDatabase db) {
         // Get data from old tables
         Cursor filtersCursor = db.query("filters", new String[] {
             "field",
@@ -129,7 +145,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
                 values.put(BlockedMessages.TIME_RECEIVED, messagesCursor.getLong(3));
                 values.put(BlockedMessages.READ, 1);
                 values.put(BlockedMessages.SEEN, 1);
-                values.put(BlockedMessages.SUB_ID, 0);
+                values.put(BlockedMessages.SUB_ID, -1);
                 db.insert(BlockedMessages.TABLE, null, values);
             }
             messagesCursor.close();
@@ -140,18 +156,29 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         db.execSQL("DROP TABLE IF EXISTS blocked");
     }
 
-    private void upgrade9To11(SQLiteDatabase db) {
+    private void upgrade9To10(SQLiteDatabase db) {
+        // Add action column
         db.execSQL(
             "ALTER TABLE " + FilterRules.TABLE +
             " ADD COLUMN " + FilterRules.ACTION + " TEXT NOT NULL" +
             " DEFAULT \"" + SmsFilterAction.BLOCK.name() + "\"");
-        upgrade10To11(db);
     }
 
     private void upgrade10To11(SQLiteDatabase db) {
+        // Add sub_id column
         db.execSQL(
             "ALTER TABLE " + BlockedMessages.TABLE +
             " ADD COLUMN " + BlockedMessages.SUB_ID + " INTEGER NOT NULL" +
             " DEFAULT 0");
+    }
+
+    private void upgrade11To12(SQLiteDatabase db) {
+        // Change unknown sub_id value to -1 (unfortunately, we can't tell the
+        // difference between 0 and unknown, so we have to clobber some data)
+        // See https://github.com/apsun/NekoSMS/pull/100 for context
+        db.execSQL(
+            "UPDATE " + BlockedMessages.TABLE +
+            " SET " + BlockedMessages.SUB_ID + " = -1" +
+            " WHERE " + BlockedMessages.SUB_ID + " = 0");
     }
 }
