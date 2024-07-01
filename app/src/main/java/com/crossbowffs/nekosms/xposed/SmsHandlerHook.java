@@ -23,6 +23,7 @@ import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
 import com.crossbowffs.nekosms.utils.AppOpsUtils;
 import com.crossbowffs.nekosms.utils.ContactUtils;
 import com.crossbowffs.nekosms.utils.ReflectionUtils;
+import com.crossbowffs.nekosms.utils.SmsMessageUtils;
 import com.crossbowffs.nekosms.utils.StringUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
 import com.crossbowffs.remotepreferences.RemotePreferenceAccessException;
@@ -202,21 +203,19 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
                 int phoneId = (Integer)XposedHelpers.callMethod(phone, "getPhoneId");
                 XposedHelpers.callStaticMethod(SubscriptionManager.class, "putPhoneIdAndSubIdExtra", intent, phoneId);
             } catch (Exception e) {
-                Xlog.e("Could not update intent with subscription id", e);
+                Xlog.e("Failed to call putPhoneIdAndSubIdExtra", e);
             }
         }
     }
 
-    // override the subId value in the intent with the values from tracker as they can be
-    // different, specifically if the message is coming from SmsBroadcastUndelivered
-    private void putSubscriptionIdExtra(Intent intent, int subId) {
+    private void putSubscriptionIdExtraIfValid(Intent intent, int subId) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
-                if((boolean) XposedHelpers.callStaticMethod(SubscriptionManager.class, "isValidSubscriptionId", subId)){
+                if ((boolean)XposedHelpers.callStaticMethod(SubscriptionManager.class, "isValidSubscriptionId", subId)) {
                     XposedHelpers.callStaticMethod(SubscriptionManager.class, "putSubscriptionIdExtra", intent, subId);
                 }
             } catch (Exception e) {
-                Xlog.e("Could not update intent with subId", e);
+                Xlog.e("Failed to call putSubscriptionIdExtra", e);
             }
         }
     }
@@ -237,18 +236,18 @@ public class SmsHandlerHook implements IXposedHookLoadPackage {
             return;
         }
 
-        // dispatchIntent is where the subscription id gets attached
-        // to the intent, so we have to emulate that behavior ourselves
-        // if we want to use the field.
-        putPhoneIdAndSubIdExtra(param.thisObject, intent);
-
-        // android 11+ new
-        // see http://www.aospxref.com/android-11.0.0_r21/xref/frameworks/opt/telephony/src/java/com/android/internal/telephony/InboundSmsHandler.java#1266
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-            putSubscriptionIdExtra(intent, (int) param.args[6]);
+        // Copy original dispatchIntent behavior to set the subscription id,
+        // so that we can read it within getMessageFromIntent (technically
+        // this is not necessary; we could also just pass the subId value
+        // directly as an argument)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            putPhoneIdAndSubIdExtra(param.thisObject, intent);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            putSubscriptionIdExtraIfValid(intent, (int)param.args[6]);
         }
 
-        SmsMessageData message = SmsMessageData.fromIntent(intent);
+        SmsMessageData message = SmsMessageUtils.getMessageFromIntent(intent);
         String sender = message.getSender();
         String body = message.getBody();
         Xlog.i("Received a new SMS message");
