@@ -27,7 +27,7 @@ android {
         minSdk = 19
         targetSdk = 34
         resourceConfigurations.addAll(listOf("en", "zh-rCN", "ru"))
-        buildConfigField("int", "MODULE_VERSION", "18")
+        buildConfigField("int", "MODULE_VERSION", "19")
         buildConfigField("int", "DATABASE_VERSION", "12")
         buildConfigField("int", "BACKUP_VERSION", "3")
         buildConfigField("String", "LOG_TAG", "\"NekoSMS\"")
