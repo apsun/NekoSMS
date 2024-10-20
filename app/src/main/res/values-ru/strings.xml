@@ -6,6 +6,9 @@
     <string name="ok">OK</string>
     <string name="delete">Удалить</string>
     <string name="edit">Редактировать</string>
+    <string name="enable">Активировать</string>
+    <string name="reboot">Перезагрузить</string>
+    <string name="ignore">Закрыть</string>
     <string name="close">Закрыть</string>
     <string name="restore">Восстановить</string>
     <string name="undo">Отменить</string>
@@ -43,6 +46,15 @@
     <string name="filter_info_case_sensitive">\u0020(с учётом регистра)</string>
     <string name="filter_deleted">Правило удалено</string>
     <string name="filter_actions">Действия</string>
+    <string name="enable_xposed_module_title">Активируйте модуль Xposed</string>
+    <string name="enable_xposed_module_message">
+        Начиная с версии Android 4.4 приложения, которые не являются в системе приложением SMS по умолчанию,
+        не могут получать доступ к SMS сообщениям и добавлять новые в список полученных.\n\nПожалуйста активируйте модуль Xposed
+        для того чтобы обойти это ограничение, в противном случае приложение не сможет работать.
+    </string>
+    <string name="module_outdated_title">Модуль Xposed обновлён</string>
+    <string name="module_outdated_message">Пожалуйста перезагрузите устройство чтобы изменения вступили в силу.</string>
+    <string name="xposed_not_installed">Xposed не найден</string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">Редактирование правила</string>
@@ -105,6 +117,7 @@
     <string name="pref_general">Общие</string>
     <string name="pref_enable">Включить NekoSMS</string>
     <string name="pref_enable_summary">Перезагрузка не требуется</string>
+    <string name="pref_enable_summary_alt">Пожалуйста активируйте модуль Xposed!</string>
     <string name="pref_whitelist_contacts">Разрешить сообщения от контактов</string>
     <string name="pref_whitelist_contacts_summary">Не блокировать входящие SMS сообщения от номеров записанных в телефонной книге</string>
     <string name="pref_verbose_logging">Расширенное логирование</string>

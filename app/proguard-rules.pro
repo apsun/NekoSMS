@@ -1,5 +1,10 @@
 -dontobfuscate
 
+# Keep so Xposed module can hook version info
+-keep class com.crossbowffs.nekosms.utils.XposedUtils {
+    int getModuleVersion();
+}
+
 # Keep so explicit intents can use class name
 -keep class com.crossbowffs.nekosms.app.BlockedSmsReceiver
 

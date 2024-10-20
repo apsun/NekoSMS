@@ -1,1 +1,2 @@
 com.crossbowffs.nekosms.xposed.SmsHandlerHook
+com.crossbowffs.nekosms.xposed.XposedUtilsHook

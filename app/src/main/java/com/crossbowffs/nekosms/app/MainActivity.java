@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.crossbowffs.nekosms.BuildConfig;
@@ -16,6 +17,7 @@ import com.crossbowffs.nekosms.data.SmsFilterAction;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.IOUtils;
 import com.crossbowffs.nekosms.utils.Xlog;
+import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -101,6 +103,19 @@ public class MainActivity extends AppCompatActivity {
             // Process intent. If an action was taken, don't do the rest.
             if (handleIntent(getIntent())) {
                 return;
+            }
+
+            // Show info dialogs as necessary
+            if (!XposedUtils.isModuleEnabled()) {
+                if (XposedUtils.isXposedInstalled(this)) {
+                    showEnableModuleDialog();
+                } else {
+                    // We should probably show a different dialog if the
+                    // user doesn't even have Xposed installed...
+                    showEnableModuleDialog();
+                }
+            } else if (XposedUtils.isModuleUpdated()) {
+                showModuleUpdatedDialog();
             }
 
             // Set the section that was selected previously
@@ -251,6 +266,36 @@ public class MainActivity extends AppCompatActivity {
 
             snackbar.dismiss();
         }
+    }
+
+    private void startXposedActivity(XposedUtils.Section section) {
+        if (!XposedUtils.startXposedActivity(this, section)) {
+            makeSnackbar(R.string.xposed_not_installed).show();
+        }
+    }
+
+    private void showEnableModuleDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.enable_xposed_module_title)
+            .setMessage(R.string.enable_xposed_module_message)
+            .setIcon(R.drawable.ic_warning_24dp)
+            .setPositiveButton(R.string.enable, (dialog, which) -> {
+                startXposedActivity(XposedUtils.Section.MODULES);
+            })
+            .setNegativeButton(R.string.ignore, null)
+            .show();
+    }
+
+    private void showModuleUpdatedDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle(R.string.module_outdated_title)
+            .setMessage(R.string.module_outdated_message)
+            .setIcon(R.drawable.ic_warning_24dp)
+            .setPositiveButton(R.string.reboot, (dialog, which) -> {
+                startXposedActivity(XposedUtils.Section.INSTALL);
+            })
+            .setNegativeButton(R.string.ignore, null)
+            .show();
     }
 
     public static MainActivity from(Fragment fragment) {

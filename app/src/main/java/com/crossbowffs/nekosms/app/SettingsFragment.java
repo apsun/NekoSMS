@@ -16,6 +16,7 @@ import com.crossbowffs.nekosms.backup.BackupLoader;
 import com.crossbowffs.nekosms.backup.ExportResult;
 import com.crossbowffs.nekosms.backup.ImportResult;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
+import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnNewArgumentsListener {
@@ -34,6 +35,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // General
         addPreferencesFromResource(R.xml.settings_general);
+        if (!XposedUtils.isModuleEnabled()) {
+            Preference enablePreference = findPreference(PreferenceConsts.KEY_ENABLE);
+            enablePreference.setEnabled(false);
+            enablePreference.setSummary(R.string.pref_enable_summary_alt);
+        }
 
         // Notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

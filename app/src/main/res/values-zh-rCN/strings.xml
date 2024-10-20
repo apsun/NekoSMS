@@ -6,6 +6,9 @@
     <string name="ok">确定</string>
     <string name="delete">删除</string>
     <string name="edit">编辑</string>
+    <string name="enable">启用</string>
+    <string name="reboot">重启</string>
+    <string name="ignore">忽略</string>
     <string name="close">关闭</string>
     <string name="restore">恢复</string>
     <string name="undo">撤消</string>
@@ -43,6 +46,14 @@
     <string name="filter_info_case_sensitive">（区分大小写）</string>
     <string name="filter_deleted">过滤规则已删除</string>
     <string name="filter_actions">过滤规则操作</string>
+    <string name="enable_xposed_module_title">启用Xposed模块</string>
+    <string name="enable_xposed_module_message">
+        Android 4.4以上不允许非默认的短信应用拦截信息或写入信息收件箱。\n
+        \n为了绕过此限制，请启用NekoSMS的Xposed模块，否则此应用将无法工作。
+    </string>
+    <string name="module_outdated_title">Xposed模块已更新</string>
+    <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
+    <string name="xposed_not_installed">Xposed未安装</string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">编辑过滤规则</string>
@@ -105,6 +116,7 @@
     <string name="pref_general">通用</string>
     <string name="pref_enable">启用NekoSMS</string>
     <string name="pref_enable_summary">用此开关不需要重启</string>
+    <string name="pref_enable_summary_alt">请先启用Xposed模块！</string>
     <string name="pref_whitelist_contacts">联系人白名单</string>
     <string name="pref_whitelist_contacts_summary">不拦截来自联系人的信息</string>
     <string name="pref_verbose_logging">详细log模式</string>
