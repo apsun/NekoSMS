@@ -6,9 +6,6 @@
     <string name="ok">OK</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
-    <string name="enable">Enable</string>
-    <string name="reboot">Reboot</string>
-    <string name="ignore">Ignore</string>
     <string name="close">Close</string>
     <string name="restore">Restore</string>
     <string name="undo">Undo</string>
@@ -46,15 +43,6 @@
     <string name="filter_info_case_sensitive">\u0020(case sensitive)</string>
     <string name="filter_deleted">Filter rule deleted</string>
     <string name="filter_actions">Filter actions</string>
-    <string name="enable_xposed_module_title">Enable Xposed module</string>
-    <string name="enable_xposed_module_message">
-        Android 4.4+ does not allow non-default SMS apps to intercept
-        SMS messages or write to the SMS inbox.\n\nTo bypass this restriction,
-        please enable the Xposed module, or else this app will not work!
-    </string>
-    <string name="module_outdated_title">Xposed module updated</string>
-    <string name="module_outdated_message">Please reboot your device for changes to take effect.</string>
-    <string name="xposed_not_installed">Xposed not installed</string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">Filter rule editor</string>
@@ -117,7 +105,6 @@
     <string name="pref_general">General</string>
     <string name="pref_enable">Enable NekoSMS</string>
     <string name="pref_enable_summary">No reboot required</string>
-    <string name="pref_enable_summary_alt">Please enable the Xposed module first!</string>
     <string name="pref_whitelist_contacts">Whitelist contacts</string>
     <string name="pref_whitelist_contacts_summary">Don\'t block messages from contacts</string>
     <string name="pref_verbose_logging">Verbose logging</string>

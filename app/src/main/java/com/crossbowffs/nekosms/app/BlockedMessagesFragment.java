@@ -27,7 +27,6 @@ import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
-import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
 
 public class BlockedMessagesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnNewArgumentsListener {
@@ -212,15 +211,6 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         BlockedSmsLoader.get().setReadStatus(context, messageData.getId(), true);
     }
 
-    private void startXposedActivity(XposedUtils.Section section) {
-        Context context = getContext();
-        if (context == null) return;
-
-        if (!XposedUtils.startXposedActivity(context, section)) {
-            MainActivity.from(this).makeSnackbar(R.string.xposed_not_installed).show();
-        }
-    }
-
     private void restoreSms(long smsId) {
         Context context = getContext();
         if (context == null) return;
@@ -242,12 +232,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
             inboxSmsUri = InboxSmsLoader.writeMessage(context, messageData);
         } catch (SecurityException e) {
             Xlog.e("Do not have permissions to write SMS");
-            MainActivity.from(this)
-                .makeSnackbar(R.string.must_enable_xposed_module)
-                .setAction(R.string.enable, v -> {
-                    startXposedActivity(XposedUtils.Section.MODULES);
-                })
-                .show();
+            MainActivity.from(this).makeSnackbar(R.string.must_enable_xposed_module).show();
             return;
         } catch (DatabaseException e) {
             Xlog.e("Failed to restore message: could not write to SMS inbox");

@@ -36,7 +36,6 @@ android {
     buildTypes {
         getByName("debug") {
             buildConfigField("int", "LOG_LEVEL", "2")
-            buildConfigField("boolean", "LOG_TO_XPOSED", "false")
         }
 
         getByName("release") {
@@ -48,7 +47,6 @@ android {
                 proguardFile("proguard-rules.pro")
             }
             buildConfigField("int", "LOG_LEVEL", "4")
-            buildConfigField("boolean", "LOG_TO_XPOSED", "true")
         }
     }
 }
