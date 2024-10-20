@@ -5,7 +5,7 @@ plugins {
 dependencies {
     implementation("androidx.core:core:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.annotation:annotation:1.8.0")
+    implementation("androidx.annotation:annotation:1.9.0")
     implementation("androidx.loader:loader:1.1.0")
     implementation("androidx.fragment:fragment:1.7.1")
     implementation("androidx.preference:preference:1.2.1")
