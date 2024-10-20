@@ -6,8 +6,6 @@
     <string name="ok">OK</string>
     <string name="delete">Удалить</string>
     <string name="edit">Редактировать</string>
-    <string name="enable">Активировать</string>
-    <string name="reboot">Перезагрузить</string>
     <string name="ignore">Закрыть</string>
     <string name="close">Закрыть</string>
     <string name="restore">Восстановить</string>
@@ -54,7 +52,6 @@
     </string>
     <string name="module_outdated_title">Модуль Xposed обновлён</string>
     <string name="module_outdated_message">Пожалуйста перезагрузите устройство чтобы изменения вступили в силу.</string>
-    <string name="xposed_not_installed">Xposed не найден</string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">Редактирование правила</string>

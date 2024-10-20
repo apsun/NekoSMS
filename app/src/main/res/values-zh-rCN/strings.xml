@@ -6,8 +6,6 @@
     <string name="ok">确定</string>
     <string name="delete">删除</string>
     <string name="edit">编辑</string>
-    <string name="enable">启用</string>
-    <string name="reboot">重启</string>
     <string name="ignore">忽略</string>
     <string name="close">关闭</string>
     <string name="restore">恢复</string>
@@ -53,7 +51,6 @@
     </string>
     <string name="module_outdated_title">Xposed模块已更新</string>
     <string name="module_outdated_message">请重启你的设备以使更改生效。</string>
-    <string name="xposed_not_installed">Xposed未安装</string>
 
     <!-- Filter rule editor -->
     <string name="filter_editor">编辑过滤规则</string>

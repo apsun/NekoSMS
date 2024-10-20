@@ -107,13 +107,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Show info dialogs as necessary
             if (!XposedUtils.isModuleEnabled()) {
-                if (XposedUtils.isXposedInstalled(this)) {
-                    showEnableModuleDialog();
-                } else {
-                    // We should probably show a different dialog if the
-                    // user doesn't even have Xposed installed...
-                    showEnableModuleDialog();
-                }
+                showEnableModuleDialog();
             } else if (XposedUtils.isModuleUpdated()) {
                 showModuleUpdatedDialog();
             }
@@ -268,20 +262,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startXposedActivity(XposedUtils.Section section) {
-        if (!XposedUtils.startXposedActivity(this, section)) {
-            makeSnackbar(R.string.xposed_not_installed).show();
-        }
-    }
-
     private void showEnableModuleDialog() {
         new AlertDialog.Builder(this)
             .setTitle(R.string.enable_xposed_module_title)
             .setMessage(R.string.enable_xposed_module_message)
             .setIcon(R.drawable.ic_warning_24dp)
-            .setPositiveButton(R.string.enable, (dialog, which) -> {
-                startXposedActivity(XposedUtils.Section.MODULES);
-            })
             .setNegativeButton(R.string.ignore, null)
             .show();
     }
@@ -291,9 +276,6 @@ public class MainActivity extends AppCompatActivity {
             .setTitle(R.string.module_outdated_title)
             .setMessage(R.string.module_outdated_message)
             .setIcon(R.drawable.ic_warning_24dp)
-            .setPositiveButton(R.string.reboot, (dialog, which) -> {
-                startXposedActivity(XposedUtils.Section.INSTALL);
-            })
             .setNegativeButton(R.string.ignore, null)
             .show();
     }
