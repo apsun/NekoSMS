@@ -145,6 +145,7 @@ public class FilterEditorActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         saveIfValid();
+        super.onBackPressed();
     }
 
     @Override

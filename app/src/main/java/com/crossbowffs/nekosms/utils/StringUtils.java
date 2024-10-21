@@ -30,7 +30,7 @@ public final class StringUtils {
             return haystack.contains(needle);
         }
 
-        if (needle.length() == 0) {
+        if (needle.isEmpty()) {
             return true;
         }
 

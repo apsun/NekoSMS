@@ -16,9 +16,9 @@ public class ListRecyclerView extends RecyclerView {
         private final Drawable mDivider;
 
         public ListDividerDecoration(Context context) {
-            TypedArray attributes = context.obtainStyledAttributes(new int[] {android.R.attr.listDivider});
-            mDivider = attributes.getDrawable(0);
-            attributes.recycle();
+            try (TypedArray attributes = context.obtainStyledAttributes(new int[] {android.R.attr.listDivider})) {
+                mDivider = attributes.getDrawable(0);
+            }
         }
 
         @Override

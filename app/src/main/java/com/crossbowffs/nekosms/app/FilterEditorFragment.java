@@ -67,6 +67,7 @@ public class FilterEditorFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        FilterEditorActivity activity = (FilterEditorActivity)requireActivity();
 
         // Set up spinner adapters
         mModeAdapter = new EnumAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
@@ -78,7 +79,6 @@ public class FilterEditorFragment extends Fragment {
         mCaseSpinner.setAdapter(mCaseAdapter);
 
         // Load pattern data corresponding to the current tab
-        FilterEditorActivity activity = (FilterEditorActivity)getActivity();
         mPatternData = activity.getPatternData(mField);
 
         // Disable hint animation as workaround for drawing issue during activity creation

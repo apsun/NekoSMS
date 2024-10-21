@@ -75,7 +75,12 @@ public class BlockedSmsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        switch (intent.getAction()) {
+        String action = intent.getAction();
+        if (action == null) {
+            return;
+        }
+
+        switch (action) {
         case BroadcastConsts.ACTION_RECEIVE_SMS:
             onReceiveSms(context, intent);
             break;

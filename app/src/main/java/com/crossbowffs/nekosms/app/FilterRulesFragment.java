@@ -1,6 +1,7 @@
 package com.crossbowffs.nekosms.app;
 
 import android.content.ContentUris;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -47,6 +48,7 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        MainActivity activity = (MainActivity)requireActivity();
 
         // Initialize filter list
         mAdapter = new FilterRulesAdapter(this);
@@ -56,11 +58,10 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
 
-        MainActivity activity = MainActivity.from(this);
-
         // Display create FAB
         activity.enableFab(R.drawable.ic_create_24dp, v -> {
-            Intent intent = new Intent(getContext(), FilterEditorActivity.class);
+            Context context = requireActivity();
+            Intent intent = new Intent(context, FilterEditorActivity.class);
             intent.putExtra(FilterEditorActivity.EXTRA_ACTION, mAction.name());
             startActivity(intent);
         });
@@ -77,7 +78,7 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_filter_rules, menu);
         menu.setHeaderTitle(R.string.filter_actions);
     }
@@ -85,6 +86,10 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         ListRecyclerView.ContextMenuInfo info = (ListRecyclerView.ContextMenuInfo)item.getMenuInfo();
+        if (info == null) {
+            return super.onContextItemSelected(item);
+        }
+
         switch (item.getItemId()) {
         case R.id.menu_item_edit_filter:
             startFilterEditorActivity(info.mId);
@@ -101,7 +106,7 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
-            getContext(),
+            requireContext(),
             DatabaseContract.FilterRules.CONTENT_URI,
             DatabaseContract.FilterRules.ALL,
             DatabaseContract.FilterRules.ACTION + "=?",
@@ -125,7 +130,9 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
     }
 
     private void deleteFilter(long filterId) {
-        final SmsFilterData filterData = FilterRuleLoader.get().queryAndDelete(getContext(), filterId);
+        Context context = requireActivity();
+
+        final SmsFilterData filterData = FilterRuleLoader.get().queryAndDelete(context, filterId);
         if (filterData == null) {
             Xlog.e("Failed to delete filter: could not load data");
             return;
@@ -134,13 +141,16 @@ public class FilterRulesFragment extends Fragment implements LoaderManager.Loade
         MainActivity.from(this)
             .makeSnackbar(R.string.filter_deleted)
             .setAction(R.string.undo, v -> {
-                FilterRuleLoader.get().insert(getContext(), filterData);
+                Context context2 = requireActivity();
+                FilterRuleLoader.get().insert(context2, filterData);
             })
             .show();
     }
 
     public void startFilterEditorActivity(long id) {
-        Intent intent = new Intent(getContext(), FilterEditorActivity.class);
+        Context context = requireActivity();
+
+        Intent intent = new Intent(context, FilterEditorActivity.class);
         Uri filterUri = ContentUris.withAppendedId(DatabaseContract.FilterRules.CONTENT_URI, id);
         intent.setData(filterUri);
         startActivity(intent);

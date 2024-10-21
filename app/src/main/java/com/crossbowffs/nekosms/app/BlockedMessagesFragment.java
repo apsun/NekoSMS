@@ -27,7 +27,6 @@ import com.crossbowffs.nekosms.loader.DatabaseException;
 import com.crossbowffs.nekosms.loader.InboxSmsLoader;
 import com.crossbowffs.nekosms.provider.DatabaseContract;
 import com.crossbowffs.nekosms.utils.Xlog;
-import com.crossbowffs.nekosms.utils.XposedUtils;
 import com.crossbowffs.nekosms.widget.ListRecyclerView;
 
 public class BlockedMessagesFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, OnNewArgumentsListener {
@@ -55,6 +54,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        MainActivity activity = (MainActivity)requireActivity();
 
         mAdapter = new BlockedMessagesAdapter(this);
         LoaderManager loaderManager = LoaderManager.getInstance(this);
@@ -63,7 +63,6 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         registerForContextMenu(mRecyclerView);
 
-        MainActivity activity = MainActivity.from(this);
         activity.setTitle(R.string.blocked_messages);
 
         BlockedSmsLoader.get().markAllSeen(getContext());
@@ -87,7 +86,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
 
     @Override
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, ContextMenu.ContextMenuInfo menuInfo) {
-        MenuInflater inflater = getActivity().getMenuInflater();
+        MenuInflater inflater = requireActivity().getMenuInflater();
         inflater.inflate(R.menu.context_blocked_messages, menu);
         menu.setHeaderTitle(R.string.message_actions);
     }
@@ -95,6 +94,10 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         ListRecyclerView.ContextMenuInfo info = (ListRecyclerView.ContextMenuInfo)item.getMenuInfo();
+        if (info == null) {
+            return super.onContextItemSelected(item);
+        }
+
         switch (item.getItemId()) {
         case R.id.menu_item_restore_message:
             restoreSms(info.mId);
@@ -133,7 +136,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
-            getContext(),
+            requireContext(),
             DatabaseContract.BlockedMessages.CONTENT_URI,
             DatabaseContract.BlockedMessages.ALL, null, null,
             DatabaseContract.BlockedMessages.TIME_SENT + " DESC"
@@ -155,8 +158,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     }
 
     private void clearAllMessages() {
-        Context context = getContext();
-        if (context == null) return;
+        Context context = requireActivity();
 
         NotificationHelper.cancelAllNotifications(context);
         BlockedSmsLoader.get().deleteAll(context);
@@ -164,8 +166,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     }
 
     private void showConfirmClearDialog() {
-        Context context = getContext();
-        if (context == null) return;
+        Context context = requireActivity();
 
         new AlertDialog.Builder(context)
             .setIcon(R.drawable.ic_warning_24dp)
@@ -177,7 +178,8 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     }
 
     private void showMessageDetailsDialog(Uri uri) {
-        Context context = getContext();
+        Context context = requireActivity();
+
         SmsMessageData messageData = BlockedSmsLoader.get().query(context, uri);
         if (messageData != null) {
             showMessageDetailsDialog(messageData);
@@ -188,8 +190,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     }
 
     public void showMessageDetailsDialog(final SmsMessageData messageData) {
-        Context context = getContext();
-        if (context == null) return;
+        Context context = requireActivity();
 
         // Dismiss notification if present
         NotificationHelper.cancelNotification(context, messageData.getId());
@@ -213,8 +214,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     }
 
     private void restoreSms(long smsId) {
-        Context context = getContext();
-        if (context == null) return;
+        Context context = requireActivity();
 
         // We've obviously seen the message, so remove the notification
         NotificationHelper.cancelNotification(context, smsId);
@@ -247,8 +247,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         MainActivity.from(this)
             .makeSnackbar(R.string.message_restored)
             .setAction(R.string.undo, v -> {
-                Context context2 = getContext();
-                if (context2 == null) return;
+                Context context2 = requireActivity();
                 BlockedSmsLoader.get().insert(context2, messageData);
                 InboxSmsLoader.deleteMessage(context2, inboxSmsUri);
             })
@@ -256,8 +255,7 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
     }
 
     private void deleteSms(long smsId) {
-        Context context = getContext();
-        if (context == null) return;
+        Context context = requireActivity();
 
         // We've obviously seen the message, so remove the notification
         NotificationHelper.cancelNotification(context, smsId);
@@ -273,16 +271,14 @@ public class BlockedMessagesFragment extends Fragment implements LoaderManager.L
         MainActivity.from(this)
             .makeSnackbar(R.string.message_deleted)
             .setAction(R.string.undo, v -> {
-                Context context2 = getContext();
-                if (context2 == null) return;
+                Context context2 = requireActivity();
                 BlockedSmsLoader.get().insert(context2, messageData);
             })
             .show();
     }
 
     private void createTestSms() {
-        Context context = getContext();
-        if (context == null) return;
+        Context context = requireActivity();
 
         SmsMessageData message = new SmsMessageData();
         message.setSender("+11234567890");

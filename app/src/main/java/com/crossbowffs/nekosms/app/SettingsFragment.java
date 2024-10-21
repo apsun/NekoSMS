@@ -1,11 +1,14 @@
 package com.crossbowffs.nekosms.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -31,12 +34,22 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
     private static final String GITHUB_URL = "https://github.com/apsun/NekoSMS";
     private static final String WIKI_URL = GITHUB_URL + "/wiki";
 
+    @NonNull
+    @SuppressWarnings("unchecked")
+    private <T extends Preference> T requirePreference(CharSequence key) {
+        Preference pref = findPreference(key);
+        if (pref == null) {
+            throw new IllegalStateException("Could not find preference with key " + key);
+        }
+        return (T)pref;
+    }
+
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         // General
         addPreferencesFromResource(R.xml.settings_general);
         if (!XposedUtils.isModuleEnabled()) {
-            Preference enablePreference = findPreference(PreferenceConsts.KEY_ENABLE);
+            Preference enablePreference = requirePreference(PreferenceConsts.KEY_ENABLE);
             enablePreference.setEnabled(false);
             enablePreference.setSummary(R.string.pref_enable_summary_alt);
         }
@@ -44,7 +57,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
         // Notifications
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             addPreferencesFromResource(R.xml.settings_notifications_v26);
-            Preference settingsPreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_OPEN_SETTINGS);
+            Preference settingsPreference = requirePreference(PreferenceConsts.KEY_NOTIFICATIONS_OPEN_SETTINGS);
             settingsPreference.setOnPreferenceClickListener(preference -> {
                 Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
                 intent.putExtra(Settings.EXTRA_APP_PACKAGE, NEKOSMS_PACKAGE);
@@ -53,7 +66,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
             });
         } else {
             addPreferencesFromResource(R.xml.settings_notifications);
-            RingtonePreference ringtonePreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE);
+            RingtonePreference ringtonePreference = requirePreference(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE);
             ringtonePreference.setOnPreferenceClickListener(preference -> {
                 Intent intent = ((RingtonePreference)preference).getRingtonePickerIntent();
                 startActivityForResult(intent, PICK_RINGTONE_REQUEST);
@@ -63,27 +76,27 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
 
         // Backup
         addPreferencesFromResource(R.xml.settings_backup);
-        findPreference(PreferenceConsts.KEY_IMPORT_BACKUP).setOnPreferenceClickListener(preference -> {
+        requirePreference(PreferenceConsts.KEY_IMPORT_BACKUP).setOnPreferenceClickListener(preference -> {
             startActivityForResult(BackupLoader.getImportFilePickerIntent(), IMPORT_BACKUP_REQUEST);
             return true;
         });
-        findPreference(PreferenceConsts.KEY_EXPORT_BACKUP).setOnPreferenceClickListener(preference -> {
+        requirePreference(PreferenceConsts.KEY_EXPORT_BACKUP).setOnPreferenceClickListener(preference -> {
             startActivityForResult(BackupLoader.getExportFilePickerIntent(), EXPORT_BACKUP_REQUEST);
             return true;
         });
 
         // About
         addPreferencesFromResource(R.xml.settings_about);
-        findPreference(PreferenceConsts.KEY_ABOUT_HELP).setOnPreferenceClickListener(preference -> {
+        requirePreference(PreferenceConsts.KEY_ABOUT_HELP).setOnPreferenceClickListener(preference -> {
             startBrowserActivity(WIKI_URL);
             return true;
         });
-        findPreference(PreferenceConsts.KEY_ABOUT_GITHUB).setOnPreferenceClickListener(preference -> {
+        requirePreference(PreferenceConsts.KEY_ABOUT_GITHUB).setOnPreferenceClickListener(preference -> {
             startBrowserActivity(GITHUB_URL);
             return true;
         });
         String versionSummary = getString(R.string.format_pref_about_version_summary, VERSION_NAME, VERSION_CODE);
-        findPreference(PreferenceConsts.KEY_ABOUT_VERSION).setSummary(versionSummary);
+        requirePreference(PreferenceConsts.KEY_ABOUT_VERSION).setSummary(versionSummary);
 
         // Handle import requests as necessary
         onNewArguments(getArguments());
@@ -92,8 +105,8 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        MainActivity activity = (MainActivity)requireActivity();
 
-        MainActivity activity = MainActivity.from(this);
         activity.setTitle(R.string.settings);
     }
 
@@ -104,7 +117,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
         }
 
         if (requestCode == PICK_RINGTONE_REQUEST) {
-            RingtonePreference ringtonePreference = findPreference(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE);
+            RingtonePreference ringtonePreference = requirePreference(PreferenceConsts.KEY_NOTIFICATIONS_RINGTONE);
             ringtonePreference.onRingtonePickerResult(data);
         } else if (requestCode == IMPORT_BACKUP_REQUEST) {
             importFilterRules(data.getData());
@@ -127,7 +140,9 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
     }
 
     private void showConfirmImportDialog(final Uri uri) {
-        new AlertDialog.Builder(getContext())
+        Context context = requireActivity();
+
+        new AlertDialog.Builder(context)
             .setIcon(R.drawable.ic_warning_24dp)
             .setTitle(R.string.import_confirm_title)
             .setMessage(R.string.import_confirm_message)

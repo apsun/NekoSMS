@@ -149,12 +149,6 @@ public class SmsFilterLoader {
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (!Intent.ACTION_PACKAGE_REMOVED.equals(action) &&
-                    !Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
-                    return;
-                }
-
                 Uri data = intent.getData();
                 if (data == null) {
                     return;
@@ -165,12 +159,20 @@ public class SmsFilterLoader {
                     return;
                 }
 
-                if (Intent.ACTION_PACKAGE_REMOVED.equals(action)) {
+                String action = intent.getAction();
+                if (action == null) {
+                    return;
+                }
+
+                switch (action) {
+                case Intent.ACTION_PACKAGE_REMOVED:
                     Xlog.i("App uninstalled, resetting filters");
                     invalidateCache();
-                } else if (Intent.ACTION_PACKAGE_DATA_CLEARED.equals(action)) {
+                    break;
+                case Intent.ACTION_PACKAGE_DATA_CLEARED:
                     Xlog.i("App data cleared, resetting filters");
                     invalidateCache();
+                    break;
                 }
             }
         };

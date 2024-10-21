@@ -29,7 +29,7 @@ public abstract class AutoContentProvider extends ContentProvider {
     private final UriMatcher mUriMatcher;
     private SQLiteOpenHelper mDatabaseHelper;
 
-    public AutoContentProvider(String authority, ProviderTable[] tables) {
+    protected AutoContentProvider(String authority, ProviderTable[] tables) {
         mTables = tables;
         mUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         for (int i = 0; i < tables.length; ++i) {

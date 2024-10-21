@@ -1,5 +1,6 @@
 package com.crossbowffs.nekosms.app;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -8,9 +9,12 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
@@ -19,6 +23,7 @@ import com.crossbowffs.nekosms.consts.BroadcastConsts;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
 import com.crossbowffs.nekosms.data.SmsMessageData;
 import com.crossbowffs.nekosms.loader.BlockedSmsLoader;
+import com.crossbowffs.nekosms.utils.Xlog;
 
 public final class NotificationHelper {
     private static final String NOTIFICATION_CHANNEL = "blocked_message";
@@ -111,6 +116,11 @@ public final class NotificationHelper {
     public static void displayNotification(Context context, Uri messageUri) {
         if (!areNotificationsEnabled(context)) {
             BlockedSmsLoader.get().setSeenStatus(context, messageUri, true);
+            return;
+        }
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            Xlog.e("Do not have permissions to send permissions");
             return;
         }
 
