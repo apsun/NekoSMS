@@ -32,7 +32,7 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
     private static final String CREATE_FILTER_RULES_TABLE =
         "CREATE TABLE " + FilterRules.TABLE + "(" +
             FilterRules._ID                     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            FilterRules.ACTION                  + " TEXT NOT NULL, " +
+            '`' + FilterRules.ACTION + '`'      + " TEXT NOT NULL, " +
             FilterRules.SENDER_MODE             + " TEXT, " +
             FilterRules.SENDER_PATTERN          + " TEXT, " +
             FilterRules.SENDER_CASE_SENSITIVE   + " INTEGER, " +
@@ -160,8 +160,8 @@ import static com.crossbowffs.nekosms.provider.DatabaseContract.FilterRules;
         // Add action column
         db.execSQL(
             "ALTER TABLE " + FilterRules.TABLE +
-            " ADD COLUMN " + FilterRules.ACTION + " TEXT NOT NULL" +
-            " DEFAULT \"" + SmsFilterAction.BLOCK.name() + "\"");
+            " ADD COLUMN `" + FilterRules.ACTION + "` TEXT NOT NULL" +
+            " DEFAULT '" + SmsFilterAction.BLOCK.name() + "'");
     }
 
     private void upgrade10To11(SQLiteDatabase db) {
