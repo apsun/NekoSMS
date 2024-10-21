@@ -22,8 +22,6 @@
     <string name="export_success">Export successful</string>
     <string name="export_write_failed">Could not write backup file</string>
     <string name="backup_button_import">Import</string>
-    <string name="progress_importing">Importing data from storage…</string>
-    <string name="progress_exporting">Exporting data to storage…</string>
 
     <!-- Filter rules -->
     <string name="blacklist_rules">Blacklist rules</string>

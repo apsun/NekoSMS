@@ -22,8 +22,6 @@
     <string name="export_success">导出成功</string>
     <string name="export_write_failed">无法写入备份文件</string>
     <string name="backup_button_import">导入</string>
-    <string name="progress_importing">正在导入数据…</string>
-    <string name="progress_exporting">正在导出数据…</string>
 
     <!-- Filter rules -->
     <string name="blacklist_rules">黑名单规则</string>

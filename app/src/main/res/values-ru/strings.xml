@@ -22,8 +22,6 @@
     <string name="export_success">Файл успешно сохранён</string>
     <string name="export_write_failed">Не получилось сохранить файл с правилами</string>
     <string name="backup_button_import">Импортировать</string>
-    <string name="progress_importing">Загружаю данные из файла…</string>
-    <string name="progress_exporting">Сохраняю данные в файл…</string>
 
     <!-- Filter rules -->
     <string name="blacklist_rules">Чёрный список</string>
