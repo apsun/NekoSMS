@@ -13,14 +13,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+
 import com.crossbowffs.nekosms.BuildConfig;
 import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.backup.BackupLoader;
-import com.crossbowffs.nekosms.backup.ExportResult;
-import com.crossbowffs.nekosms.backup.ImportResult;
 import com.crossbowffs.nekosms.consts.PreferenceConsts;
+import com.crossbowffs.nekosms.utils.AsyncUtils;
 import com.crossbowffs.nekosms.utils.XposedUtils;
-import com.crossbowffs.nekosms.widget.DialogAsyncTask;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements OnNewArgumentsListener {
     private static final int PICK_RINGTONE_REQUEST = 1852;
@@ -152,15 +151,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
     }
 
     private void importFilterRules(final Uri uri) {
-        new DialogAsyncTask<Void, Void, ImportResult>(getContext(), R.string.progress_importing) {
-            @Override
-            protected ImportResult doInBackground(Void... params) {
-                return BackupLoader.importFilterRules(getContext(), uri);
-            }
+        Context appContext = requireContext().getApplicationContext();
 
-            @Override
-            protected void onPostExecute(ImportResult result) {
-                super.onPostExecute(result);
+        AsyncUtils.run(
+            () -> BackupLoader.importFilterRules(appContext, uri),
+            (result) -> {
                 int messageId;
                 switch (result) {
                 case SUCCESS:
@@ -179,21 +174,19 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
                     throw new AssertionError("Unknown backup import result code: " + result);
                 }
 
-                MainActivity.from(SettingsFragment.this).makeSnackbar(messageId).show();
-            }
-        }.execute();
+                MainActivity activity = (MainActivity)getActivity();
+                if (activity != null) {
+                    activity.makeSnackbar(messageId).show();
+                }
+            });
     }
 
     private void exportFilterRules(final Uri uri) {
-        new DialogAsyncTask<Void, Void, ExportResult>(getContext(), R.string.progress_exporting) {
-            @Override
-            protected ExportResult doInBackground(Void... params) {
-                return BackupLoader.exportFilterRules(getContext(), uri);
-            }
+        Context appContext = requireContext().getApplicationContext();
 
-            @Override
-            protected void onPostExecute(ExportResult result) {
-                super.onPostExecute(result);
+        AsyncUtils.run(
+            () -> BackupLoader.exportFilterRules(appContext, uri),
+            (result) -> {
                 int messageId;
                 switch (result) {
                 case SUCCESS:
@@ -206,9 +199,11 @@ public class SettingsFragment extends PreferenceFragmentCompat implements OnNewA
                     throw new AssertionError("Unknown backup export result code: " + result);
                 }
 
-                MainActivity.from(SettingsFragment.this).makeSnackbar(messageId).show();
-            }
-        }.execute();
+                MainActivity activity = (MainActivity)getActivity();
+                if (activity != null) {
+                    activity.makeSnackbar(messageId).show();
+                }
+            });
     }
 
     private void startBrowserActivity(String url) {

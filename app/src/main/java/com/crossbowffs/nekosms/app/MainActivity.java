@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -280,7 +282,8 @@ public class MainActivity extends AppCompatActivity {
             .show();
     }
 
+    @NonNull
     public static MainActivity from(Fragment fragment) {
-        return (MainActivity)fragment.getActivity();
+        return (MainActivity)fragment.requireActivity();
     }
 }
