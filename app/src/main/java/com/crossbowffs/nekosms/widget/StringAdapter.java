@@ -7,52 +7,30 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-public class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
-    private final Context mContext;
+public class StringAdapter<T> extends BaseAdapter {
     private final LayoutInflater mInflater;
     private final int mMainLayout;
     private final int mDropdownLayout;
-    private final List<T> mItems;
-    private Map<T, String> mStringMap;
+    private final LinkedHashMap<T, String> mItems;
+    private final List<T> mItemOrder;
 
-    public EnumAdapter(Context context, int layout, Class<T> cls) {
-        this(context, layout, layout, cls);
-    }
-
-    public EnumAdapter(Context context, int layout, T[] items) {
+    public StringAdapter(Context context, int layout, LinkedHashMap<T, String> items) {
         this(context, layout, layout, items);
     }
 
-    public EnumAdapter(Context context, int mainLayout, int dropdownLayout, Class<T> cls) {
-        this(context, mainLayout, dropdownLayout, cls.getEnumConstants());
-    }
-
-    public EnumAdapter(Context context, int mainLayout, int dropdownLayout, T[] items) {
-        mContext = context;
+    public StringAdapter(Context context, int mainLayout, int dropdownLayout, LinkedHashMap<T, String> items) {
         mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mMainLayout = mainLayout;
         mDropdownLayout = dropdownLayout;
-        mItems = Arrays.asList(items);
-    }
-
-    public void setStringMap(Map<T, String> map) {
-        mStringMap = map;
-    }
-
-    public Map<T, String> getStringMap() {
-        return mStringMap;
-    }
-
-    public Context getContext() {
-        return mContext;
+        mItems = items;
+        mItemOrder = List.copyOf(items.keySet());
     }
 
     public int getPosition(T item) {
-        return mItems.indexOf(item);
+        return mItemOrder.indexOf(item);
     }
 
     @Override
@@ -62,7 +40,7 @@ public class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
 
     @Override
     public T getItem(int position) {
-        return mItems.get(position);
+        return mItemOrder.get(position);
     }
 
     @Override
@@ -113,13 +91,6 @@ public class EnumAdapter<T extends Enum<T>> extends BaseAdapter {
     }
 
     protected String getItemString(T item) {
-        if (mStringMap != null) {
-            String itemString = mStringMap.get(item);
-            if (itemString != null) {
-                return itemString;
-            }
-        }
-
-        return item.toString();
+        return mItems.get(item);
     }
 }

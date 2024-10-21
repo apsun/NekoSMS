@@ -15,37 +15,23 @@ import com.crossbowffs.nekosms.R;
 import com.crossbowffs.nekosms.data.SmsFilterField;
 import com.crossbowffs.nekosms.data.SmsFilterMode;
 import com.crossbowffs.nekosms.data.SmsFilterPatternData;
-import com.crossbowffs.nekosms.widget.EnumAdapter;
+import com.crossbowffs.nekosms.widget.StringAdapter;
 import com.crossbowffs.nekosms.widget.OnItemSelectedListenerAdapter;
 import com.crossbowffs.nekosms.widget.TextWatcherAdapter;
 import com.google.android.material.textfield.TextInputLayout;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedHashMap;
 
 public class FilterEditorFragment extends Fragment {
-    private enum CaseSensitivity {
-        INSENSITIVE,
-        SENSITIVE;
-
-        public static CaseSensitivity fromBoolean(boolean caseSensitive) {
-            return caseSensitive ? SENSITIVE : INSENSITIVE;
-        }
-
-        public boolean toBoolean() {
-            return this == SENSITIVE;
-        }
-    }
-
     public static final String EXTRA_FIELD = "field";
 
     private SmsFilterField mField;
     private TextInputLayout mPatternTextInputLayout;
     private EditText mPatternEditText;
     private Spinner mModeSpinner;
-    private Spinner mCaseSpinner;
-    private EnumAdapter<SmsFilterMode> mModeAdapter;
-    private EnumAdapter<CaseSensitivity> mCaseAdapter;
+    private Spinner mCaseSensitiveSpinner;
+    private StringAdapter<SmsFilterMode> mModeAdapter;
+    private StringAdapter<Boolean> mCaseSensitiveAdapter;
     private SmsFilterPatternData mPatternData;
 
     @Override
@@ -60,7 +46,7 @@ public class FilterEditorFragment extends Fragment {
         mPatternTextInputLayout = view.findViewById(R.id.filter_editor_pattern_inputlayout);
         mPatternEditText = view.findViewById(R.id.filter_editor_pattern_edittext);
         mModeSpinner = view.findViewById(R.id.filter_editor_mode_spinner);
-        mCaseSpinner = view.findViewById(R.id.filter_editor_case_spinner);
+        mCaseSensitiveSpinner = view.findViewById(R.id.filter_editor_case_spinner);
         return view;
     }
 
@@ -70,13 +56,13 @@ public class FilterEditorFragment extends Fragment {
         FilterEditorActivity activity = (FilterEditorActivity)requireActivity();
 
         // Set up spinner adapters
-        mModeAdapter = new EnumAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, SmsFilterMode.class);
-        mModeAdapter.setStringMap(getModeMap());
+        mModeAdapter = new StringAdapter<>(
+            getContext(), android.R.layout.simple_spinner_dropdown_item, getModeSpinnerItems());
         mModeSpinner.setAdapter(mModeAdapter);
 
-        mCaseAdapter = new EnumAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, CaseSensitivity.class);
-        mCaseAdapter.setStringMap(getCaseMap());
-        mCaseSpinner.setAdapter(mCaseAdapter);
+        mCaseSensitiveAdapter = new StringAdapter<>(
+            getContext(), android.R.layout.simple_spinner_dropdown_item, getCaseSensitiveSpinnerItems());
+        mCaseSensitiveSpinner.setAdapter(mCaseSensitiveAdapter);
 
         // Load pattern data corresponding to the current tab
         mPatternData = activity.getPatternData(mField);
@@ -101,18 +87,18 @@ public class FilterEditorFragment extends Fragment {
             }
         });
 
-        mCaseSpinner.setSelection(mCaseAdapter.getPosition(CaseSensitivity.fromBoolean(mPatternData.isCaseSensitive())));
-        mCaseSpinner.setOnItemSelectedListener(new OnItemSelectedListenerAdapter() {
+        mCaseSensitiveSpinner.setSelection(mCaseSensitiveAdapter.getPosition(mPatternData.isCaseSensitive()));
+        mCaseSensitiveSpinner.setOnItemSelectedListener(new OnItemSelectedListenerAdapter() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mPatternData.setCaseSensitive(mCaseAdapter.getItem(position).toBoolean());
+                mPatternData.setCaseSensitive(mCaseSensitiveAdapter.getItem(position));
             }
         });
     }
 
-    private Map<SmsFilterMode, String> getModeMap() {
+    private LinkedHashMap<SmsFilterMode, String> getModeSpinnerItems() {
         Resources resources = getResources();
-        HashMap<SmsFilterMode, String> modeMap = new HashMap<>();
+        LinkedHashMap<SmsFilterMode, String> modeMap = new LinkedHashMap<>();
         modeMap.put(SmsFilterMode.REGEX, resources.getString(R.string.filter_mode_regex));
         modeMap.put(SmsFilterMode.WILDCARD, resources.getString(R.string.filter_mode_wildcard));
         modeMap.put(SmsFilterMode.CONTAINS, resources.getString(R.string.filter_mode_contains));
@@ -122,11 +108,11 @@ public class FilterEditorFragment extends Fragment {
         return modeMap;
     }
 
-    private Map<CaseSensitivity, String> getCaseMap() {
+    private LinkedHashMap<Boolean, String> getCaseSensitiveSpinnerItems() {
         Resources resources = getResources();
-        HashMap<CaseSensitivity, String> caseMap = new HashMap<>();
-        caseMap.put(CaseSensitivity.INSENSITIVE, resources.getString(R.string.filter_case_insensitive));
-        caseMap.put(CaseSensitivity.SENSITIVE, resources.getString(R.string.filter_case_sensitive));
+        LinkedHashMap<Boolean, String> caseMap = new LinkedHashMap<>();
+        caseMap.put(false, resources.getString(R.string.filter_case_insensitive));
+        caseMap.put(true, resources.getString(R.string.filter_case_sensitive));
         return caseMap;
     }
 }
